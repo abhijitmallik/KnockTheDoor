@@ -3,7 +3,7 @@ var path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-	entry:'./public/javascripts/app.js',
+	entry:'./public/javascripts/init.js',
 	output:{
 		filename:'production.js',
 		path:path.resolve(__dirname,'production')
@@ -18,7 +18,11 @@ module.exports = {
            	 query:{
            	 	presets:['react','es2015','stage-1']
            	 }
-           }
+           },
+	       {
+	                test: /\.css$/,
+	                loader: "style-loader!css-loader"
+	       }
 		]
 	},
 	plugins: [

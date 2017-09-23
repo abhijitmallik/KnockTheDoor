@@ -1,4 +1,4 @@
-'use strict'
+
 const express = require('express');
 const app = express();
 const path = require('path');
@@ -7,19 +7,35 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const config = require('config');
+const mongoose = require('mongoose');
+
 
 
 const fs = require('fs');
 
-
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'html');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'production')));
 
-//app.use(express.static('public'));
+
+
+const uristring = 'mongodb://127.0.0.1:27017/Employees';
+mongoose.connect(uristring , function (err, res) {
+      if (err) {
+      console.log ('ERROR connecting to: ' + uristring + '. ' + err);
+      } else {
+      console.log ('Succeeded connected to: ' + uristring);
+      
+      }
+});
+
 require('./routes/index')(app,path,config);
+
+
 
 
 // catch 404 and forward to error handler
