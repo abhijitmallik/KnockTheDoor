@@ -1,47 +1,27 @@
 import React,{Component} from 'react';
+import '../../stylesheets/style.css';
 import {connect} from 'react-redux';
-import {allEmployees} from '../actions/employeeAction';
 import { bindActionCreators } from 'redux';
+import { toggleLogin } from '../actions/loginAction';
 
 
-class Employees  extends Component{
+class Admin extends Component{
 	constructor(props){
 		super(props);
-	}
-	componentDidMount(){
-		this.props.fetchEmp();
+		this.login = this.login.bind(this);
 	}
 	render(){
-		if(this.props.employees.employees.length > 0){
-			const employeesList =  this.props.employees.employees.map(function(emp){
-			return(
-				  <div key={emp[0]._id}><span className="emp-name">{emp[0].title}</span><span className="emp-occupation">{emp[0].occupation}</span></div>
-				)
-		    })
-		    return(
-	          <div>
-	           {employeesList}
-	          </div>
-			)
-		}else{
-			return(
-              <div>No Employees available in your rigion</div>
-			)
-		}
-		
-
-		
+       return(
+       	    <div className='login-div'>
+                <button  className='login-button'  onClick={this.login}>LogIn</button>
+       	     </div>)
+	}
+	login(){
+		 this.props.showLogin(true);
 	}
 } 
-
 function bindActionWithClass(dispatch){
-   return bindActionCreators({fetchEmp:allEmployees},dispatch);
+   return bindActionCreators({showLogin:toggleLogin},dispatch)
 }
 
-function mapPropesToState(state){
-	return {employees:state.employeeReducer}
-}
-
-export default connect(mapPropesToState,bindActionWithClass)(Employees);
-
-
+export default connect(null,bindActionWithClass)(Admin);

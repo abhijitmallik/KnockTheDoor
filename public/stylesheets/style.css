@@ -10,3 +10,21 @@ a {
 .main-container{
 	
 }
+.emp-name{
+ font-size: 18px;
+ margin-right: 10px;
+}
+.emp-occupation{
+  font-size: 20px;
+}
+.login-div{
+  float:right;
+}
+.login-button{
+  height: 25px;
+  width: 60px;
+  border-radius: 5px;
+}
+.show-login{
+	display: none;
+}
