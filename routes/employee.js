@@ -2,6 +2,7 @@
 /* GET home page. */
 const employees = require('../models/employees.js');
 module.exports =(app,path,config)=>{
+	var emp;
 	app.get('/', function(req, res, next) {
 	  res.sendFile(path.resolve(__dirname,'public','index.html'))
 	});
@@ -11,7 +12,7 @@ module.exports =(app,path,config)=>{
 	})
 
 	app.post('/employee',function(req,res){
-		var emp = req.body;
+		emp = req.body;
 		employees.create(emp,function(err,emps){
 			if(err){
 				throw err;

@@ -23,7 +23,7 @@ app.use(express.static(path.join(__dirname, 'production')));
 
 
 
-const uristring = 'mongodb://127.0.0.1:27017/Employees';
+const uristring = config.dbURL + 'Employees';
 mongoose.connect(uristring , function (err, res) {
       if (err) {
       console.log ('ERROR connecting to: ' + uristring + '. ' + err);
@@ -33,7 +33,19 @@ mongoose.connect(uristring , function (err, res) {
       }
 });
 
-require('./routes/index')(app,path,config);
+const userString = config.dbURL + 'Users';
+
+mongoose.connect(uristring , function (err, res) {
+      if (err) {
+      console.log ('ERROR connecting to: ' + userString + '. ' + err);
+      } else {
+      console.log ('Succeeded connected to: ' + userString);
+      
+      }
+});
+
+require('./routes/employee')(app,path,config);
+require('./routes/login')(app,path,config);
 
 
 
