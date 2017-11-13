@@ -4,15 +4,24 @@ import {bindActionCreators} from 'redux';
 import {toggleLogin} from '../actions/loginAction';
 import {authenticateUser} from '../actions/adminLogin';
 import '../../stylesheets/style.css';
+import UserForm from './userform.js';
+import { Redirect } from 'react-router-dom';
+
 
 class Login extends Component{
 	constructor(props){
 		super(props);
+    this.state = {redirectToNewPage: false};
 		this.submit = this.submit.bind(this);
 		this.cancel = this.cancel.bind(this);
 	}
 	render(){
-		return(
+    if (this.state.redirectToNewPage) {
+       return (
+          <Redirect to="/employeeForm"/>
+       )
+     }else{
+      return(
             <div className='admin-form'>
                <div className='form-field'>
                  <label className='form-label'>User Name</label>
@@ -22,12 +31,13 @@ class Login extends Component{
                  <label className='form-label'>Password</label>
                  <input type='password' className='form-input' ref = "password"></input>
                </div>
-               <div className='form-field'>
-                 <button className='submit-class' onClick={this.submit}>Submit</button>
+               <div className='form-field button-groups'>
+                 <button className='submit-class ok-button' onClick={this.submit}>Submit</button>
                  <button className='submit-class' onClick={this.cancel}>Cancel</button>
                </div>
             </div>
-		)
+      )
+    }
 	}
 	submit(){
         var userName = this.refs.userName.value;
@@ -39,7 +49,9 @@ class Login extends Component{
            userName:userName,
            password:password
         };
-        this.props.login(obj);
+        this.props.login(obj,(data) => {
+          this.setState({ redirectToNewPage: true });
+        });
 	}
 	cancel(){
         this.props.hideLogIn(false);

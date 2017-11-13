@@ -5,10 +5,11 @@ body {
 
 a {
   color: #00B7FF;
+  text-decoration: none;
 }
 
 .main-container{
-	
+	 
 }
 .emp-name{
  font-size: 18px;
@@ -17,14 +18,44 @@ a {
 .emp-occupation{
   font-size: 20px;
 }
+.link-button{
+  display: inline-block;
+}
 .login-div{
-  float:right;
+
 }
 .login-button{
-  height: 25px;
-  width: 60px;
-  border-radius: 5px;
+  margin-right: 10px;
 }
 .show-login{
 	display: none;
+}
+.admin-form{
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  margin: 0px auto;
+  width: 250px;
+  top: 200px;
+}
+.form-field{
+  height: 20px;
+  padding-bottom: 5px;
+}
+.form-field .form-label{
+    display: inline-block;
+    font-size: 14px;
+    margin-right: 5px;
+    font-family: Kievit;
+    width: 80px;
+}
+.form-field .form-input{
+  width:150px;
+}
+.button-groups{
+  text-align: right;
+  padding-right: 10px;
+}
+.ok-button{
+  margin-right: 5px;
 }
