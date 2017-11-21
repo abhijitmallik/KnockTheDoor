@@ -9,3 +9,15 @@ export function allEmployees(){
 	   })
    }
 }
+
+export function addEmployee(user,callback){
+	console.log("=======user121212========",user);
+	 return function(dispatch){
+       axios.post("/employee",user).then(function(res){
+	      dispatch({type:"ADD-USER",payload:res.data});
+	      callback(res.data);
+	   }).catch(function(err){
+          console.log("=========err=====",err);
+	   })
+   }
+}
