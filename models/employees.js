@@ -1,13 +1,16 @@
 var mongoose = require('mongoose');
 
 var employeeSchema = mongoose.Schema({
-    title:String,
+    firstname:String,
+    lastname:String,
     age:Number,
     occupation:String,
     city:String,
     state:String,
-    phone:Number,
-    pin:Number	
+    phone:String,
+    pin:Number,
+    email:String,
+    dateOfJoin:Date	
 });
 var Employees = mongoose.model('Employee',employeeSchema);
 

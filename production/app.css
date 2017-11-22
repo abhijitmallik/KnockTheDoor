@@ -1,0 +1,8 @@
+.main-div{
+  height: 800px;
+  width:1200px;
+  margin:auto;
+  padding:10px;
+  background-color: antiquewhite;
+  position: relative;
+}

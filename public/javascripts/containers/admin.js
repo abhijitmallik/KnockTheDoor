@@ -10,11 +10,12 @@ export default class Admin extends Component{
 	}
 	render(){
        return(
-       	    <div className='login-div'>
-       	       <div className="link-button"><Link className='login-button' to="/login">Admin</Link></div>
-       	       <div className="link-button"><Link className='login-button' to="/employee">Employees</Link></div>
-       	       <div className="link-button"><Link className='login-button' to="/plumbers">Plumber</Link></div>
-       	       <div className="link-button"><Link className='login-button' to="/electricians">Electricians</Link></div>
-       	    </div>)
+	       <div className='login-div'>
+	         <div className="link-button"><Link className='login-button' to="/login">Admin</Link></div>
+	         <div className="link-button"><Link className='login-button' to="/employee">Employees</Link></div>
+	         <div className="link-button"><Link className='login-button' to="/plumbers">Plumber</Link></div>
+	         <div className="link-button"><Link className='login-button' to="/electricians">Electricians</Link></div>
+	       </div>
+           )
 	}
 } 
