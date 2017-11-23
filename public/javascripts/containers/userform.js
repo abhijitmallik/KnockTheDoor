@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
 import { Field, reduxForm } from 'redux-form';
 import _ from 'lodash';
-import '../../stylesheets/style.css';
 import {addEmployee} from '../actions/employeeAction';
 import { connect } from 'react-redux';
-import UploadImage from './uploadImage';
+import UploadImage from './uploadimage/uploadImage';
 
 
 const FIELDS = {
@@ -87,7 +86,7 @@ class PostNew extends Component {
     if(label === "Upload Image"){
        return(
           <div className="upload-image">
-              <UploadImage />
+              <UploadImage message="Upload Image"/>
           </div>
        )
     }else{

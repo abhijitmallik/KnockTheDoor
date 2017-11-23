@@ -3,7 +3,6 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {toggleLogin} from '../actions/loginAction';
 import {authenticateUser} from '../actions/adminLogin';
-import '../../stylesheets/style.css';
 import UserForm from './userform.js';
 import { Redirect } from 'react-router-dom';
 
@@ -16,7 +15,7 @@ class Login extends Component{
 		this.cancel = this.cancel.bind(this);
 	}
 	render(){
-    if (this.state.redirectToNewPage) {
+    if (this.state.redirectToNewPage == true) {
        return (
           <Redirect to="/employeeForm"/>
        )
@@ -50,7 +49,9 @@ class Login extends Component{
            password:password
         };
         this.props.login(obj,(data) => {
-          this.setState({ redirectToNewPage: true });
+          if(data.length > 0){
+            this.setState({ redirectToNewPage: true });
+          }
         });
 	}
 	cancel(){

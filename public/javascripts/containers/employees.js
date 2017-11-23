@@ -2,7 +2,6 @@ import React,{Component} from 'react';
 import {connect} from 'react-redux';
 import {allEmployees} from '../actions/employeeAction';
 import { bindActionCreators } from 'redux';
-import '../../stylesheets/style.css';
 
 
 class Employees  extends Component{

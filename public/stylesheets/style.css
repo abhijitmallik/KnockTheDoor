@@ -1,3 +1,4 @@
+
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -103,28 +104,9 @@ a {
   margin-bottom: 20px;
   color: cadetblue;
 }
-.upload-container{
-  display: inline-block;
-  height: 100px;
-  width: 100px;
-  background-color: gainsboro;
-  position: absolute;
-  top: 0;
-  font-size: 10px;
-  text-align: center;
-  left: 0px;
-  right: 0px;
-  margin: 0px auto;
-  border-radius: 4px;
+.default-img{
+  background-image: url('../images/missing-image.jpg');
+  background-repeat: no-repeat;
+  background-size:100%;
 }
-.upload-msg{
-  position: absolute;
-  left: 0px;
-  right: 0px;
-  top: 40%;
-  color: currentColor;
-  cursor: pointer;
-}
-.upload-msg:hover{
-  color: red;
-}
+
