@@ -10,10 +10,21 @@ import { Redirect } from 'react-router-dom';
 class Login extends Component{
 	constructor(props){
 		super(props);
-    this.state = {redirectToNewPage: false};
 		this.submit = this.submit.bind(this);
 		this.cancel = this.cancel.bind(this);
+    this.state = {redirectToNewPage: false};
 	}
+  getDefaultProps(){
+
+  }
+  //Another above two methods that only get called when initializing a component are componentWillMount and componentDidMount.
+  componentWillMount(){
+    
+  }
+  //As soon as the render method has been executed the componentDidMount function is called. 
+  componentDidMount(){
+
+  }
 	render(){
     if (this.state.redirectToNewPage == true) {
        return (
@@ -31,8 +42,8 @@ class Login extends Component{
                  <input type='password' className='form-input' ref = "password"></input>
                </div>
                <div className='form-field button-groups'>
-                 <button className='submit-class ok-button' onClick={this.submit}>Submit</button>
-                 <button className='submit-class' onClick={this.cancel}>Cancel</button>
+                 <button className='submit-class ok-button' onClick={this.submit.bind(this)}>Submit</button>
+                 <button className='submit-class' onClick={this.cancel.bind(this)}>Cancel</button>
                </div>
             </div>
       )
