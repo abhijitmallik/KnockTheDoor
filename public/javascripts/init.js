@@ -10,6 +10,8 @@ import Login from './containers/login';
 import reducers from './reducers';
 import {BrowserRouter,Route,Switch} from 'react-router-dom';
 import '.././stylesheets/style.css';
+import '.././stylesheets/cropper.css';
+
 
 
 const createStoreWithMiddleware = applyMiddleware(thunk)(createStore);

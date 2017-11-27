@@ -12,10 +12,25 @@
 }
 .popup_inner {
   position: absolute;
-  left: 25%;
-  right: 25%;
-  top: 25%;
-  bottom: 25%;
+  height: 400px;
+  width: 400px;
+  left: 40%;
+  right: 40%;
+  top: 40%;
+  bottom: 40%;
   margin: auto;
   background: white;
+  padding: 10px;
+}
+.popup-button{
+  margin: auto 30px;
+  bottom: 20px;
+  position: absolute;
+  right: 0px;
+}
+.file-choose{
+  display: none;
+}
+.cropper-class-div{
+  margin-top: 40px;
 }

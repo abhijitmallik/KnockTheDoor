@@ -6,6 +6,8 @@ import { connect } from 'react-redux';
 import UploadImage from './uploadimage/uploadImage';
 
 
+
+
 const FIELDS = {
   firstname:{
      type:'input',
@@ -76,6 +78,10 @@ const FIELDS = {
 }
 
 class PostNew extends Component {
+  constructor(){
+    super();
+    this.renderField = this.renderField.bind(this);
+  }
   callAttribute(field){
     return <Field label={field.label} key={field.key} type={field.type}  name={field.name} component={this.renderField}/>
   }
@@ -148,6 +154,7 @@ function validate(values){
   });
    return errors;
 }
+
 
 export default reduxForm({
   validate,

@@ -14,9 +14,6 @@ class Login extends Component{
 		this.cancel = this.cancel.bind(this);
     this.state = {redirectToNewPage: false};
 	}
-  getDefaultProps(){
-
-  }
   //Another above two methods that only get called when initializing a component are componentWillMount and componentDidMount.
   componentWillMount(){
     

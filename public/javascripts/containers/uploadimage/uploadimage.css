@@ -23,5 +23,45 @@
 .upload-msg:hover{
   color: red;
 }
+.header-class{
+  line-height: 20px;
+  font-size: 20px;
+  text-align: center;
+  display: block;
+}
+.message-class{
+  font-size: 12px;
+  margin-top: 10px;
+  text-align: center;
+}
+.browse-image-area{
+  /*position: relative;
+  height: 300px;
+  width: 330px;
+  background-color: lightgray;
+  border-style:solid 1px;
+  margin:10px auto;*/
+}
+.browse-area{
+   cursor: pointer;
+}
+.browse-message{
+  text-align: center;
+  position: absolute;
+  margin: auto;
+  left: 0px;
+  right: 0px;
+  top: 35px;
+  bottom: 0px;
+  height: 10px;
+}
+.selected-image{
+  position: absolute;
+  margin: auto;
+  left: 0px;
+  right: 0px;
+  height: 290px;
+  width: 320px
+}
 
 
