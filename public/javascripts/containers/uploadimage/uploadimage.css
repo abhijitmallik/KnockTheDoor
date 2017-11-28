@@ -1,6 +1,6 @@
 .upload-container{
   display: inline-block;
-  height: 100px;
+  height: 80px;
   width: 100px;
   background-color: gainsboro;
   position: absolute;
@@ -42,19 +42,7 @@
   border-style:solid 1px;
   margin:10px auto;*/
 }
-.browse-area{
-   cursor: pointer;
-}
-.browse-message{
-  text-align: center;
-  position: absolute;
-  margin: auto;
-  left: 0px;
-  right: 0px;
-  top: 35px;
-  bottom: 0px;
-  height: 10px;
-}
+
 .selected-image{
   position: absolute;
   margin: auto;

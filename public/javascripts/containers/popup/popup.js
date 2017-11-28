@@ -15,7 +15,6 @@ class PopUp extends Component
       super();
       this.browseFile = this.browseFile.bind(this);
       this.onChange = this.onChange.bind(this);
-      this.clear = this.clear.bind(this);
       this.crop = this.crop.bind(this);
        this.state = {
             image: null,
@@ -38,20 +37,12 @@ class PopUp extends Component
 	}
 
     async crop() {
-    	debugger;
         let image = await this.refs.crop.cropImage()
         this.setState({
             previewUrl: window.URL.createObjectURL(image)
         })
-        this.props.getCroppedURL(this.state.previewUrl);
-    }
- 
-    clear() {
-        this.refs.file.value = null
-        this.setState({
-            previewUrl: null,
-            image: null
-        })
+        console.log("===image===",image);
+        this.props.getCroppedURL({url:this.state.previewUrl,imageBlob:image});
     }
  
     imageLoaded(img) {
@@ -66,11 +57,13 @@ class PopUp extends Component
         })
     }
 	render(){
-	   
 		const template = this.props.template;
          return(  <div className='popup'>
 				    <div className='popup_inner'>
-				    <div dangerouslySetInnerHTML={{ __html: template }}/>
+				    <span className='header-class'>Upload Image</span>
+                    <div className='message-class'>Please select image with dimension more than 500 x 500</div> 
+                    <div className='browse-image-area'><span className='browse-area'><span className='upload-img upload-span'></span><div className='browse-message'>Browse</div></span> 
+                    <span className='file-choose'> <input className='fileInput'  type="file"/></span>
 				      {
                   
                     this.state.image &&
@@ -83,21 +76,12 @@ class PopUp extends Component
                             height={80}
                             onImageLoaded={this.imageLoaded}
                         />
- 
-                        <button onClick={this.crop}>Crop</button>
-                        <button onClick={this.clear}>Clear</button>
                     </div>
  
                 }
- 
-                {
-                    this.state.previewUrl &&
- 
-                    <img src={this.state.previewUrl} />
-                }
-				      
-				       
-				      <button className="popup-button" onClick={this.props.closePopup}>close me</button>
+                    </div>
+                    <button className="crop-button" onClick={this.crop}>Crop</button>
+				    <button className="popup-button" onClick={this.props.closePopup}>close me</button>
 				    </div>
 				  </div> );
 	}
