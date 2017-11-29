@@ -10,7 +10,8 @@ var employeeSchema = mongoose.Schema({
     phone:String,
     pin:Number,
     email:String,
-    dateOfJoin:Date	
+    dateOfJoin:Date,
+    croppedImage:String	
 });
 var Employees = mongoose.model('Employee',employeeSchema);
 

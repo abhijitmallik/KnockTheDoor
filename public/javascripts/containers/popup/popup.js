@@ -41,7 +41,7 @@ class PopUp extends Component
         this.setState({
             previewUrl: window.URL.createObjectURL(image)
         })
-        console.log("===image===",image);
+        this.props.croppedImage(this.state.previewUrl);
         this.props.getCroppedURL({url:this.state.previewUrl,imageBlob:image});
     }
  
@@ -80,7 +80,7 @@ class PopUp extends Component
  
                 }
                     </div>
-                    <button className="crop-button" onClick={this.crop}>Crop</button>
+                    <button className="crop-button" onClick={this.crop.bind(this)}>Crop</button>
 				    <button className="popup-button" onClick={this.props.closePopup}>close me</button>
 				    </div>
 				  </div> );

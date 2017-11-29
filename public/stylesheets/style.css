@@ -15,11 +15,14 @@ a {
 .emp-row{
   margin: 10px;
 }
-.emp-city,.emp-name,.emp-occupation,.emp-phone,.emp-state,.emp-city{
+.emp-city,.emp-name,.emp-occupation,.emp-phone,.emp-state,.emp-city,.emp-doj{
   margin-right: 20px;
   font-size: 14px;
   width: 100px;
   display: inline-block;
+}
+.emp-image{
+  height: 40px;
 }
 .link-button{
   display: inline-block;

@@ -16724,6 +16724,8 @@ var Employees = function (_Component) {
 		value: function render() {
 			if (this.props.employees.employees.length > 0) {
 				var employeesList = this.props.employees.employees[0].map(function (emp) {
+					emp.dateOfJoin = new Date(emp.dateOfJoin);
+					var dt = emp.dateOfJoin.getDate() + ":" + emp.dateOfJoin.getMonth() + ":" + emp.dateOfJoin.getFullYear();
 					return _react2.default.createElement(
 						'div',
 						{ className: 'emp-row', key: emp._id },
@@ -16746,14 +16748,20 @@ var Employees = function (_Component) {
 						),
 						_react2.default.createElement(
 							'span',
+							{ className: 'emp-city' },
+							emp.city
+						),
+						_react2.default.createElement(
+							'span',
 							{ className: 'emp-state' },
 							emp.state
 						),
 						_react2.default.createElement(
 							'span',
-							{ className: 'emp-city' },
-							emp.city
-						)
+							{ className: 'emp-doj' },
+							dt
+						),
+						_react2.default.createElement('img', { className: 'emp-image', src: emp.croppedImage })
 					);
 				});
 				return _react2.default.createElement(
@@ -17914,6 +17922,8 @@ var PostNew = function (_Component) {
     var _this = _possibleConstructorReturn(this, (PostNew.__proto__ || Object.getPrototypeOf(PostNew)).call(this));
 
     _this.renderField = _this.renderField.bind(_this);
+    _this.onCroppedImgData = _this.onCroppedImgData.bind(_this);
+    _this.state = { croppedData: undefined };
     return _this;
   }
 
@@ -17921,6 +17931,11 @@ var PostNew = function (_Component) {
     key: 'callAttribute',
     value: function callAttribute(field) {
       return _react2.default.createElement(_reduxForm.Field, { label: field.label, key: field.key, type: field.type, name: field.name, component: this.renderField });
+    }
+  }, {
+    key: 'onCroppedImgData',
+    value: function onCroppedImgData(data) {
+      this.setState({ croppedData: data });
     }
   }, {
     key: 'renderField',
@@ -17936,7 +17951,7 @@ var PostNew = function (_Component) {
         return _react2.default.createElement(
           'div',
           { className: 'upload-image' },
-          _react2.default.createElement(_uploadImage2.default, { message: 'Upload Image' })
+          _react2.default.createElement(_uploadImage2.default, { message: 'Upload Image', callbackImgCropped: this.onCroppedImgData })
         );
       } else {
         return _react2.default.createElement(
@@ -17965,6 +17980,10 @@ var PostNew = function (_Component) {
     value: function onSubmit(obj) {
       var _this2 = this;
 
+      console.log("Employee need to be inserted===", obj);
+      if (this.state.croppedData) {
+        obj.croppedImage = this.state.croppedData;
+      }
       this.props.addEmployee(obj, function (data) {
         _this2.props.reset();
       });
@@ -18015,7 +18034,7 @@ var PostNew = function (_Component) {
 function validate(values) {
   var errors = {};
   _lodash2.default.each(FIELDS, function (type, field) {
-    if (!values[field]) {
+    if (!values[field] && type.type != "blob") {
       if (type.type == "email") {
         errors[field] = 'Enter an ' + field;
       } else {
@@ -34675,7 +34694,7 @@ exports = module.exports = __webpack_require__(85)(undefined);
 
 
 // module
-exports.push([module.i, "\nbody {\n  padding: 50px;\n  font: 14px \"Lucida Grande\", Helvetica, Arial, sans-serif;\n}\n\na {\n  color: #00B7FF;\n  text-decoration: none;\n}\n\n.main-container{\n\t \n}\n.emp-row{\n  margin: 10px;\n}\n.emp-city,.emp-name,.emp-occupation,.emp-phone,.emp-state,.emp-city{\n  margin-right: 20px;\n  font-size: 14px;\n  width: 100px;\n  display: inline-block;\n}\n.link-button{\n  display: inline-block;\n}\n.login-div{\n\n}\n.login-button{\n  margin-right: 10px;\n}\n.show-login{\n\tdisplay: none;\n}\n.admin-form{\n  position: absolute;\n  left: 0px;\n  right: 0px;\n  margin: 0px auto;\n  width: 250px;\n  top: 200px;\n}\n.form-field{\n  height: 25px;\n  padding-bottom: 5px;\n}\n.form-field .form-label{\n    display: inline-block;\n    font-size: 14px;\n    margin-right: 5px;\n    font-family: Kievit;\n    width: 80px;\n}\n.form-field .form-input{\n  width:150px;\n}\n.button-groups{\n  text-align: right;\n  padding-right: 10px;\n}\n.ok-button{\n  margin-right: 5px;\n}\n.label-name{\n  width: 10%;\n  display: inline-block;\n  text-align: right;\n  margin-right: 10px;\n  font-size: 14px;\n  font-family: Kievit;\n}\n.employee-form{\n  width: 100%;\n  height: 100%;\n  margin-left: 30%;\n  margin-right: 30%;\n  position: relative;\n}\n.form-div{\n  height: 800px;\n  padding: 100px;\n}\n.field-div{\n  margin-bottom: 10px;\n}\n.form-button{\n  margin-left: 11%;\n}\n.error-msg{\n  margin-left: 110px;\n  color: crimson;\n  display: block;\n}\n.form-input{\n  width: 250px;\n  height: 20px;\n}\n.form-header{\n  font-size: 18px;\n  font-family: Kievit;\n  font-weight: bolder;\n  text-align: center;\n  margin-bottom: 20px;\n  color: cadetblue;\n}\n.default-img{\n  background-image: url(" + __webpack_require__(464) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n}\n.upload-img{\n  position: absolute;\n  background-image: url(" + __webpack_require__(465) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 20px;\n  width: 20px;\n  top: 0px;\n  bottom: 0px;\n  left:0px;\n  right: 0px;\n  margin: auto;\n}\n\n", ""]);
+exports.push([module.i, "\nbody {\n  padding: 50px;\n  font: 14px \"Lucida Grande\", Helvetica, Arial, sans-serif;\n}\n\na {\n  color: #00B7FF;\n  text-decoration: none;\n}\n\n.main-container{\n\t \n}\n.emp-row{\n  margin: 10px;\n}\n.emp-city,.emp-name,.emp-occupation,.emp-phone,.emp-state,.emp-city,.emp-doj{\n  margin-right: 20px;\n  font-size: 14px;\n  width: 100px;\n  display: inline-block;\n}\n.emp-image{\n  height: 40px;\n}\n.link-button{\n  display: inline-block;\n}\n.login-div{\n\n}\n.login-button{\n  margin-right: 10px;\n}\n.show-login{\n\tdisplay: none;\n}\n.admin-form{\n  position: absolute;\n  left: 0px;\n  right: 0px;\n  margin: 0px auto;\n  width: 250px;\n  top: 200px;\n}\n.form-field{\n  height: 25px;\n  padding-bottom: 5px;\n}\n.form-field .form-label{\n    display: inline-block;\n    font-size: 14px;\n    margin-right: 5px;\n    font-family: Kievit;\n    width: 80px;\n}\n.form-field .form-input{\n  width:150px;\n}\n.button-groups{\n  text-align: right;\n  padding-right: 10px;\n}\n.ok-button{\n  margin-right: 5px;\n}\n.label-name{\n  width: 10%;\n  display: inline-block;\n  text-align: right;\n  margin-right: 10px;\n  font-size: 14px;\n  font-family: Kievit;\n}\n.employee-form{\n  width: 100%;\n  height: 100%;\n  margin-left: 30%;\n  margin-right: 30%;\n  position: relative;\n}\n.form-div{\n  height: 800px;\n  padding: 100px;\n}\n.field-div{\n  margin-bottom: 10px;\n}\n.form-button{\n  margin-left: 11%;\n}\n.error-msg{\n  margin-left: 110px;\n  color: crimson;\n  display: block;\n}\n.form-input{\n  width: 250px;\n  height: 20px;\n}\n.form-header{\n  font-size: 18px;\n  font-family: Kievit;\n  font-weight: bolder;\n  text-align: center;\n  margin-bottom: 20px;\n  color: cadetblue;\n}\n.default-img{\n  background-image: url(" + __webpack_require__(464) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n}\n.upload-img{\n  position: absolute;\n  background-image: url(" + __webpack_require__(465) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 20px;\n  width: 20px;\n  top: 0px;\n  bottom: 0px;\n  left:0px;\n  right: 0px;\n  margin: auto;\n}\n\n", ""]);
 
 // exports
 
@@ -62655,8 +62674,6 @@ var _popup = __webpack_require__(641);
 
 var _popup2 = _interopRequireDefault(_popup);
 
-var _reactRedux = __webpack_require__(29);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -62668,12 +62685,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var UploadImage = function (_Component) {
 	_inherits(UploadImage, _Component);
 
-	function UploadImage() {
+	function UploadImage(props) {
 		_classCallCheck(this, UploadImage);
 
-		var _this = _possibleConstructorReturn(this, (UploadImage.__proto__ || Object.getPrototypeOf(UploadImage)).call(this));
+		var _this = _possibleConstructorReturn(this, (UploadImage.__proto__ || Object.getPrototypeOf(UploadImage)).call(this, props));
 
-		_this.state = { callPopUp: false };
+		_this.state = { callPopUp: false, imgURL: undefined };
 		return _this;
 	}
 
@@ -62687,13 +62704,29 @@ var UploadImage = function (_Component) {
 			}
 		}
 	}, {
+		key: 'getImageData',
+		value: function getImageData(img) {
+			this.setState({ imgURL: img });
+		}
+	}, {
+		key: 'handleImageLoaded',
+		value: function handleImageLoaded(e) {
+			var canvas = document.createElement('canvas');
+			var ctx = canvas.getContext('2d');
+			canvas.width = e.target.width;
+			canvas.height = e.target.height;
+			ctx.drawImage(e.target, 0, 0);
+			var dataURL = canvas.toDataURL("image/png");
+			this.props.callbackImgCropped(dataURL);
+		}
+	}, {
 		key: 'render',
 		value: function render() {
 			var message = this.props.message;
 
 			var popup = "";
 			var template = '<span class=\'header-class\'>Upload Image</span>\n                      <div class=\'message-class\'>Please select image with dimension more than 500 x 500</div> \n                      <div class=\'browse-image-area\'><span class=\'browse-area\'><span class=\'upload-img upload-span\'></span><div class=\'browse-message\'>Browse</div></span><span class=\'file-choose\'> \n                      <input className=\'fileInput\'  type="file"/>\n                      </span>\n                      </div>';
-			popup = _react2.default.createElement(_popup2.default, { template: template, closePopup: this.togglePopup.bind(this) });
+			popup = _react2.default.createElement(_popup2.default, { template: template, croppedImage: this.getImageData.bind(this), closePopup: this.togglePopup.bind(this) });
 			return _react2.default.createElement(
 				'div',
 				null,
@@ -62708,7 +62741,7 @@ var UploadImage = function (_Component) {
 					_react2.default.createElement(
 						'div',
 						{ 'class': 'cropped-image-div' },
-						this.props.croppedImage ? _react2.default.createElement('img', { src: this.props.croppedImage.url }) : null
+						this.state.imgURL ? _react2.default.createElement('img', { src: this.state.imgURL, onLoad: this.handleImageLoaded.bind(this) }) : null
 					)
 				),
 				this.state.callPopUp ? _react2.default.createElement(
@@ -62723,15 +62756,7 @@ var UploadImage = function (_Component) {
 	return UploadImage;
 }(_react.Component);
 
-function bindPropertiesToForm(state) {
-	if (state.croppedImage) {
-		console.log("form reducer received4444", state.croppedImage.cropped);
-	}
-	console.log("form reducer received12121", state.croppedImage);
-	return { croppedImage: state.croppedImage.cropped };
-}
-
-exports.default = (0, _reactRedux.connect)(bindPropertiesToForm)(UploadImage);
+exports.default = UploadImage;
 
 /***/ }),
 /* 639 */
@@ -62773,7 +62798,7 @@ exports = module.exports = __webpack_require__(85)(undefined);
 
 
 // module
-exports.push([module.i, ".upload-container{\n  display: inline-block;\n  height: 80px;\n  width: 100px;\n  background-color: gainsboro;\n  position: absolute;\n  top: 0;\n  font-size: 10px;\n  text-align: center;\n  left: 0px;\n  right: 0px;\n  margin: 0px auto;\n  border-radius: 4px;\n}\n.upload-msg{\n  position: absolute;\n  left: 0px;\n  right: 0px;\n  top: 40%;\n  color: currentColor;\n  cursor: pointer;\n}\n.upload-msg:hover{\n  color: red;\n}\n.header-class{\n  line-height: 20px;\n  font-size: 20px;\n  text-align: center;\n  display: block;\n}\n.message-class{\n  font-size: 12px;\n  margin-top: 10px;\n  text-align: center;\n}\n.browse-image-area{\n  /*position: relative;\n  height: 300px;\n  width: 330px;\n  background-color: lightgray;\n  border-style:solid 1px;\n  margin:10px auto;*/\n}\n\n.selected-image{\n  position: absolute;\n  margin: auto;\n  left: 0px;\n  right: 0px;\n  height: 290px;\n  width: 320px\n}\n\n\n", ""]);
+exports.push([module.i, ".upload-container{\n  display: inline-block;\n  height: 80px;\n  width: 100px;\n  background-color: gainsboro;\n  position: absolute;\n  top: 0;\n  font-size: 10px;\n  text-align: center;\n  left: 0px;\n  right: 0px;\n  margin: 0px auto;\n  border-radius: 4px;\n}\n.header-class{\n  line-height: 20px;\n  font-size: 20px;\n  text-align: center;\n  display: block;\n}\n.message-class{\n  font-size: 12px;\n  margin-top: 10px;\n  text-align: center;\n}\n.browse-image-area{\n  /*position: relative;\n  height: 300px;\n  width: 330px;\n  background-color: lightgray;\n  border-style:solid 1px;\n  margin:10px auto;*/\n}\n\n.selected-image{\n  position: absolute;\n  margin: auto;\n  left: 0px;\n  right: 0px;\n  height: 290px;\n  width: 320px\n}\n\n\n", ""]);
 
 // exports
 
@@ -62881,7 +62906,7 @@ var PopUp = function (_Component) {
                                 this.setState({
                                     previewUrl: window.URL.createObjectURL(image)
                                 });
-                                console.log("===image===", image);
+                                this.props.croppedImage(this.state.previewUrl);
                                 this.props.getCroppedURL({ url: this.state.previewUrl, imageBlob: image });
 
                             case 6:
@@ -62965,7 +62990,7 @@ var PopUp = function (_Component) {
                     ),
                     _react2.default.createElement(
                         'button',
-                        { className: 'crop-button', onClick: this.crop },
+                        { className: 'crop-button', onClick: this.crop.bind(this) },
                         'Crop'
                     ),
                     _react2.default.createElement(

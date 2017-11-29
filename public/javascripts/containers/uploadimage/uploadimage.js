@@ -1,12 +1,11 @@
 import React, {Component} from 'react';
 import './uploadimage.css';
 import PopUp from "../popup/popup.js";
-import { connect } from 'react-redux';
  
-class UploadImage extends Component{
-	constructor(){
-		super();
-		this.state = {callPopUp:false};
+export default class UploadImage extends Component{
+	constructor(props){
+		super(props);
+		this.state = {callPopUp:false,imgURL:undefined};
 	}
 
 	togglePopup(){
@@ -16,6 +15,18 @@ class UploadImage extends Component{
 			this.setState({callPopUp:true});
 		}
 		
+	}
+	getImageData(img){
+	   this.setState({imgURL:img});
+	}
+	handleImageLoaded(e){
+		let canvas = document.createElement('canvas')
+        let ctx = canvas.getContext('2d')
+        canvas.width = e.target.width
+        canvas.height = e.target.height
+        ctx.drawImage(e.target, 0, 0)
+        let dataURL = canvas.toDataURL("image/png");
+        this.props.callbackImgCropped(dataURL);
 	}
 
 	render(){
@@ -27,10 +38,10 @@ class UploadImage extends Component{
                       <input className='fileInput'  type="file"/>
                       </span>
                       </div>`
-        popup = <PopUp template={template} closePopup={this.togglePopup.bind(this)}/>;
+        popup = <PopUp template={template} croppedImage={this.getImageData.bind(this)} closePopup={this.togglePopup.bind(this)}/>;
 		return(
 			<div>
-	           <div className="upload-container default-img"><span className="upload-msg" onClick={this.togglePopup.bind(this)}>{message}</span><div class="cropped-image-div">{this.props.croppedImage ? <img src={this.props.croppedImage.url}/>:null}</div></div>
+	           <div className="upload-container default-img"><span className="upload-msg" onClick={this.togglePopup.bind(this)}>{message}</span><div class="cropped-image-div">{this.state.imgURL ? <img src={this.state.imgURL}  onLoad={this.handleImageLoaded.bind(this)}/>:null}</div></div>
 	           {this.state.callPopUp ? <span id="uploadphoto-id">{popup}</span> : null}
 	           
            </div>
@@ -38,12 +49,3 @@ class UploadImage extends Component{
         
 	}
 } 
-function bindPropertiesToForm(state){
-	if(state.croppedImage){
-		console.log("form reducer received4444",state.croppedImage.cropped);
-	}
-  console.log("form reducer received12121",state.croppedImage);
-  return({croppedImage:state.croppedImage.cropped});
-} 
-
-export default connect(bindPropertiesToForm)(UploadImage);

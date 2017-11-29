@@ -81,18 +81,23 @@ class PostNew extends Component {
   constructor(){
     super();
     this.renderField = this.renderField.bind(this);
+    this.onCroppedImgData = this.onCroppedImgData.bind(this);
+    this.state = {croppedData:undefined};
   }
   callAttribute(field){
     return <Field label={field.label} key={field.key} type={field.type}  name={field.name} component={this.renderField}/>
   }
-
+  onCroppedImgData(data)
+  {
+    this.setState({croppedData:data});
+  }
   renderField(field){
     const {meta:{touched,error}} = field;
     const {label,type,key} = field;
     if(label === "Upload Image"){
        return(
           <div className="upload-image">
-              <UploadImage message="Upload Image"/>
+              <UploadImage message="Upload Image" callbackImgCropped={this.onCroppedImgData}/>
           </div>
        )
     }else{
@@ -110,9 +115,13 @@ class PostNew extends Component {
      
   }
   onSubmit(obj){
+    console.log("Employee need to be inserted===",obj);
+    if(this.state.croppedData){
+      obj.croppedImage = this.state.croppedData;
+    }
     this.props.addEmployee(obj,(data) => {
       this.props.reset();     
-  });
+    });
   }
   render(){
     const { handleSubmit, pristine, reset, submitting } = this.props;
@@ -138,7 +147,7 @@ class PostNew extends Component {
 function validate(values){
    const errors = {};
    _.each(FIELDS,(type,field)=>{
-     if(!values[field]){
+     if(!values[field] && type.type != "blob"){
       if(type.type == "email"){
         errors[field] = `Enter an ${field}`;
       }else{
@@ -154,7 +163,6 @@ function validate(values){
   });
    return errors;
 }
-
 
 export default reduxForm({
   validate,
