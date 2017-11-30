@@ -5,6 +5,8 @@ var employeeSchema = mongoose.Schema({
     lastname:String,
     age:Number,
     occupation:String,
+    password:String,
+    reenterpassword:String,
     city:String,
     state:String,
     phone:String,

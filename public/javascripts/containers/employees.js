@@ -17,7 +17,7 @@ class Employees  extends Component{
 				emp.dateOfJoin = new Date(emp.dateOfJoin);
 				let dt = emp.dateOfJoin.getDate() + ":" +emp.dateOfJoin.getMonth()+":"+emp.dateOfJoin.getFullYear();
 			return(
-				  <div className="emp-row" key={emp._id}><span className="emp-name">{emp.firstname} {emp.lastname}</span><span className="emp-occupation">{emp.occupation}</span><span className="emp-phone">{emp.phone}</span><span className="emp-city">{emp.city}</span><span className="emp-state">{emp.state}</span><span className="emp-doj">{dt}</span><img className="emp-image"  src={emp.croppedImage}/></div>
+				  <div className="emp-row" key={emp._id}><span className="emp-name">{emp.firstname} {emp.lastname}</span><span className="emp-occupation">{emp.occupation}</span><span className="emp-city">{emp.city}</span><span className="emp-state">{emp.state}</span><span className="emp-doj">{dt}</span><img className="emp-image"  src={emp.croppedImage}/></div>
 				)
 		    })
 		    return(

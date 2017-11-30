@@ -1,6 +1,6 @@
 
 body {
-  padding: 50px;
+  background-color: antiquewhite;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
@@ -41,7 +41,7 @@ a {
   left: 0px;
   right: 0px;
   margin: 0px auto;
-  width: 250px;
+  width:  400px;;
   top: 200px;
 }
 .form-field{
@@ -55,12 +55,9 @@ a {
     font-family: Kievit;
     width: 80px;
 }
-.form-field .form-input{
-  width:150px;
-}
 .button-groups{
   text-align: right;
-  padding-right: 10px;
+  padding-right: 60px;
 }
 .ok-button{
   margin-right: 5px;
@@ -88,10 +85,10 @@ a {
   margin-bottom: 10px;
 }
 .form-button{
-  margin-left: 11%;
+  margin-left: 20%;
 }
 .error-msg{
-  margin-left: 110px;
+  margin-left: 75px;
   color: crimson;
   display: block;
 }
@@ -124,5 +121,13 @@ a {
   left:0px;
   right: 0px;
   margin: auto;
+}
+.admin-header{
+  font-size: 18px;
+  font-family: Kievit;
+  font-weight: bolder;
+  text-align: center;
+  margin-bottom: 20px;
+  color: cadetblue;
 }
 

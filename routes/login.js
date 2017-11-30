@@ -1,7 +1,7 @@
 const adminModal = require('../models/admin.js');
 
 module.exports =(app,path,config)=>{
-	var admin;
+	var user;
 	app.post('/adminUser',function(req,res){
        admin = req.body;
        adminModal.find({userName:admin.userName,password:admin.password},function(err,user){
@@ -21,5 +21,15 @@ module.exports =(app,path,config)=>{
 			}
 			res.json(user);
 		})
+	})
+
+	app.post('/userLogin',function(req,res){
+       admin = req.body;
+       adminModal.find({userName:admin.userName,password:admin.password},function(err,user){
+       	if(err){
+       		throw err;
+       	}
+       	res.send(200)
+       })
 	})
 }
