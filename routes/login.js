@@ -22,14 +22,4 @@ module.exports =(app,path,config)=>{
 			res.json(user);
 		})
 	})
-
-	app.post('/userLogin',function(req,res){
-       admin = req.body;
-       adminModal.find({userName:admin.userName,password:admin.password},function(err,user){
-       	if(err){
-       		throw err;
-       	}
-       	res.send(200)
-       })
-	})
 }

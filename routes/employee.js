@@ -46,4 +46,21 @@ module.exports =(app,path,config)=>{
 		})
 	})
 
+	app.post('/userLogin',function(req,res){
+       emp = req.body;
+       employees.find({firstname:emp.username,password:emp.password},function(err,user){
+       	if(err){
+       		throw err;
+       	}
+       	if(user.length > 0){
+       		res.json({status:true,id:user[0]._id,firstname:user[0].firstname,lastname:user[0].lastname,age:user[0].age,
+       		         occupation:user[0].occupation,city:user[0].city,state:user[0].state,
+       		         phone:user[0].phone,pin:user[0].pin,email:user[0].email,dateOfJoin:user[0].dateOfJoin,croppedImage:user[0].croppedImage});
+       	}else{
+       		res.json({status:false,id:null});
+       	}
+       	
+       })
+	})
+
 };

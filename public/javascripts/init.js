@@ -8,6 +8,7 @@ import Employees from './containers/employees';
 import userForm from './containers/signup';
 import AdminLogin from './containers/adminLogin';
 import SignIn from './containers/signin/signin';
+import Profile from './containers/profile/profile';
 import reducers from './reducers';
 import {BrowserRouter,Route,Switch} from 'react-router-dom';
 import '.././stylesheets/style.css';
@@ -25,6 +26,7 @@ ReactDOM.render(
        <Route path="/signup" component={userForm}/>
        <Route path="/admin" component={AdminLogin}/>
        <Route path="/signin" component={SignIn}/>
+       <Route path="/profile" component={Profile}/>
       </div> 
     </BrowserRouter>
   </Provider>,document.getElementById('app'));
