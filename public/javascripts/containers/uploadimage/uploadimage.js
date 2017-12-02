@@ -6,6 +6,12 @@ export default class UploadImage extends Component{
 	constructor(props){
 		super(props);
 		this.state = {callPopUp:false,imgURL:undefined};
+		
+	}
+	componentWillMount(){
+		if(this.props.profileImg){
+			this.setState({imgURL:this.props.profileImg});
+		}
 	}
 
 	togglePopup(){

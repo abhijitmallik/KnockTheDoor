@@ -36,6 +36,20 @@ module.exports =(app,path,config)=>{
 		})
 	})
 
+	app.put('/editemployee',function(req,res){
+		emp = req.body;
+		console.log("update information",emp.id);
+		employees.findById(emp.id,function(err,emp){
+			emp.save(function(err,updatedEmp){
+				if(err){
+					return handleError(err);
+				}
+				res.json(emp);
+			})
+		})
+		res.json(emp);
+	})
+
 	app.delete('/employee/:_id',function(req,res){
 		var query = {_id: req.params._id}; 
 		employees.remove(query,function(err,emp){
