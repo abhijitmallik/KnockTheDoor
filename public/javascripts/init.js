@@ -27,6 +27,7 @@ ReactDOM.render(
        <Route path="/admin" component={AdminLogin}/>
        <Route path="/signin" component={SignIn}/>
        <Route path="/profile" component={Profile}/>
+       <Route path="/init" component={Profile}/>
       </div> 
     </BrowserRouter>
   </Provider>,document.getElementById('app'));

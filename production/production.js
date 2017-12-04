@@ -17678,6 +17678,12 @@ var _uploadImage = __webpack_require__(284);
 
 var _uploadImage2 = _interopRequireDefault(_uploadImage);
 
+var _reactRouterDom = __webpack_require__(103);
+
+var _index = __webpack_require__(442);
+
+var _index2 = _interopRequireDefault(_index);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -17790,7 +17796,8 @@ var PostNew = function (_Component) {
 
     _this.renderField = _this.renderField.bind(_this);
     _this.onCroppedImgData = _this.onCroppedImgData.bind(_this);
-    _this.state = { croppedData: undefined, header: 'Registration Form' };
+    _this.valueChange = _this.valueChange.bind(_this);
+    _this.state = { croppedData: undefined, header: 'Registration Form', createdUser: false };
     return _this;
   }
 
@@ -17812,8 +17819,17 @@ var PostNew = function (_Component) {
       this.setState({ croppedData: data });
     }
   }, {
+    key: 'valueChange',
+    value: function valueChange(e, dbName) {
+      if (this.props.userData) {
+        this.props.userData = null;
+      }
+    }
+  }, {
     key: 'renderField',
     value: function renderField(field) {
+      var _this2 = this;
+
       var _field$meta = field.meta,
           touched = _field$meta.touched,
           error = _field$meta.error;
@@ -17825,7 +17841,7 @@ var PostNew = function (_Component) {
 
 
       if (label === "Upload Image") {
-        var src = "";
+        var src = void 0;
         if (this.props.userData) {
           src = this.props.userData[dbname];
         }
@@ -17835,8 +17851,7 @@ var PostNew = function (_Component) {
           _react2.default.createElement(_uploadImage2.default, { message: 'Upload Image', callbackImgCropped: this.onCroppedImgData, profileImg: src })
         );
       } else {
-        var val = "";
-        console.log("=====this.props.userData====", this.props.userData);
+        var val = void 0;
         if (this.props.userData) {
           val = this.props.userData[dbname];
           if (dbname === "dateOfJoin") {
@@ -17855,7 +17870,9 @@ var PostNew = function (_Component) {
               { className: 'label-name' },
               label
             ),
-            _react2.default.createElement('input', _extends({ className: 'form-input', key: key, type: type }, field.input, { ref: name, value: val })),
+            _react2.default.createElement('input', _extends({ className: 'form-input', key: key, type: type }, field.input, { ref: name, value: val, onChange: function onChange(e) {
+                _this2.valueChange(e, dbname);
+              } })),
             _react2.default.createElement(
               'span',
               { className: 'error-msg' },
@@ -17868,9 +17885,8 @@ var PostNew = function (_Component) {
   }, {
     key: 'onSubmit',
     value: function onSubmit(obj) {
-      var _this2 = this;
+      var _this3 = this;
 
-      console.log("Employee need to be inserted===", obj);
       if (this.state.croppedData) {
         obj.croppedImage = this.state.croppedData;
       }
@@ -17878,20 +17894,17 @@ var PostNew = function (_Component) {
         obj.id = this.props.userData.id;
         console.log("edit operation");
         this.props.editEmployee(obj, function (data) {
-          _this2.props.reset();
+          _this3.props.reset();
         });
       } else {
-        console.log("new  Registration");
+        if (this.state.croppedData) {
+          obj.croppedImage = this.state.croppedData;
+        }
         this.props.addEmployee(obj, function (data) {
-          _this2.props.reset();
+          _this3.setState({ createdUser: true });
+          _this3.props.reset();
         });
       }
-      if (this.state.croppedData) {
-        obj.croppedImage = this.state.croppedData;
-      }
-      /*this.props.addEmployee(obj,(data) => {
-        this.props.reset();     
-      });*/
     }
   }, {
     key: 'render',
@@ -17902,34 +17915,38 @@ var PostNew = function (_Component) {
           reset = _props.reset,
           submitting = _props.submitting;
 
-      return _react2.default.createElement(
-        'div',
-        { className: 'form-div' },
-        _react2.default.createElement(
+      if (this.state.createdUser) {
+        return _react2.default.createElement(_reactRouterDom.Redirect, { to: '/' });
+      } else {
+        return _react2.default.createElement(
           'div',
-          { className: 'form-header' },
-          this.state.header
-        ),
-        _react2.default.createElement(
-          'form',
-          { className: 'employee-form', onSubmit: handleSubmit(this.onSubmit.bind(this)) },
-          _lodash2.default.map(FIELDS, this.callAttribute.bind(this)),
+          { className: 'form-div' },
           _react2.default.createElement(
             'div',
-            { className: 'form-button' },
+            { className: 'form-header' },
+            this.state.header
+          ),
+          _react2.default.createElement(
+            'form',
+            { className: 'employee-form', onSubmit: handleSubmit(this.onSubmit.bind(this)) },
+            _lodash2.default.map(FIELDS, this.callAttribute.bind(this)),
             _react2.default.createElement(
-              'button',
-              { type: 'submit', disabled: submitting },
-              'Submit'
-            ),
-            _react2.default.createElement(
-              'button',
-              { type: 'button', disabled: pristine || submitting, onClick: reset },
-              'Clear Values'
+              'div',
+              { className: 'form-button' },
+              _react2.default.createElement(
+                'button',
+                { type: 'submit', disabled: submitting },
+                'Submit'
+              ),
+              _react2.default.createElement(
+                'button',
+                { type: 'button', disabled: pristine || submitting, onClick: reset },
+                'Clear Values'
+              )
             )
           )
-        )
-      );
+        );
+      }
     }
   }]);
 
@@ -19178,7 +19195,7 @@ var UploadImage = function (_Component) {
 	}, {
 		key: 'getImageData',
 		value: function getImageData(img) {
-			this.setState({ imgURL: img });
+			this.setState({ imgURL: img, callPopUp: false });
 		}
 	}, {
 		key: 'handleImageLoaded',
@@ -19190,6 +19207,7 @@ var UploadImage = function (_Component) {
 			ctx.drawImage(e.target, 0, 0);
 			var dataURL = canvas.toDataURL("image/png");
 			this.props.callbackImgCropped(dataURL);
+			event.stopPropagation();
 		}
 	}, {
 		key: 'render',
@@ -20239,7 +20257,8 @@ _reactDom2.default.render(_react2.default.createElement(
       _react2.default.createElement(_reactRouterDom.Route, { path: '/signup', component: _signup2.default }),
       _react2.default.createElement(_reactRouterDom.Route, { path: '/admin', component: _adminLogin2.default }),
       _react2.default.createElement(_reactRouterDom.Route, { path: '/signin', component: _signin2.default }),
-      _react2.default.createElement(_reactRouterDom.Route, { path: '/profile', component: _profile2.default })
+      _react2.default.createElement(_reactRouterDom.Route, { path: '/profile', component: _profile2.default }),
+      _react2.default.createElement(_reactRouterDom.Route, { path: '/init', component: _profile2.default })
     )
   )
 ), document.getElementById('app'));
@@ -33693,12 +33712,23 @@ var Init = function (_Component) {
 	function Init(props) {
 		_classCallCheck(this, Init);
 
-		return _possibleConstructorReturn(this, (Init.__proto__ || Object.getPrototypeOf(Init)).call(this, props));
+		var _this = _possibleConstructorReturn(this, (Init.__proto__ || Object.getPrototypeOf(Init)).call(this, props));
+
+		_this.state = { logout: false };
+		return _this;
 	}
 
 	_createClass(Init, [{
+		key: 'componentWillMount',
+		value: function componentWillMount() {
+			if (this.state.logout) {
+				this.props.show = false;
+			}
+		}
+	}, {
 		key: 'signOut',
 		value: function signOut() {
+			this.setState({ logout: true });
 			this.props.show = false;
 		}
 	}, {
@@ -62777,16 +62807,17 @@ var PopUp = function (_Component) {
     }, {
         key: 'crop',
         value: function () {
-            var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+            var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(event) {
                 var image;
                 return regeneratorRuntime.wrap(function _callee$(_context) {
                     while (1) {
                         switch (_context.prev = _context.next) {
                             case 0:
-                                _context.next = 2;
+                                event.preventDefault();
+                                _context.next = 3;
                                 return this.refs.crop.cropImage();
 
-                            case 2:
+                            case 3:
                                 image = _context.sent;
 
                                 this.setState({
@@ -62795,7 +62826,7 @@ var PopUp = function (_Component) {
                                 this.props.croppedImage(this.state.previewUrl);
                                 this.props.getCroppedURL({ url: this.state.previewUrl, imageBlob: image });
 
-                            case 6:
+                            case 7:
                             case 'end':
                                 return _context.stop();
                         }
@@ -62803,7 +62834,7 @@ var PopUp = function (_Component) {
                 }, _callee, this);
             }));
 
-            function crop() {
+            function crop(_x) {
                 return _ref.apply(this, arguments);
             }
 
@@ -69430,6 +69461,7 @@ function signin(user, callback) {
         _axios2.default.post("/userLogin", user).then(function (res) {
             if (res.data) {
                 callback(res.data.status);
+                console.log("call here call here");
                 dispatch({ type: "LOGGEDIN", payload: { status: res.data.status, userData: res.data } });
             }
         }).catch(function (err) {

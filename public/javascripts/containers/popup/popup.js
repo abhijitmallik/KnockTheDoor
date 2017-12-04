@@ -36,7 +36,8 @@ class PopUp extends Component
 	    el.querySelector('input').click();
 	}
 
-    async crop() {
+    async crop(event) {
+        event.preventDefault();
         let image = await this.refs.crop.cropImage()
         this.setState({
             previewUrl: window.URL.createObjectURL(image)

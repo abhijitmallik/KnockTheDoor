@@ -23,7 +23,7 @@ export default class UploadImage extends Component{
 		
 	}
 	getImageData(img){
-	   this.setState({imgURL:img});
+	   this.setState({imgURL:img,callPopUp:false});
 	}
 	handleImageLoaded(e){
 		let canvas = document.createElement('canvas')
@@ -33,6 +33,7 @@ export default class UploadImage extends Component{
         ctx.drawImage(e.target, 0, 0)
         let dataURL = canvas.toDataURL("image/png");
         this.props.callbackImgCropped(dataURL);
+        event.stopPropagation();
 	}
 
 	render(){
