@@ -8,8 +8,14 @@ module.exports =(app,path,config)=>{
        	if(err){
        		throw err;
        	}
-       	console.log(user);
-       	res.json(user);
+       	console.log("admin user ",user);
+       	if(user.length > 0){
+       		console.log("11111");
+       		res.json({status:true});
+       	}else{		
+       		console.log("22222");
+       	   res.json({status:false});
+       	}
        })
 	})
 
