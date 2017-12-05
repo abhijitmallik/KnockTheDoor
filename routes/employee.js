@@ -43,12 +43,13 @@ module.exports =(app,path,config)=>{
 		    if (err) {
 		      res.send(err);
 		    }
-		    res.send(obj);
+		    res.json({status:true});
 		  });
 	})
 
-	app.delete('/employee/:_id',function(req,res){
-		var query = {_id: req.params._id}; 
+	app.put('/deleteemployee',function(req,res){
+		console.log("=====req.body.id====",req.body.id);
+		var query = {_id: req.body.id}; 
 		employees.remove(query,function(err,emp){
 			if(err){
 				throw err;

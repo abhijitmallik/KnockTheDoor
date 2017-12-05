@@ -24,7 +24,17 @@ export function addEmployee(user,callback){
 export function editEmployee(user,callback){
     return function(dispatch){
        axios.put("/editemployee",user).then(function(res){
+       	console.log("======edit response====");
 	      dispatch({type:"EDIT-USER",payload:res.data});
+	      callback(res.data);
+	   }).catch(function(err){
+          console.log("=========err=====",err);
+	   })
+   }
+}
+export function removeEmployee(user,callback){
+    return function(dispatch){
+       axios.put("/deleteemployee",user).then(function(res){
 	      callback(res.data);
 	   }).catch(function(err){
           console.log("=========err=====",err);
