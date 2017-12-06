@@ -1,13 +1,13 @@
 
 body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  background-image: url('../images/backgroundimage.jpg');
+  background-image: url('../images/background.jpg');
   background-repeat: no-repeat;
   background-size:100%;
 }
 
 a {
-  color: #00B7FF;
+  color: cornsilk;
   text-decoration: none;
 }
 
@@ -24,7 +24,7 @@ a {
   font-size: 14px;
   width: 150px;
   display: inline-block;
-  color:bisque;
+  color:inherit;
 }
 .emp-image{
   height: 40px;
@@ -60,7 +60,7 @@ a {
     margin-right: 5px;
     font-family: Kievit;
     width: 80px;
-    color: bisque;
+    color: inherit;
 }
 .button-groups{
   text-align: right;
@@ -76,7 +76,7 @@ a {
   margin-right: 10px;
   font-size: 14px;
   font-family: Kievit;
-  color: bisque;
+  color: inherit;
 }
 .employee-form{
   width: 100%;
@@ -110,7 +110,7 @@ a {
   font-weight: bolder;
   text-align: center;
   margin-bottom: 20px;
-  color: cadetblue;
+  color: indigo;
 }
 .edit-icon{
   position: absolute;
@@ -147,7 +147,7 @@ a {
   font-weight: bolder;
   text-align: center;
   margin-bottom: 20px;
-  color: cadetblue;
+  color: indigo;
 }
 .edi-user{
   position: relative;
@@ -182,11 +182,25 @@ a {
   cursor: pointer;
   margin-left: 10px;
 }
+.white-board{
+  position: absolute;
+  background-image: url('../images/whiteboard.jpg');
+  background-repeat: no-repeat;
+  background-size:100%;
+  height: 50px;
+  width: 50px;
+  top: 0px;
+  bottom: 0px;
+  cursor: pointer;
+}
 .emp-row .delete-icon{
   margin-left: 80px;
 }
 .employee-parent-div{
   margin: 50px;
+}
+.employee-parent-div .white-board{
+  margin-left: 80px;
 }
 
 

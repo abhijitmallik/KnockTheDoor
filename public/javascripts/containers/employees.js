@@ -4,6 +4,7 @@ import {allEmployees} from '../actions/employeeAction';
 import {removeEmployee} from '../actions/employeeAction';
 import { bindActionCreators } from 'redux';
 import Checkbox from '../components/checkbox';
+import WhiteBoardComponent from '../components/whiteBoardComponent/whiteBoardComponent';
 import ReactConfirmAlert, { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 
@@ -14,13 +15,17 @@ class Employees  extends Component{
 		this.deleteEmployee = this.deleteEmployee.bind(this);
 		this.onOk = this.onOk.bind(this);
 		this.onCancel = this.onCancel.bind(this);
-		this.state = {showDialog: false,id:"",userName:""};
+		this.shareWhiteBoard = this.shareWhiteBoard.bind(this);
+		this.state = {showDialog: false,id:"",userName:"",showWhiteBoard:false};
 	}
 	componentDidMount(){
 		this.props.fetchEmp();
 	}
 	selectedUser(bol,id){
        
+	}
+	shareWhiteBoard(id){
+        this.setState({showWhiteBoard:true});
 	}
 	onOk(){
 		var obj = {id:this.state.id};
@@ -42,6 +47,9 @@ class Employees  extends Component{
 		this.setState({id:userId});
 		this.setState({showDialog:true});
 	}
+	closeWhiteBoard(){
+		this.setState({showWhiteBoard:false});
+	}
 	render(){
 		if(this.state.showDialog){
 			let msg = "Are you sure to delete "+this.state.userName +"?";
@@ -56,6 +64,9 @@ class Employees  extends Component{
 	          />
           )
 		}else{
+			if(this.state.showWhiteBoard){
+               return(<WhiteBoardComponent closeCanvasPopup={this.closeWhiteBoard.bind(this)}/>)
+			}
 			if(this.props.employees.employees.length > 0){
 				const employeesList =  this.props.employees.employees[0].map(function(emp){
 					emp.dateOfJoin = new Date(emp.dateOfJoin);
@@ -64,7 +75,7 @@ class Employees  extends Component{
 					let titleMsg = "Delete "+emp.firstname;
 				return(
 					  <div className="emp-row" key={emp._id}>
-					   {checkBox} <span className="emp-name">{emp.firstname} {emp.lastname}</span><span className="emp-occupation">{emp.occupation}</span><span className="emp-city">{emp.city}</span><span className="emp-state">{emp.state}</span><span className="emp-doj">{dt}</span><img className="emp-image"  src={emp.croppedImage}/><span className="delete-icon" title={titleMsg} onClick={(e)=>{this.deleteEmployee(emp._id,emp.firstname)}}></span>
+					   {checkBox} <span className="emp-name">{emp.firstname} {emp.lastname}</span><span className="emp-occupation">{emp.occupation}</span><span className="emp-city">{emp.city}</span><span className="emp-state">{emp.state}</span><span className="emp-doj">{dt}</span><img className="emp-image"  src={emp.croppedImage}/>{this.props.adminUserLogin ? <span className="delete-icon" title={titleMsg} onClick={(e)=>{this.deleteEmployee(emp._id,emp.firstname)}}></span> : ""}{!this.props.adminUserLogin ? <span className="white-board" title="Start white board sharing" onClick={()=>{this.shareWhiteBoard(emp._id)}}></span> :""}
 					  </div>
 					)
 			    },this)
@@ -88,7 +99,8 @@ function bindActionWithClass(dispatch){
 }
 
 function mapPropesToState(state){
-	return {employees:state.employeeReducer}
+	console.log("====state.adminUserLogin====",state.adminUserLogin);
+	return {employees:state.employeeReducer,adminUserLogin:state.adminUserLogin}
 }
 
 export default connect(mapPropesToState,bindActionWithClass)(Employees);
