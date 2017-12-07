@@ -19,6 +19,9 @@ a {
   position: relative;
   height: 50px;
 }
+.active-emp{
+  color:green !important;
+}
 .emp-city,.emp-name,.emp-occupation,.emp-phone,.emp-state,.emp-city,.emp-doj,.edi-user{
   margin-right: 20px;
   font-size: 14px;

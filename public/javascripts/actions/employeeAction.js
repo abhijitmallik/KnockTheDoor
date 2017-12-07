@@ -3,7 +3,8 @@ import axios from 'axios';
 export function allEmployees(){
    return function(dispatch){
        axios.get("/employees").then(function(res){
-	      dispatch({type:"GET_BOOKS",payload:res.data});
+        console.log("====res.data get all emps=====",res.data);
+	      dispatch({type:"GET_ALL_EMPLOYEES",payload:res.data});
 	   }).catch(function(err){
           console.log("=========err=====",err);
 	   })

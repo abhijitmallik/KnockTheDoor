@@ -7,6 +7,7 @@ import Checkbox from '../components/checkbox';
 import WhiteBoardComponent from '../components/whiteBoardComponent/whiteBoardComponent';
 import ReactConfirmAlert, { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import socket from '../socket.js';
 
 
 class Employees  extends Component{
@@ -16,10 +17,19 @@ class Employees  extends Component{
 		this.onOk = this.onOk.bind(this);
 		this.onCancel = this.onCancel.bind(this);
 		this.shareWhiteBoard = this.shareWhiteBoard.bind(this);
-		this.state = {showDialog: false,id:"",userName:"",showWhiteBoard:false};
+		this.state = {showDialog: false,id:"",userName:"",showWhiteBoard:false,refreshEmployee:false};
+	}
+	componentWillMount(){
+		
 	}
 	componentDidMount(){
 		this.props.fetchEmp();
+		socket.on('online',(user)=>{
+			this.setState({refreshEmployee:true});
+			if(this.state.refreshEmployee){
+				this.props.fetchEmp();
+			}
+		});
 	}
 	selectedUser(bol,id){
        
@@ -70,12 +80,16 @@ class Employees  extends Component{
 			if(this.props.employees.employees.length > 0){
 				const employeesList =  this.props.employees.employees[0].map(function(emp){
 					emp.dateOfJoin = new Date(emp.dateOfJoin);
+					let onlineStatus = false;
+					if(emp.online && emp.online == "true"){
+						onlineStatus = true;
+					}
 					let dt = emp.dateOfJoin.getDate() + ":" +emp.dateOfJoin.getMonth()+":"+emp.dateOfJoin.getFullYear();
 					let checkBox = <Checkbox id={emp._id} userSelected={(bol)=>{this.selectedUser(bol,emp._id)}}/>;
 					let titleMsg = "Delete "+emp.firstname;
 				return(
 					  <div className="emp-row" key={emp._id}>
-					   {checkBox} <span className="emp-name">{emp.firstname} {emp.lastname}</span><span className="emp-occupation">{emp.occupation}</span><span className="emp-city">{emp.city}</span><span className="emp-state">{emp.state}</span><span className="emp-doj">{dt}</span><img className="emp-image"  src={emp.croppedImage}/>{this.props.adminUserLogin ? <span className="delete-icon" title={titleMsg} onClick={(e)=>{this.deleteEmployee(emp._id,emp.firstname)}}></span> : ""}{!this.props.adminUserLogin ? <span className="white-board" title="Start white board sharing" onClick={()=>{this.shareWhiteBoard(emp._id)}}></span> :""}
+					   {checkBox} {onlineStatus ?<span className="emp-name active-emp">{emp.firstname} {emp.lastname}</span> : <span className="emp-name">{emp.firstname} {emp.lastname}</span>}<span className="emp-occupation">{emp.occupation}</span><span className="emp-city">{emp.city}</span><span className="emp-state">{emp.state}</span><span className="emp-doj">{dt}</span><img className="emp-image"  src={emp.croppedImage}/>{this.props.adminUserLogin ? <span className="delete-icon" title={titleMsg} onClick={(e)=>{this.deleteEmployee(emp._id,emp.firstname)}}></span> : ""}{!this.props.adminUserLogin ? <span className="white-board" title="Start white board sharing" onClick={()=>{this.shareWhiteBoard(emp._id)}}></span> :""}
 					  </div>
 					)
 			    },this)

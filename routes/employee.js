@@ -1,15 +1,12 @@
 
 /* GET home page. */
 const employees = require('../models/employees.js');
+const io = require('./socketio.js');
 module.exports =(app,path,config)=>{
 	var emp;
 	app.get('/', function(req, res, next) {
 	  res.sendFile(path.resolve(__dirname,'public','index.html'))
 	});
-
-	app.listen(config.server.port,function(){
-		console.log("application is listening on port",config.server.port);
-	})
 
 	app.post('/employee',function(req,res){
 		emp = req.body;
@@ -29,8 +26,9 @@ module.exports =(app,path,config)=>{
             }
             for(var i=0;i<emps.length;i++){
             	var emp = emps[i];
+            	console.log("====emp.online====",emp.online);
             	objArr.push({_id:emp._id,firstname:emp.firstname,lastname:emp.lastname,
-            	age:emp.age,occupation:emp.occupation,dateOfJoin:emp.dateOfJoin,city:emp.city,state:emp.state,croppedImage:emp.croppedImage});
+            	age:emp.age,occupation:emp.occupation,dateOfJoin:emp.dateOfJoin,city:emp.city,state:emp.state,croppedImage:emp.croppedImage,online:emp.online});
             }
             res.json(objArr);
 		})
@@ -61,16 +59,15 @@ module.exports =(app,path,config)=>{
 	app.post('/userLogin',function(req,res){
        emp = req.body;
        employees.find({firstname:emp.username,password:emp.password},function(err,user){
-       	if(err){
-       		throw err;
-       	}
-       	if(user.length > 0){
-       		res.json({status:true,id:user[0]._id,firstname:user[0].firstname,lastname:user[0].lastname,age:user[0].age,
-       		         occupation:user[0].occupation,city:user[0].city,state:user[0].state,
-       		         phone:user[0].phone,pin:user[0].pin,email:user[0].email,dateOfJoin:user[0].dateOfJoin,croppedImage:user[0].croppedImage});
-       	}else{
-       		res.json({status:false,id:null});
-       	}
+       	employees.update({_id: user[0]._id}, {online:true}, function(err) {
+		    if(user.length > 0){
+	       		res.json({status:true,id:user[0]._id,firstname:user[0].firstname,lastname:user[0].lastname,age:user[0].age,
+	       		         occupation:user[0].occupation,city:user[0].city,state:user[0].state,
+	       		         phone:user[0].phone,pin:user[0].pin,email:user[0].email,dateOfJoin:user[0].dateOfJoin,croppedImage:user[0].croppedImage});    
+	       	}else{
+	       		res.json({status:false,id:null});
+	       	}
+		});
        	
        })
 	})

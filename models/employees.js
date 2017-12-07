@@ -13,7 +13,8 @@ var employeeSchema = mongoose.Schema({
     pin:Number,
     email:String,
     dateOfJoin:Date,
-    croppedImage:String	
+    croppedImage:String,
+    online:String	
 });
 var Employees = mongoose.model('Employee',employeeSchema);
 

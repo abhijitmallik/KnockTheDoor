@@ -13,6 +13,7 @@ import reducers from './reducers';
 import {BrowserRouter,Route,Switch} from 'react-router-dom';
 import '.././stylesheets/style.css';
 import '.././stylesheets/cropper.css';
+import socket from './socket';
 
 
 
