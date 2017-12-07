@@ -2,39 +2,41 @@
 import React,{Component} from 'react';
 import './whiteBoardComponent.css';
 
-let lastX;
-let lastY;
+let lastX = 0;
+let lastY = 0;
+let lineThickness = 1;
+let canvas;
+let ctx;
 export default class WhiteBoardComponent extends Component{
-  constructor(props){
+    constructor(props){
        super(props);
        this.state = {isPainting:false};
-  }
-  componentDidMount() {
-        this.updateCanvas();
+    }
+    componentDidMount() {
+       canvas = this.refs.canvas;
+       ctx = canvas.getContext("2d");
+       ctx.fillStyle = "#ffffff";
     }
     updateCanvas() {
         
     }
     startWriting(e){
       this.setState({isPainting:true}); 
-      console.log("=======e=========",e.currentTarget);
-      this.refs.canvas.fillStyle = "#ffffff";
-      lastX = e.target.pageX - e.target.offsetLeft;
-      lastY = e.pageY - this.offsetTop;
+      console.log("==========this.offsetLeft=====",this.offsetLeft);
+      lastX = e.nativeEvent.offsetX - canvas.offsetLeft;
+      lastY = e.nativeEvent.offsetY - canvas.offsetTop;
+      console.log("========canvas=====",canvas);
+      console.log("=======e.pageX======",e.nativeEvent.offsetX,"=====e.pageY===",e.nativeEvent.offsetY);
+      console.log("========lastX======",lastX,"=====lastY====",lastY);
     }
     mouseUp(e){
       this.setState({isPainting:false}); 
-      console.log("===============mouse up=========",e.currentTarget);
     }
     mouseMove(e){
-      console.log("===============mouse move=========",e.currentTarget);
-      if(this.state.isPainting) {
-        let ctx = this.refs.canvas;
-        mouseX = e.pageX - this.offsetLeft;
-        mouseY = e.pageY - this.offsetTop;
-
-        // find all points between        
-        var x1 = mouseX,
+      if(this.state.isPainting){
+        let mouseX = e.nativeEvent.offsetX - canvas.offsetLeft;
+        let mouseY = e.nativeEvent.offsetY - canvas.offsetTop;
+          var x1 = mouseX,
             x2 = lastX,
             y1 = mouseY,
             y2 = lastY;
@@ -66,36 +68,35 @@ export default class WhiteBoardComponent extends Component{
             de = dy / dx,
             yStep = -1,
             y = y1;
-
+        
         if (y1 < y2) {
             yStep = 1;
         }
-
-        let lineThickness = 5 - Math.sqrt((x2 - x1) *(x2-x1) + (y2 - y1) * (y2-y1))/10;
-        if(lineThickness < 1){
-            lineThickness = 1;   
-        }
-
+       
+        lineThickness = 2;
+     
         for (var x = x1; x < x2; x++) {
             if (steep) {
+                console.log("========y=====",y,"==========x=====",x);
                 ctx.fillRect(y, x, lineThickness , lineThickness );
             } else {
+                console.log("========x=====",x,"==========y=====",y);
                 ctx.fillRect(x, y, lineThickness , lineThickness );
             }
-
+            
             error += de;
             if (error >= 0.5) {
                 y += yStep;
                 error -= 1.0;
             }
         }
-
+        
 
 
         lastX = mouseX;
         lastY = mouseY;
 
-     }
+      }
     }
     render() {
         return (
