@@ -199,6 +199,28 @@ a {
   bottom: 0px;
   cursor: pointer;
 }
+.video-call{
+  position: absolute;
+  background-image: url('../images/video.png');
+  background-repeat: no-repeat;
+  background-size:100%;
+  height: 40px;
+  width: 40px;
+  top: 0px;
+  bottom: 0px;
+  cursor: pointer;
+}
+.audio-call{
+  position: absolute;
+  background-image: url('../images/audio.png');
+  background-repeat: no-repeat;
+  background-size:100%;
+  height: 40px;
+  width: 40px;
+  top: 0px;
+  bottom: 0px;
+  cursor: pointer;
+}
 .emp-row .delete-icon{
   right: 0px;
 }
@@ -207,6 +229,9 @@ a {
 }
 .employee-parent-div .white-board{
   margin-left: 80px;
+}
+.local-video{
+  
 }
 
 
