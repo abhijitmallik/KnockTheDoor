@@ -17,14 +17,14 @@ class Employees  extends Component{
 		this.onOk = this.onOk.bind(this);
 		this.onCancel = this.onCancel.bind(this);
 		this.shareWhiteBoard = this.shareWhiteBoard.bind(this);
-		this.state = {showDialog: false,id:"",userName:"",showWhiteBoard:false,refreshEmployee:false};
+		this.state = {showDialog: false,id:"",userName:"",showWhiteBoard:false,refreshEmployee:false,invitedMemberIds:undefined};
 	}
 	componentWillMount(){
 		
 	}
 	componentDidMount(){
 		this.props.fetchEmp();
-		socket.on('online',(user)=>{
+		socket.on('onlineStatus',()=>{
 			this.setState({refreshEmployee:true});
 			if(this.state.refreshEmployee){
 				this.props.fetchEmp();
@@ -35,6 +35,7 @@ class Employees  extends Component{
        
 	}
 	shareWhiteBoard(id){
+		this.setState({invitedMemberIds:id})
         this.setState({showWhiteBoard:true});
 	}
 	onOk(){
@@ -58,6 +59,8 @@ class Employees  extends Component{
 		this.setState({showDialog:true});
 	}
 	closeWhiteBoard(){
+		console.log("=====this.state.invitedMemberIds=====",this.state.invitedMemberIds);
+		socket.emit("shareWhiteBoard",{id:this.state.invitedMemberIds,show:false});
 		this.setState({showWhiteBoard:false});
 	}
 	render(){
@@ -75,7 +78,7 @@ class Employees  extends Component{
           )
 		}else{
 			if(this.state.showWhiteBoard){
-               return(<WhiteBoardComponent closeCanvasPopup={this.closeWhiteBoard.bind(this)}/>)
+               return(<WhiteBoardComponent closeCanvasPopup={this.closeWhiteBoard.bind(this)}  invitedIds={this.state.invitedMemberIds}/>)
 			}
 			if(this.props.employees.employees.length > 0){
 				const employeesList =  this.props.employees.employees[0].map(function(emp){
@@ -84,12 +87,17 @@ class Employees  extends Component{
 					if(emp.online && emp.online == "true"){
 						onlineStatus = true;
 					}
+					let canAcceptSession = false;
+					if(this.props.userLoggedin && emp.canAcceptSession && (emp._id == this.props.userLoggedin.id)){
+                       canAcceptSession = true;
+					}
+					console.log("=====emp=====",emp);
 					let dt = emp.dateOfJoin.getDate() + ":" +emp.dateOfJoin.getMonth()+":"+emp.dateOfJoin.getFullYear();
 					let checkBox = <Checkbox id={emp._id} userSelected={(bol)=>{this.selectedUser(bol,emp._id)}}/>;
 					let titleMsg = "Delete "+emp.firstname;
 				return(
 					  <div className="emp-row" key={emp._id}>
-					   {checkBox} {onlineStatus ?<span className="emp-name active-emp">{emp.firstname} {emp.lastname}</span> : <span className="emp-name">{emp.firstname} {emp.lastname}</span>}<span className="emp-occupation">{emp.occupation}</span><span className="emp-city">{emp.city}</span><span className="emp-state">{emp.state}</span><span className="emp-doj">{dt}</span><img className="emp-image"  src={emp.croppedImage}/>{this.props.adminUserLogin ? <span className="delete-icon" title={titleMsg} onClick={(e)=>{this.deleteEmployee(emp._id,emp.firstname)}}></span> : ""}{!this.props.adminUserLogin ? <span className="white-board" title="Start white board sharing" onClick={()=>{this.shareWhiteBoard(emp._id)}}></span> :""}
+					   {checkBox} {onlineStatus ?<span className="emp-name active-emp">{emp.firstname} {emp.lastname}</span> : <span className="emp-name">{emp.firstname} {emp.lastname}</span>}<span className="emp-occupation">{emp.occupation}</span><span className="emp-city">{emp.city}</span><span className="emp-state">{emp.state}</span><span className="emp-doj">{dt}</span><img className="emp-image"  src={emp.croppedImage}/>{this.props.adminUserLogin ? <span className="white-board" title="Start white board sharing" onClick={()=>{this.shareWhiteBoard(emp._id);socket.emit("shareWhiteBoard",{id:emp._id,show:true})}}></span> :""}{this.props.adminUserLogin ? <span className="delete-icon" title={titleMsg} onClick={(e)=>{this.deleteEmployee(emp._id,emp.firstname)}}></span> : ""}{(canAcceptSession && !this.props.adminUserLogin) ? <span className="accept-session white-board" title="Join Session" onClick={()=>{this.shareWhiteBoard(emp._id)}}></span> :""}
 					  </div>
 					)
 			    },this)
@@ -113,8 +121,8 @@ function bindActionWithClass(dispatch){
 }
 
 function mapPropesToState(state){
-	console.log("====state.adminUserLogin====",state.adminUserLogin);
-	return {employees:state.employeeReducer,adminUserLogin:state.adminUserLogin}
+	console.log("====state.userLogIn.userData====",state.userLogIn.userData);
+	return {employees:state.employeeReducer,adminUserLogin:state.adminUserLogin,userLoggedin:state.userLogIn.userData}
 }
 
 export default connect(mapPropesToState,bindActionWithClass)(Employees);

@@ -28,7 +28,7 @@ module.exports =(app,path,config)=>{
             	var emp = emps[i];
             	console.log("====emp.online====",emp.online);
             	objArr.push({_id:emp._id,firstname:emp.firstname,lastname:emp.lastname,
-            	age:emp.age,occupation:emp.occupation,dateOfJoin:emp.dateOfJoin,city:emp.city,state:emp.state,croppedImage:emp.croppedImage,online:emp.online});
+            	age:emp.age,occupation:emp.occupation,dateOfJoin:emp.dateOfJoin,city:emp.city,state:emp.state,croppedImage:emp.croppedImage,online:emp.online,canAcceptSession:emp.canAcceptSession});
             }
             res.json(objArr);
 		})
@@ -59,15 +59,20 @@ module.exports =(app,path,config)=>{
 	app.post('/userLogin',function(req,res){
        emp = req.body;
        employees.find({firstname:emp.username,password:emp.password},function(err,user){
-       	employees.update({_id: user[0]._id}, {online:true}, function(err) {
+       	if(user.length > 0){
+       		employees.update({_id: user[0]._id}, {online:true}, function(err) {
 		    if(user.length > 0){
 	       		res.json({status:true,id:user[0]._id,firstname:user[0].firstname,lastname:user[0].lastname,age:user[0].age,
 	       		         occupation:user[0].occupation,city:user[0].city,state:user[0].state,
 	       		         phone:user[0].phone,pin:user[0].pin,email:user[0].email,dateOfJoin:user[0].dateOfJoin,croppedImage:user[0].croppedImage});    
-	       	}else{
-	       		res.json({status:false,id:null});
-	       	}
-		});
+	       	    }else{
+	       		  res.json({status:false,id:null});
+	         	}
+		    });
+       	}else{
+
+       	}
+       	
        	
        })
 	})

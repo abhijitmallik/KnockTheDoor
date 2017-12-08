@@ -14,7 +14,8 @@ var employeeSchema = mongoose.Schema({
     email:String,
     dateOfJoin:Date,
     croppedImage:String,
-    online:String	
+    online:String,
+    canAcceptSession:Boolean	
 });
 var Employees = mongoose.model('Employee',employeeSchema);
 
