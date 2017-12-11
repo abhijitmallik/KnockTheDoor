@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const config = require('config');
 const mongoose = require('mongoose');
+const socketIo = require('./routes/socket');
 
 
 
@@ -47,7 +48,7 @@ mongoose.connect(uristring , function (err, res) {
 app.listen(config.server.port,function(){
     console.log("application is listening on port",config.server.port);
 })
-require('./routes/socketio')(app,path,config);
+socketIo.socketId(app,path,config);
 require('./routes/employee')(app,path,config);
 require('./routes/login')(app,path,config);
 

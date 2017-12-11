@@ -1,7 +1,6 @@
 
 /* GET home page. */
 const employees = require('../models/employees.js');
-const io = require('./socketio.js');
 module.exports =(app,path,config)=>{
 	var emp;
 	app.get('/', function(req, res, next) {

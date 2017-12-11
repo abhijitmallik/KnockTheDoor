@@ -44884,7 +44884,7 @@ var WhiteBoardComponent = function (_Component) {
 
         var _this = _possibleConstructorReturn(this, (WhiteBoardComponent.__proto__ || Object.getPrototypeOf(WhiteBoardComponent)).call(this, props));
 
-        _this.state = { isPainting: false, showVideoAudio: false };
+        _this.state = { isPainting: false, showVideoAudio: false, videoSrc: "" };
         return _this;
     }
 
@@ -45004,10 +45004,8 @@ var WhiteBoardComponent = function (_Component) {
         value: function audioCall() {
             if (this.state.showVideoAudio) {
                 this.setState({ showVideoAudio: false });
-                this.refs.localVideoId.src = null;
             } else {
                 this.setState({ showVideoAudio: true });
-                this.videoCall();
             }
         }
     }, {
@@ -45015,30 +45013,78 @@ var WhiteBoardComponent = function (_Component) {
         value: function videoCall() {
             var _this3 = this;
 
-            if (this.hasUserMedia) {
-                navigator.getUserMedia({ video: true, audio: true }, function (myStream) {
-                    var localVideo = _this3.refs.localVideoId;
-                    var stream = myStream;
-                    localVideo.src = window.URL.createObjectURL(stream);
-
-                    /*if (hasRTCPeerConnection()) {
-                         setupPeerConnection(stream);
-                    } else {
-                      alert("Sorry, your browser does not support WebRTC.");
-                    }*/
-                }, function (error) {
-                    console.log(error);
+            var channel = prompt("Enter signaling channel name");
+            if (channel !== "") {
+                console.log('Trying to create or join channel: ', channel);
+                // Send 'create or join' to the server
+                _socket2.default.emit('create or join', channel);
+            }
+            // Handle 'created' message
+            _socket2.default.on('created', function (channel) {
+                navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
+                if (navigator.getUserMedia) {
+                    navigator.getUserMedia(_this3.props.constraints, _this3.handleUserMedia.bind(_this3), _this3.handleUserMediaError);
+                    _this3.props.isInitiator = true;
+                    _this3.checkAndStart();
+                }
+            });
+            _socket2.default.on('message', function (message) {
+                var myResponse = prompt('Send response to other peer');
+                _socket2.default.emit('response', {
+                    channel: channel,
+                    message: myResponse
                 });
-            } else {
-                alert("Sorry, your browser does not support WebRTC.");
+            });
+            _socket2.default.on('response', function (response) {
+                var chatMessage = prompt("Keep on chatting or Bye to quit conversation");
+                _socket2.default.emit('response', {
+                    channel: channel,
+                    message: chatMessage
+                });
+            });
+            _socket2.default.on('joined', function (channel) {
+                console.log('This peer has joined room ' + room);
+                _this3.props.isChannelReady = true;
+            });
+            _socket2.default.on('join', function (room) {
+                console.log('Another peer made a request to join room ' + room);
+                console.log('This peer is the initiator of room ' + room + '!');
+                _this3.props.isChannelReady = true;
+            });
+        }
+    }, {
+        key: 'handleUserMedia',
+        value: function handleUserMedia(stream) {
+            console.log('Adding local stream.');
+            this.sendMessage('got user media');
+            this.setState({ videoSrc: window.URL.createObjectURL(stream) });
+        }
+    }, {
+        key: 'handleUserMediaError',
+        value: function handleUserMediaError() {}
+    }, {
+        key: 'sendMessage',
+        value: function sendMessage(message) {
+            console.log('Sending message: ', message);
+            _socket2.default.emit('message', message);
+        }
+    }, {
+        key: 'checkAndStart',
+        value: function checkAndStart() {
+            if (!this.props.isStarted && typeof this.state.videoSrc != "undefined" && this.props.isChannelReady) {
+                this.createPeerConnection();
+                this.props.isStarted = true;
+                if (this.props.isInitiator) {
+                    doCall();
+                }
             }
         }
     }, {
-        key: 'hasUserMedia',
-        value: function hasUserMedia() {
-            navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
-            return !!navigator.getUserMedia;
-        }
+        key: 'doCall',
+        value: function doCall() {}
+    }, {
+        key: 'createPeerConnection',
+        value: function createPeerConnection() {}
     }, {
         key: 'render',
         value: function render() {
@@ -45054,7 +45100,12 @@ var WhiteBoardComponent = function (_Component) {
                     'div',
                     { className: 'video-display' },
                     _react2.default.createElement('span', { className: 'video-call', title: 'Video Call', onClick: this.videoCall.bind(this) }),
-                    _react2.default.createElement('video', { autoplay: true, ref: 'localVideoId', 'class': 'local-video' })
+                    _react2.default.createElement('video', { autoPlay: 'true', 'class': 'local-video', src: this.state.videoSrc }),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'local-video-display' },
+                        _react2.default.createElement('video', { autoPlay: 'true', src: this.state.videoSrc })
+                    )
                 ) : "",
                 _react2.default.createElement(
                     'div',
@@ -45084,7 +45135,11 @@ var WhiteBoardComponent = function (_Component) {
 
 WhiteBoardComponent.defaultProps = {
     width: 800,
-    height: 400
+    height: 400,
+    constraints: { video: true, audio: true },
+    isChannelReady: false,
+    isStarted: false,
+    isInitiator: false
 };
 exports.default = WhiteBoardComponent;
 
@@ -45128,7 +45183,7 @@ exports = module.exports = __webpack_require__(49)(undefined);
 
 
 // module
-exports.push([module.i, "\n.canvas_outer {\n  position: fixed;\n  width: 100%;\n  height: 100%;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  margin: auto;\n  background-color: rgba(0,0,0, 0.5);\n}\n.canvas_inner {\n  position: absolute;\n  height: 400px;\n  width: 800px;\n  left: 0;\n  right: 0;\n  top: 40%;\n  bottom: 40%;\n  margin: auto;\n  background: black;\n  padding: 10px;\n}\n\n.canvas-component{\n  height: 400px !important;\n  width: 800px;\n}\n.canvas-component .lower-canvas{\n  height: 800px;\n  width: 800px;\n}\n.canvas-component .upper-canvas{\n  height: 800px;\n  width: 800px;\n}\n.canvas_inner .canvas-button-group{\n  width: 810px;\n  text-align: right;\n  margin-top: 20px;\n}\n.canvas_inner .canvas_button{\n  display: inline-block;\n}\n.canvas_inner .canvas_button_clear{\n  display: inline-block;\n  margin-right: 5px;\n}\n.canvas_outer .audio-call{\n  right: 70px;\n  z-index: 1;\n}\n.canvas_outer .video-call{\n  right:10px;\n  z-index: 1;\n}\n.canvas_outer .video-display{\n  height: 200px;\n  width: 200px;\n  background-color: black;\n  display: inline-block;\n  float: right;\n}\n.video-display video{\n  height: 200px;\n  width: 200px;\n}", ""]);
+exports.push([module.i, "\n.canvas_outer {\n  position: fixed;\n  width: 100%;\n  height: 100%;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  margin: auto;\n  background-color: rgba(0,0,0, 0.5);\n}\n.canvas_inner {\n  position: absolute;\n  height: 400px;\n  width: 800px;\n  left: 0;\n  right: 0;\n  top: 40%;\n  bottom: 40%;\n  margin: auto;\n  background: black;\n  padding: 10px;\n}\n\n.canvas-component{\n  height: 400px !important;\n  width: 800px;\n}\n.canvas-component .lower-canvas{\n  height: 800px;\n  width: 800px;\n}\n.canvas-component .upper-canvas{\n  height: 800px;\n  width: 800px;\n}\n.canvas_inner .canvas-button-group{\n  width: 810px;\n  text-align: right;\n  margin-top: 20px;\n}\n.canvas_inner .canvas_button{\n  display: inline-block;\n}\n.canvas_inner .canvas_button_clear{\n  display: inline-block;\n  margin-right: 5px;\n}\n.canvas_outer .audio-call{\n  right: 70px;\n  z-index: 1;\n}\n.canvas_outer .video-call{\n  right:10px;\n  z-index: 1;\n}\n.canvas_outer .video-display{\n  height: 250px;\n  width: 250px;\n  background-color: black;\n  display: inline-block;\n  float: right;\n  position: relative;\n}\n.video-display .local-video-display{\n  height: 100px;\n  width: 100px;\n  background-color: black;\n  position: absolute;\n  right: 0px;\n  bottom: 0px;\n}\n.video-display .local-video-display video{\n  height: 90px;\n  width: 90px;\n}\n.video-display video{\n  height: 240px;\n  width: 240px;\n}", ""]);
 
 // exports
 
@@ -77466,7 +77521,7 @@ exports = module.exports = __webpack_require__(49)(undefined);
 
 
 // module
-exports.push([module.i, "\nbody {\n  font: 14px \"Lucida Grande\", Helvetica, Arial, sans-serif;\n  background-image: url(" + __webpack_require__(915) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n}\n\na {\n  color: cornsilk;\n  text-decoration: none;\n}\n\n.main-container{\n\t \n}\n.emp-row{\n  margin: 10px;\n  position: relative;\n  height: 50px;\n}\n.active-emp{\n  color:green !important;\n}\n.emp-city,.emp-name,.emp-occupation,.emp-phone,.emp-state,.emp-city,.emp-doj,.edi-user,.accept-session{\n  margin-right: 20px;\n  font-size: 14px;\n  width: 150px;\n  display: inline-block;\n  color:inherit;\n}\n.accept-session{\n  text-align: right;\n}\n.emp-image{\n  height: 40px;\n  position: absolute;\n}\n.link-button{\n  display: inline-block;\n}\n.login-div{\n\n}\n.login-button{\n  margin-right: 10px;\n}\n.show-login{\n\tdisplay: none;\n}\n.admin-form{\n  position: absolute;\n  left: 0px;\n  right: 0px;\n  margin: 0px auto;\n  width:  400px;;\n  top: 200px;\n}\n.form-field{\n  height: 25px;\n  padding-bottom: 5px;\n}\n.form-field .form-label{\n    display: inline-block;\n    font-size: 14px;\n    margin-right: 5px;\n    font-family: Kievit;\n    width: 80px;\n    color: inherit;\n}\n.button-groups{\n  text-align: right;\n  padding-right: 60px;\n}\n.ok-button{\n  margin-right: 5px;\n}\n.label-name{\n  width: 10%;\n  display: inline-block;\n  text-align: right;\n  margin-right: 10px;\n  font-size: 14px;\n  font-family: Kievit;\n  color: inherit;\n}\n.employee-form{\n  width: 100%;\n  height: 100%;\n  margin-left: 30%;\n  margin-right: 30%;\n  position: relative;\n}\n.form-div{\n  height: 800px;\n  padding: 100px;\n}\n.field-div{\n  margin-bottom: 10px;\n}\n.form-button{\n  margin-left: 20%;\n}\n.error-msg{\n  margin-left: 75px;\n  color: crimson;\n  display: block;\n}\n.form-input{\n  width: 250px;\n  height: 20px;\n}\n.form-header{\n  font-size: 18px;\n  font-family: Kievit;\n  font-weight: bolder;\n  text-align: center;\n  margin-bottom: 20px;\n  color: indigo;\n}\n.edit-icon{\n  position: absolute;\n  background-image: url(" + __webpack_require__(916) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 20px;\n  width: 20px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n}\n.default-img{\n  background-image: url(" + __webpack_require__(917) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n}\n.upload-img{\n  position: absolute;\n  background-image: url(" + __webpack_require__(918) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 20px;\n  width: 20px;\n  top: 0px;\n  bottom: 0px;\n  left:0px;\n  right: 0px;\n  margin: auto;\n}\n.admin-header{\n  font-size: 18px;\n  font-family: Kievit;\n  font-weight: bolder;\n  text-align: center;\n  margin-bottom: 20px;\n  color: indigo;\n}\n.edi-user{\n  position: relative;\n  height: 20px;\n  width: 30px;\n  margin-left: 20px;\n  background-color: darkgray;\n  border-radius: 5px;\n  text-align: center;\n  font-size: 10px;\n  cursor: pointer;\n  line-height: 18px;\n}\n.user-profile-button-group{\n  float:right;\n  display: inline-block;\n}\n.backgroundImage{\n  background-image: url(" + __webpack_require__(919) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n}\n.delete-icon{\n  position: absolute;\n  background-image: url(" + __webpack_require__(920) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 20px;\n  width: 20px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n  margin-left: 10px;\n}\n.white-board{\n  position: absolute;\n  background-image: url(" + __webpack_require__(921) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 50px;\n  width: 50px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n}\n.video-call{\n  position: absolute;\n  background-image: url(" + __webpack_require__(927) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n}\n.audio-call{\n  position: absolute;\n  background-image: url(" + __webpack_require__(926) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n}\n.emp-row .delete-icon{\n  right: 0px;\n}\n.employee-parent-div{\n  margin: 50px;\n}\n.employee-parent-div .white-board{\n  margin-left: 80px;\n}\n.local-video{\n  \n}\n\n\n", ""]);
+exports.push([module.i, "\nbody {\n  font: 14px \"Lucida Grande\", Helvetica, Arial, sans-serif;\n  background-image: url(" + __webpack_require__(915) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n}\n\na {\n  color: cornsilk;\n  text-decoration: none;\n}\n\n.main-container{\n\t \n}\n.emp-row{\n  margin: 10px;\n  position: relative;\n  height: 50px;\n}\n.active-emp{\n  color:green !important;\n}\n.emp-city,.emp-name,.emp-occupation,.emp-phone,.emp-state,.emp-city,.emp-doj,.edi-user,.accept-session{\n  margin-right: 20px;\n  font-size: 14px;\n  width: 150px;\n  display: inline-block;\n  color:inherit;\n}\n.accept-session{\n  text-align: right;\n}\n.emp-image{\n  height: 40px;\n  position: absolute;\n}\n.link-button{\n  display: inline-block;\n}\n.login-div{\n\n}\n.login-button{\n  margin-right: 10px;\n}\n.show-login{\n\tdisplay: none;\n}\n.admin-form{\n  position: absolute;\n  left: 0px;\n  right: 0px;\n  margin: 0px auto;\n  width:  400px;;\n  top: 200px;\n}\n.form-field{\n  height: 25px;\n  padding-bottom: 5px;\n}\n.form-field .form-label{\n    display: inline-block;\n    font-size: 14px;\n    margin-right: 5px;\n    font-family: Kievit;\n    width: 80px;\n    color: inherit;\n}\n.button-groups{\n  text-align: right;\n  padding-right: 60px;\n}\n.ok-button{\n  margin-right: 5px;\n}\n.label-name{\n  width: 10%;\n  display: inline-block;\n  text-align: right;\n  margin-right: 10px;\n  font-size: 14px;\n  font-family: Kievit;\n  color: inherit;\n}\n.employee-form{\n  width: 100%;\n  height: 100%;\n  margin-left: 30%;\n  margin-right: 30%;\n  position: relative;\n}\n.form-div{\n  height: 800px;\n  padding: 100px;\n}\n.field-div{\n  margin-bottom: 10px;\n}\n.form-button{\n  margin-left: 20%;\n}\n.error-msg{\n  margin-left: 75px;\n  color: crimson;\n  display: block;\n}\n.form-input{\n  width: 250px;\n  height: 20px;\n}\n.form-header{\n  font-size: 18px;\n  font-family: Kievit;\n  font-weight: bolder;\n  text-align: center;\n  margin-bottom: 20px;\n  color: indigo;\n}\n.edit-icon{\n  position: absolute;\n  background-image: url(" + __webpack_require__(916) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 20px;\n  width: 20px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n}\n.default-img{\n  background-image: url(" + __webpack_require__(917) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n}\n.upload-img{\n  position: absolute;\n  background-image: url(" + __webpack_require__(918) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 20px;\n  width: 20px;\n  top: 0px;\n  bottom: 0px;\n  left:0px;\n  right: 0px;\n  margin: auto;\n}\n.admin-header{\n  font-size: 18px;\n  font-family: Kievit;\n  font-weight: bolder;\n  text-align: center;\n  margin-bottom: 20px;\n  color: indigo;\n}\n.edi-user{\n  position: relative;\n  height: 20px;\n  width: 30px;\n  margin-left: 20px;\n  background-color: darkgray;\n  border-radius: 5px;\n  text-align: center;\n  font-size: 10px;\n  cursor: pointer;\n  line-height: 18px;\n}\n.user-profile-button-group{\n  float:right;\n  display: inline-block;\n}\n.backgroundImage{\n  background-image: url(" + __webpack_require__(919) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n}\n.delete-icon{\n  position: absolute;\n  background-image: url(" + __webpack_require__(920) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 20px;\n  width: 20px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n  margin-left: 10px;\n}\n.white-board{\n  position: absolute;\n  background-image: url(" + __webpack_require__(921) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 50px;\n  width: 50px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n}\n.video-call{\n  position: absolute;\n  background-image: url(" + __webpack_require__(922) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n}\n.audio-call{\n  position: absolute;\n  background-image: url(" + __webpack_require__(923) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n}\n.emp-row .delete-icon{\n  right: 0px;\n}\n.employee-parent-div{\n  margin: 50px;\n}\n.employee-parent-div .white-board{\n  margin-left: 80px;\n}\n.local-video{\n  \n}\n\n\n", ""]);
 
 // exports
 
@@ -77514,8 +77569,18 @@ module.exports = __webpack_require__.p + "51e4a2e7c19a5c3ec6c40ca4be395bd3.png";
 module.exports = "data:image/jpeg;base64,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"
 
 /***/ }),
-/* 922 */,
-/* 923 */,
+/* 922 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "42e4f4de0ba95625ca65c58fea111403.png";
+
+/***/ }),
+/* 923 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "648310388f670819299ed37d11d171ba.png";
+
+/***/ }),
 /* 924 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -77559,18 +77624,6 @@ exports.push([module.i, ".Cropper {\n  position: relative;\n  display: inline-bl
 
 // exports
 
-
-/***/ }),
-/* 926 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "648310388f670819299ed37d11d171ba.png";
-
-/***/ }),
-/* 927 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "42e4f4de0ba95625ca65c58fea111403.png";
 
 /***/ })
 /******/ ]);
