@@ -18747,7 +18747,7 @@ var Init = function (_Component) {
 						'Profile'
 					)
 				) : "",
-				this.props.show || this.props.adminLogin ? _react2.default.createElement(
+				this.props.show || this.props.adminLogin.status ? _react2.default.createElement(
 					'div',
 					{ className: 'link-button' },
 					_react2.default.createElement(
@@ -18759,7 +18759,7 @@ var Init = function (_Component) {
 				_react2.default.createElement(
 					'div',
 					{ className: 'user-profile-button-group' },
-					!this.props.adminLogin ? _react2.default.createElement(
+					!this.props.adminLogin.status ? _react2.default.createElement(
 						'div',
 						{ className: 'link-button' },
 						_react2.default.createElement(
@@ -18786,7 +18786,7 @@ var Init = function (_Component) {
 							'Sign in'
 						)
 					) : "",
-					this.props.show || this.props.adminLogin ? _react2.default.createElement(
+					this.props.show || this.props.adminLogin.status ? _react2.default.createElement(
 						'div',
 						{ className: 'link-button' },
 						_react2.default.createElement(
@@ -43808,7 +43808,8 @@ var Employees = function (_Component) {
 				});
 			} else {
 				if (this.state.showWhiteBoard) {
-					return _react2.default.createElement(_whiteBoardComponent2.default, { closeCanvasPopup: this.closeWhiteBoard.bind(this), invitedIds: this.state.invitedMemberIds });
+					console.log("======v====this.props.adminUserLogin==", this.props.adminUserLogin);
+					return _react2.default.createElement(_whiteBoardComponent2.default, { closeCanvasPopup: this.closeWhiteBoard.bind(this), adminInfo: this.props.adminUserLogin, invitedIds: this.state.invitedMemberIds });
 				}
 				if (this.props.employees.employees.length > 0) {
 					var employeesList = this.props.employees.employees[0].map(function (emp) {
@@ -43868,13 +43869,13 @@ var Employees = function (_Component) {
 								dt
 							),
 							_react2.default.createElement('img', { className: 'emp-image', src: emp.croppedImage }),
-							this.props.adminUserLogin ? _react2.default.createElement('span', { className: 'white-board', title: 'Start white board sharing', onClick: function onClick() {
+							this.props.adminUserLogin.status ? _react2.default.createElement('span', { className: 'white-board', title: 'Start white board sharing', onClick: function onClick() {
 									_this5.shareWhiteBoard(emp._id);_socket2.default.emit("shareWhiteBoard", { id: emp._id, show: true });
 								} }) : "",
-							this.props.adminUserLogin ? _react2.default.createElement('span', { className: 'delete-icon', title: titleMsg, onClick: function onClick(e) {
+							this.props.adminUserLogin.status ? _react2.default.createElement('span', { className: 'delete-icon', title: titleMsg, onClick: function onClick(e) {
 									_this5.deleteEmployee(emp._id, emp.firstname);
 								} }) : "",
-							canAcceptSession && !this.props.adminUserLogin ? _react2.default.createElement('span', { className: 'accept-session white-board', title: 'Join Session', onClick: function onClick() {
+							canAcceptSession && !this.props.adminUserLogin.status ? _react2.default.createElement('span', { className: 'accept-session white-board', title: 'Join Session', onClick: function onClick() {
 									_this5.shareWhiteBoard(emp._id);
 								} }) : ""
 						);
@@ -43903,7 +43904,6 @@ function bindActionWithClass(dispatch) {
 }
 
 function mapPropesToState(state) {
-	console.log("====state.userLogIn.userData====", state.userLogIn.userData);
 	return { employees: state.employeeReducer, adminUserLogin: state.adminUserLogin, userLoggedin: state.userLogIn.userData };
 }
 
@@ -44846,7 +44846,7 @@ exports.default = Checkbox;
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -44875,271 +44875,359 @@ var lineThickness = 1;
 var canvas = void 0;
 var ctx = void 0;
 var coordinatesArr = [];
+var rtcConnection = void 0;
+var constraints = { video: true, audio: true };
+var connectedUser = void 0;
+var initiateUser = void 0;
+var isReady = false;
 
 var WhiteBoardComponent = function (_Component) {
-    _inherits(WhiteBoardComponent, _Component);
+  _inherits(WhiteBoardComponent, _Component);
 
-    function WhiteBoardComponent(props) {
-        _classCallCheck(this, WhiteBoardComponent);
+  function WhiteBoardComponent(props) {
+    _classCallCheck(this, WhiteBoardComponent);
 
-        var _this = _possibleConstructorReturn(this, (WhiteBoardComponent.__proto__ || Object.getPrototypeOf(WhiteBoardComponent)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (WhiteBoardComponent.__proto__ || Object.getPrototypeOf(WhiteBoardComponent)).call(this, props));
 
-        _this.state = { isPainting: false, showVideoAudio: false, videoSrc: "" };
-        return _this;
-    }
+    _this.state = { isPainting: false, showVideoAudio: false, videoSrc: "", localStream: "", remoteStreamSrc: "", remoteStream: "" };
+    return _this;
+  }
 
-    _createClass(WhiteBoardComponent, [{
-        key: 'componentDidMount',
-        value: function componentDidMount() {
-            var _this2 = this;
+  _createClass(WhiteBoardComponent, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
 
-            canvas = this.refs.canvas;
-            ctx = canvas.getContext("2d");
-            ctx.fillStyle = "#ffffff";
-            if (this.props.invitedIds) {
-                _socket2.default.on('getcoordinates', function (coordinates) {
-                    for (var i = 0; i < coordinates.length; i++) {
-                        var obj = coordinates[i];
-                        if (obj.operation == "clear") {
-                            ctx.clearRect(0, 0, _this2.props.width, _this2.props.height);
-                            return;
-                        }
-                        if (obj.firstCoordinate == "y") {
-                            ctx.fillRect(obj.y, obj.x, obj.lineThickness, obj.lineThickness);
-                        } else {
-                            ctx.fillRect(obj.x, obj.y, obj.lineThickness, obj.lineThickness);
-                        }
-                    }
-                });
+      console.log("=====adminInfo===this.props.adminInfo===", this.props.adminInfo);
+      canvas = this.refs.canvas;
+      ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#ffffff";
+      if (this.props.invitedIds) {
+        _socket2.default.on('getcoordinates', function (coordinates) {
+          for (var i = 0; i < coordinates.length; i++) {
+            var obj = coordinates[i];
+            if (obj.operation == "clear") {
+              ctx.clearRect(0, 0, _this2.props.width, _this2.props.height);
+              return;
             }
-        }
-    }, {
-        key: 'clearWhiteBoard',
-        value: function clearWhiteBoard() {
-            _socket2.default.emit("setcoordinates", [{ operation: "clear" }]);
-            ctx.clearRect(0, 0, this.props.width, this.props.height);
-        }
-    }, {
-        key: 'startWriting',
-        value: function startWriting(e) {
-            coordinatesArr = [];
-            this.setState({ isPainting: true });
-            lastX = e.nativeEvent.offsetX - canvas.offsetLeft;
-            lastY = e.nativeEvent.offsetY - canvas.offsetTop;
-        }
-    }, {
-        key: 'mouseUp',
-        value: function mouseUp(e) {
-            _socket2.default.emit("setcoordinates", coordinatesArr);
-            this.setState({ isPainting: false });
-        }
-    }, {
-        key: 'mouseMove',
-        value: function mouseMove(e) {
-            if (this.state.isPainting) {
-                var mouseX = e.nativeEvent.offsetX - canvas.offsetLeft;
-                var mouseY = e.nativeEvent.offsetY - canvas.offsetTop;
-                var x1 = mouseX,
-                    x2 = lastX,
-                    y1 = mouseY,
-                    y2 = lastY;
-
-                var steep = Math.abs(y2 - y1) > Math.abs(x2 - x1);
-                if (steep) {
-                    var x = x1;
-                    x1 = y1;
-                    y1 = x;
-
-                    var y = y2;
-                    y2 = x2;
-                    x2 = y;
-                }
-                if (x1 > x2) {
-                    var x = x1;
-                    x1 = x2;
-                    x2 = x;
-
-                    var y = y1;
-                    y1 = y2;
-                    y2 = y;
-                }
-
-                var dx = x2 - x1,
-                    dy = Math.abs(y2 - y1),
-                    error = 0,
-                    de = dy / dx,
-                    yStep = -1,
-                    y = y1;
-
-                if (y1 < y2) {
-                    yStep = 1;
-                }
-
-                lineThickness = 2;
-
-                for (var x = x1; x < x2; x++) {
-                    if (steep) {
-                        coordinatesArr.push({ id: this.props.invitedIds, x: x, y: y, lineThickness: lineThickness, firstCoordinate: "y", operation: "draw" });
-                        //socket.emit("setcoordinates",{id:this.props.invitedIds,x:x,y:y,lineThickness:lineThickness,firstCoordinate:y});
-                        ctx.fillRect(y, x, lineThickness, lineThickness);
-                    } else {
-                        coordinatesArr.push({ id: this.props.invitedIds, x: x, y: y, lineThickness: lineThickness, firstCoordinate: "x", operation: "draw" });
-                        //socket.emit("setcoordinates",{id:this.props.invitedIds,x:x,y:y,lineThickness:lineThickness,firstCoordinate:x});
-                        ctx.fillRect(x, y, lineThickness, lineThickness);
-                    }
-
-                    error += de;
-                    if (error >= 0.5) {
-                        y += yStep;
-                        error -= 1.0;
-                    }
-                }
-
-                lastX = mouseX;
-                lastY = mouseY;
-            }
-        }
-    }, {
-        key: 'audioCall',
-        value: function audioCall() {
-            if (this.state.showVideoAudio) {
-                this.setState({ showVideoAudio: false });
+            if (obj.firstCoordinate == "y") {
+              ctx.fillRect(obj.y, obj.x, obj.lineThickness, obj.lineThickness);
             } else {
-                this.setState({ showVideoAudio: true });
+              ctx.fillRect(obj.x, obj.y, obj.lineThickness, obj.lineThickness);
             }
-        }
-    }, {
-        key: 'videoCall',
-        value: function videoCall() {
-            var _this3 = this;
+          }
+        });
+      }
+    }
+  }, {
+    key: 'clearWhiteBoard',
+    value: function clearWhiteBoard() {
+      _socket2.default.emit("setcoordinates", [{ operation: "clear" }]);
+      ctx.clearRect(0, 0, this.props.width, this.props.height);
+    }
+  }, {
+    key: 'startWriting',
+    value: function startWriting(e) {
+      coordinatesArr = [];
+      this.setState({ isPainting: true });
+      lastX = e.nativeEvent.offsetX - canvas.offsetLeft;
+      lastY = e.nativeEvent.offsetY - canvas.offsetTop;
+    }
+  }, {
+    key: 'mouseUp',
+    value: function mouseUp(e) {
+      _socket2.default.emit("setcoordinates", coordinatesArr);
+      this.setState({ isPainting: false });
+    }
+  }, {
+    key: 'mouseMove',
+    value: function mouseMove(e) {
+      if (this.state.isPainting) {
+        var mouseX = e.nativeEvent.offsetX - canvas.offsetLeft;
+        var mouseY = e.nativeEvent.offsetY - canvas.offsetTop;
+        var x1 = mouseX,
+            x2 = lastX,
+            y1 = mouseY,
+            y2 = lastY;
 
-            var channel = prompt("Enter signaling channel name");
-            if (channel !== "") {
-                console.log('Trying to create or join channel: ', channel);
-                // Send 'create or join' to the server
-                _socket2.default.emit('create or join', channel);
-            }
-            // Handle 'created' message
-            _socket2.default.on('created', function (channel) {
-                navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
-                if (navigator.getUserMedia) {
-                    navigator.getUserMedia(_this3.props.constraints, _this3.handleUserMedia.bind(_this3), _this3.handleUserMediaError);
-                    _this3.props.isInitiator = true;
-                    _this3.checkAndStart();
-                }
-            });
-            _socket2.default.on('message', function (message) {
-                var myResponse = prompt('Send response to other peer');
-                _socket2.default.emit('response', {
-                    channel: channel,
-                    message: myResponse
-                });
-            });
-            _socket2.default.on('response', function (response) {
-                var chatMessage = prompt("Keep on chatting or Bye to quit conversation");
-                _socket2.default.emit('response', {
-                    channel: channel,
-                    message: chatMessage
-                });
-            });
-            _socket2.default.on('joined', function (channel) {
-                console.log('This peer has joined room ' + room);
-                _this3.props.isChannelReady = true;
-            });
-            _socket2.default.on('join', function (room) {
-                console.log('Another peer made a request to join room ' + room);
-                console.log('This peer is the initiator of room ' + room + '!');
-                _this3.props.isChannelReady = true;
-            });
-        }
-    }, {
-        key: 'handleUserMedia',
-        value: function handleUserMedia(stream) {
-            console.log('Adding local stream.');
-            this.sendMessage('got user media');
-            this.setState({ videoSrc: window.URL.createObjectURL(stream) });
-        }
-    }, {
-        key: 'handleUserMediaError',
-        value: function handleUserMediaError() {}
-    }, {
-        key: 'sendMessage',
-        value: function sendMessage(message) {
-            console.log('Sending message: ', message);
-            _socket2.default.emit('message', message);
-        }
-    }, {
-        key: 'checkAndStart',
-        value: function checkAndStart() {
-            if (!this.props.isStarted && typeof this.state.videoSrc != "undefined" && this.props.isChannelReady) {
-                this.createPeerConnection();
-                this.props.isStarted = true;
-                if (this.props.isInitiator) {
-                    doCall();
-                }
-            }
-        }
-    }, {
-        key: 'doCall',
-        value: function doCall() {}
-    }, {
-        key: 'createPeerConnection',
-        value: function createPeerConnection() {}
-    }, {
-        key: 'render',
-        value: function render() {
-            return _react2.default.createElement(
-                'div',
-                { className: 'canvas_outer' },
-                _react2.default.createElement(
-                    'div',
-                    { className: 'video-audio' },
-                    _react2.default.createElement('span', { className: 'audio-call', title: 'Audio call', onClick: this.audioCall.bind(this) })
-                ),
-                this.state.showVideoAudio ? _react2.default.createElement(
-                    'div',
-                    { className: 'video-display' },
-                    _react2.default.createElement('span', { className: 'video-call', title: 'Video Call', onClick: this.videoCall.bind(this) }),
-                    _react2.default.createElement('video', { autoPlay: 'true', 'class': 'local-video', src: this.state.videoSrc }),
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'local-video-display' },
-                        _react2.default.createElement('video', { autoPlay: 'true', src: this.state.videoSrc })
-                    )
-                ) : "",
-                _react2.default.createElement(
-                    'div',
-                    { className: 'canvas_inner' },
-                    _react2.default.createElement('canvas', { ref: 'canvas', width: this.props.width, height: this.props.height, onMouseUp: this.mouseUp.bind(this), onMouseMove: this.mouseMove.bind(this), onMouseDown: this.startWriting.bind(this) }),
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'canvas-button-group' },
-                        _react2.default.createElement(
-                            'button',
-                            { className: 'canvas_button_clear', onClick: this.clearWhiteBoard.bind(this) },
-                            'Clear'
-                        ),
-                        _react2.default.createElement(
-                            'button',
-                            { className: 'canvas_button', onClick: this.props.closeCanvasPopup },
-                            'close me'
-                        )
-                    )
-                )
-            );
-        }
-    }]);
+        var steep = Math.abs(y2 - y1) > Math.abs(x2 - x1);
+        if (steep) {
+          var x = x1;
+          x1 = y1;
+          y1 = x;
 
-    return WhiteBoardComponent;
+          var y = y2;
+          y2 = x2;
+          x2 = y;
+        }
+        if (x1 > x2) {
+          var x = x1;
+          x1 = x2;
+          x2 = x;
+
+          var y = y1;
+          y1 = y2;
+          y2 = y;
+        }
+
+        var dx = x2 - x1,
+            dy = Math.abs(y2 - y1),
+            error = 0,
+            de = dy / dx,
+            yStep = -1,
+            y = y1;
+
+        if (y1 < y2) {
+          yStep = 1;
+        }
+
+        lineThickness = 2;
+
+        for (var x = x1; x < x2; x++) {
+          if (steep) {
+            coordinatesArr.push({ id: this.props.invitedIds, x: x, y: y, lineThickness: lineThickness, firstCoordinate: "y", operation: "draw" });
+            //socket.emit("setcoordinates",{id:this.props.invitedIds,x:x,y:y,lineThickness:lineThickness,firstCoordinate:y});
+            ctx.fillRect(y, x, lineThickness, lineThickness);
+          } else {
+            coordinatesArr.push({ id: this.props.invitedIds, x: x, y: y, lineThickness: lineThickness, firstCoordinate: "x", operation: "draw" });
+            //socket.emit("setcoordinates",{id:this.props.invitedIds,x:x,y:y,lineThickness:lineThickness,firstCoordinate:x});
+            ctx.fillRect(x, y, lineThickness, lineThickness);
+          }
+
+          error += de;
+          if (error >= 0.5) {
+            y += yStep;
+            error -= 1.0;
+          }
+        }
+
+        lastX = mouseX;
+        lastY = mouseY;
+      }
+    }
+  }, {
+    key: 'audioCall',
+    value: function audioCall() {
+      if (this.state.showVideoAudio) {
+        this.setState({ showVideoAudio: false });
+      } else {
+        this.setState({ showVideoAudio: true });
+      }
+    }
+  }, {
+    key: 'videoCall',
+    value: function videoCall() {
+      var room = "Online Session";
+      if (room !== "") {
+        console.log('Trying to create or join room: ', room);
+        console.log("====this.props.adminInfo====", this.props.adminInfo);
+        console.log("====this.props.invitedIds====", this.props.invitedIds);
+        if (this.props.adminInfo.status) {
+          connectedUser = { id: this.props.adminInfo.id };
+        } else {
+          connectedUser = { id: this.props.invitedIds };
+        }
+        this.initConnection();
+        // Send 'create or join' to the server
+        this.messageSend({
+          type: 'create or join',
+          room: room,
+          connectedUser: connectedUser
+        });
+      }
+    }
+  }, {
+    key: 'initConnection',
+    value: function initConnection() {
+      var _this3 = this;
+
+      _socket2.default.on('message', function (obj) {
+        console.log("=======get data from server in client side====", obj);
+        switch (obj.type) {
+          case 'created':
+            _this3.startConnection();
+            break;
+          case 'joined':
+            isReady = true;
+            initiateUser = obj.connected;
+            connectedUser = obj.connected;
+            _this3.startConnection();
+            break;
+          case "candidate":
+            _this3.onCandidate(obj.candidate);
+            break;
+          case "offer":
+            _this3.onOffer(obj.offer, obj.name);
+            break;
+          case "answer":
+            _this3.onAnswer(obj.answer);
+            break;
+        }
+      });
+    }
+  }, {
+    key: 'startConnection',
+    value: function startConnection() {
+      var _this4 = this;
+
+      if (this.hasUserMedia()) {
+        navigator.getUserMedia(constraints, function (myStream) {
+          _this4.setState({ "videoSrc": window.URL.createObjectURL(myStream) });
+          if (_this4.hasRTCPeerConnection()) {
+            _this4.setupPeerConnection(myStream);
+            console.log("============isReady====", isReady);
+            if (isReady) {
+              _this4.createOffer();
+            }
+          }
+        }, function (error) {
+          console.log("error", error);
+        });
+      }
+    }
+  }, {
+    key: 'hasUserMedia',
+    value: function hasUserMedia() {
+      navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+      return !!navigator.getUserMedia;
+    }
+  }, {
+    key: 'setupPeerConnection',
+    value: function setupPeerConnection(stream) {
+      var _this5 = this;
+
+      var configuration = {
+        "iceServers": [{ "url": "stun:stun.1.google.com:19302" }]
+      };
+      rtcConnection = new RTCPeerConnection(configuration);
+      rtcConnection.addStream(stream);
+      rtcConnection.onaddstream = function (e) {
+        _this5.setState({ remoteStreamSrc: window.URL.createObjectURL(e.stream) });
+      };
+      rtcConnection.onicecandidate = function (event) {
+        if (event.candidate) {
+          _this5.messageSend({
+            type: "candidate",
+            candidate: event.candidate,
+            connectedUser: initiateUser
+          });
+        }
+      };
+    }
+  }, {
+    key: 'hasRTCPeerConnection',
+    value: function hasRTCPeerConnection() {
+      window.RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
+      window.RTCSessionDescription = window.RTCSessionDescription || window.webkitRTCSessionDescription || window.mozRTCSessionDescription;
+      window.RTCIceCandidate = window.RTCIceCandidate || window.webkitRTCIceCandidate || window.mozRTCIceCandidate;
+      return !!window.RTCPeerConnection;
+    }
+  }, {
+    key: 'createOffer',
+    value: function createOffer() {
+      var _this6 = this;
+
+      console.log("=====create offer=====");
+      rtcConnection.createOffer().then(function (offer) {
+        console.log("======== called offer=====");
+        _this6.messageSend({
+          type: "offer",
+          offer: offer,
+          connectedUser: connectedUser
+        });
+        rtcConnection.setLocalDescription(offer);
+      });
+      /*rtcConnection.createOffer((offer)=>{
+        console.log("========not called=====");
+       this.messageSend({
+         type:"offer",
+         offer:offer,
+         connectedUser:connectedUser
+       });
+       rtcConnection.setLocalDescription(offer);
+      });*/
+    }
+  }, {
+    key: 'onOffer',
+    value: function onOffer(offer, name) {
+      var _this7 = this;
+
+      rtcConnection.setRemoteDescription(new RTCSessionDescription(offer));
+      rtcConnection.createAnswer().then(function (answer) {
+        rtcConnection.setLocalDescription(answer);
+        _this7.messageSend({
+          type: "answer",
+          answer: answer,
+          connectedUser: connectedUser
+        });
+      });
+    }
+  }, {
+    key: 'onAnswer',
+    value: function onAnswer(answer) {
+      rtcConnection.setRemoteDescription(new RTCSessionDescription(answer));
+    }
+  }, {
+    key: 'onCandidate',
+    value: function onCandidate(candidate) {
+      rtcConnection.addIceCandidate(new RTCIceCandidate(candidate));
+    }
+  }, {
+    key: 'messageSend',
+    value: function messageSend(obj) {
+      _socket2.default.emit('message', obj);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        { className: 'canvas_outer' },
+        _react2.default.createElement(
+          'div',
+          { className: 'video-audio' },
+          _react2.default.createElement('span', { className: 'audio-call', title: 'Audio call', onClick: this.audioCall.bind(this) })
+        ),
+        this.state.showVideoAudio ? _react2.default.createElement(
+          'div',
+          { className: 'video-display' },
+          _react2.default.createElement('span', { className: 'video-call', title: 'Video Call', onClick: this.videoCall.bind(this) }),
+          _react2.default.createElement('video', { autoPlay: 'true', 'class': 'local-video', src: this.state.remoteStreamSrc }),
+          _react2.default.createElement(
+            'div',
+            { className: 'local-video-display' },
+            _react2.default.createElement('video', { autoPlay: 'true', src: this.state.videoSrc })
+          )
+        ) : "",
+        _react2.default.createElement(
+          'div',
+          { className: 'canvas_inner' },
+          _react2.default.createElement('canvas', { ref: 'canvas', width: this.props.width, height: this.props.height, onMouseUp: this.mouseUp.bind(this), onMouseMove: this.mouseMove.bind(this), onMouseDown: this.startWriting.bind(this) }),
+          _react2.default.createElement(
+            'div',
+            { className: 'canvas-button-group' },
+            _react2.default.createElement(
+              'button',
+              { className: 'canvas_button_clear', onClick: this.clearWhiteBoard.bind(this) },
+              'Clear'
+            ),
+            _react2.default.createElement(
+              'button',
+              { className: 'canvas_button', onClick: this.props.closeCanvasPopup },
+              'close me'
+            )
+          )
+        )
+      );
+    }
+  }]);
+
+  return WhiteBoardComponent;
 }(_react.Component);
 
 WhiteBoardComponent.defaultProps = {
-    width: 800,
-    height: 400,
-    constraints: { video: true, audio: true },
-    isChannelReady: false,
-    isStarted: false,
-    isInitiator: false
+  width: 800,
+  height: 400
 };
 exports.default = WhiteBoardComponent;
 
@@ -76770,7 +76858,7 @@ function authenticateUser(user, callback) {
    return function (dispatch) {
       _axios2.default.post("/adminUser", user).then(function (res) {
          console.log("=====res=====", res);
-         dispatch({ type: "LOGIN-USER", payload: res.data.status });
+         dispatch({ type: "LOGIN-USER", payload: res.data });
          callback(res.data.status);
       }).catch(function (err) {
          console.log("=========err=====", err);
@@ -77470,7 +77558,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.adminUserLogin = adminUserLogin;
 function adminUserLogin() {
-	var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+	var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { status: false };
 	var action = arguments[1];
 
 	switch (action.type) {

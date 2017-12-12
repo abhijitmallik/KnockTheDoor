@@ -10,7 +10,7 @@ module.exports =(app,path,config)=>{
        	}
        	console.log("admin user ",user);
        	if(user.length > 0){
-       		res.json({status:true});
+       		res.json({status:true,id:user[0]._id,name:user[0].userName});
        	}else{		
        	   res.json({status:false});
        	}

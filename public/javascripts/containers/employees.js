@@ -78,7 +78,8 @@ class Employees  extends Component{
           )
 		}else{
 			if(this.state.showWhiteBoard){
-               return(<WhiteBoardComponent closeCanvasPopup={this.closeWhiteBoard.bind(this)}  invitedIds={this.state.invitedMemberIds}/>)
+				console.log("======v====this.props.adminUserLogin==",this.props.adminUserLogin);
+               return(<WhiteBoardComponent closeCanvasPopup={this.closeWhiteBoard.bind(this)} adminInfo={this.props.adminUserLogin} invitedIds={this.state.invitedMemberIds} />)
 			}
 			if(this.props.employees.employees.length > 0){
 				const employeesList =  this.props.employees.employees[0].map(function(emp){
@@ -97,7 +98,7 @@ class Employees  extends Component{
 					let titleMsg = "Delete "+emp.firstname;
 				return(
 					  <div className="emp-row" key={emp._id}>
-					   {checkBox} {onlineStatus ?<span className="emp-name active-emp">{emp.firstname} {emp.lastname}</span> : <span className="emp-name">{emp.firstname} {emp.lastname}</span>}<span className="emp-occupation">{emp.occupation}</span><span className="emp-city">{emp.city}</span><span className="emp-state">{emp.state}</span><span className="emp-doj">{dt}</span><img className="emp-image"  src={emp.croppedImage}/>{this.props.adminUserLogin ? <span className="white-board" title="Start white board sharing" onClick={()=>{this.shareWhiteBoard(emp._id);socket.emit("shareWhiteBoard",{id:emp._id,show:true})}}></span> :""}{this.props.adminUserLogin ? <span className="delete-icon" title={titleMsg} onClick={(e)=>{this.deleteEmployee(emp._id,emp.firstname)}}></span> : ""}{(canAcceptSession && !this.props.adminUserLogin) ? <span className="accept-session white-board" title="Join Session" onClick={()=>{this.shareWhiteBoard(emp._id)}}></span> :""}
+					   {checkBox} {onlineStatus ?<span className="emp-name active-emp">{emp.firstname} {emp.lastname}</span> : <span className="emp-name">{emp.firstname} {emp.lastname}</span>}<span className="emp-occupation">{emp.occupation}</span><span className="emp-city">{emp.city}</span><span className="emp-state">{emp.state}</span><span className="emp-doj">{dt}</span><img className="emp-image"  src={emp.croppedImage}/>{this.props.adminUserLogin.status ? <span className="white-board" title="Start white board sharing" onClick={()=>{this.shareWhiteBoard(emp._id);socket.emit("shareWhiteBoard",{id:emp._id,show:true})}}></span> :""}{this.props.adminUserLogin.status ? <span className="delete-icon" title={titleMsg} onClick={(e)=>{this.deleteEmployee(emp._id,emp.firstname)}}></span> : ""}{(canAcceptSession && !this.props.adminUserLogin.status) ? <span className="accept-session white-board" title="Join Session" onClick={()=>{this.shareWhiteBoard(emp._id)}}></span> :""}
 					  </div>
 					)
 			    },this)
@@ -121,7 +122,6 @@ function bindActionWithClass(dispatch){
 }
 
 function mapPropesToState(state){
-	console.log("====state.userLogIn.userData====",state.userLogIn.userData);
 	return {employees:state.employeeReducer,adminUserLogin:state.adminUserLogin,userLoggedin:state.userLogIn.userData}
 }
 
