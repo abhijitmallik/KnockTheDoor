@@ -7078,7 +7078,7 @@ var _socket2 = _interopRequireDefault(_socket);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 //const socket = io(`${protocol}//${hostname}:${port}`);
-var socket = (0, _socket2.default)("http://138.208.17.54:8000");
+var socket = (0, _socket2.default)("http://localhost:8000");
 exports.default = socket;
 
 /***/ }),

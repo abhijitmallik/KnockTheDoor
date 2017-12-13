@@ -1,0 +1,18 @@
+.user-login-form{
+   position: absolute;
+   left: 0px;
+   right: 0px;
+   margin: 0px auto;
+   width: 400px;
+   top: 200px;
+}
+.field-div{
+   margin-bottom: 10px;
+   width: 650px;
+}
+.error-msg{
+	margin-left:75px;
+}
+.sign-in .form-button{
+	margin-left: 50%;
+}

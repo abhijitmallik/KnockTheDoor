@@ -1,0 +1,81 @@
+
+.canvas_outer {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  background-color: rgba(0,0,0, 0.5);
+}
+.canvas_inner {
+  position: absolute;
+  height: 400px;
+  width: 800px;
+  left: 0;
+  right: 0;
+  top: 40%;
+  bottom: 40%;
+  margin: auto;
+  background: black;
+  padding: 10px;
+}
+
+.canvas-component{
+  height: 400px !important;
+  width: 800px;
+}
+.canvas-component .lower-canvas{
+  height: 800px;
+  width: 800px;
+}
+.canvas-component .upper-canvas{
+  height: 800px;
+  width: 800px;
+}
+.canvas_inner .canvas-button-group{
+  width: 810px;
+  text-align: right;
+  margin-top: 20px;
+}
+.canvas_inner .canvas_button{
+  display: inline-block;
+}
+.canvas_inner .canvas_button_clear{
+  display: inline-block;
+  margin-right: 5px;
+}
+.canvas_outer .audio-call{
+  right: 70px;
+  z-index: 1;
+}
+.canvas_outer .video-call{
+  right:10px;
+  z-index: 1;
+}
+.canvas_outer .video-display{
+  height: 250px;
+  width: 250px;
+  background-color: black;
+  display: inline-block;
+  float: right;
+  position: relative;
+}
+.video-display .local-video-display{
+  height: 100px;
+  width: 100px;
+  background-color: black;
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+}
+.video-display .local-video-display video{
+  height: 90px;
+  width: 90px;
+}
+.video-display video{
+  height: 240px;
+  width: 240px;
+}
