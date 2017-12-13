@@ -1,30 +1,237 @@
+
 body {
-  padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-image: url('../images/background.jpg');
+  background-repeat: no-repeat;
+  background-size:100%;
 }
 
 a {
-  color: #00B7FF;
+  color: cornsilk;
+  text-decoration: none;
 }
 
 .main-container{
-	
+	 
 }
-.emp-name{
- font-size: 18px;
- margin-right: 10px;
+.emp-row{
+  margin: 10px;
+  position: relative;
+  height: 50px;
 }
-.emp-occupation{
-  font-size: 20px;
+.active-emp{
+  color:green !important;
+}
+.emp-city,.emp-name,.emp-occupation,.emp-phone,.emp-state,.emp-city,.emp-doj,.edi-user,.accept-session{
+  margin-right: 20px;
+  font-size: 14px;
+  width: 150px;
+  display: inline-block;
+  color:inherit;
+}
+.accept-session{
+  text-align: right;
+}
+.emp-image{
+  height: 40px;
+  position: absolute;
+}
+.link-button{
+  display: inline-block;
 }
 .login-div{
-  float:right;
+
 }
 .login-button{
-  height: 25px;
-  width: 60px;
-  border-radius: 5px;
+  margin-right: 10px;
 }
 .show-login{
 	display: none;
 }
+.admin-form{
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  margin: 0px auto;
+  width:  400px;;
+  top: 200px;
+}
+.form-field{
+  height: 25px;
+  padding-bottom: 5px;
+}
+.form-field .form-label{
+    display: inline-block;
+    font-size: 14px;
+    margin-right: 5px;
+    font-family: Kievit;
+    width: 80px;
+    color: inherit;
+}
+.button-groups{
+  text-align: right;
+  padding-right: 60px;
+}
+.ok-button{
+  margin-right: 5px;
+}
+.label-name{
+  width: 10%;
+  display: inline-block;
+  text-align: right;
+  margin-right: 10px;
+  font-size: 14px;
+  font-family: Kievit;
+  color: inherit;
+}
+.employee-form{
+  width: 100%;
+  height: 100%;
+  margin-left: 30%;
+  margin-right: 30%;
+  position: relative;
+}
+.form-div{
+  height: 800px;
+  padding: 100px;
+}
+.field-div{
+  margin-bottom: 10px;
+}
+.form-button{
+  margin-left: 20%;
+}
+.error-msg{
+  margin-left: 75px;
+  color: crimson;
+  display: block;
+}
+.form-input{
+  width: 250px;
+  height: 20px;
+}
+.form-header{
+  font-size: 18px;
+  font-family: Kievit;
+  font-weight: bolder;
+  text-align: center;
+  margin-bottom: 20px;
+  color: indigo;
+}
+.edit-icon{
+  position: absolute;
+  background-image: url('../images/icons-edit.png');
+  background-repeat: no-repeat;
+  background-size:100%;
+  height: 20px;
+  width: 20px;
+  top: 0px;
+  bottom: 0px;
+  cursor: pointer;
+}
+.default-img{
+  background-image: url('../images/missing-image.jpg');
+  background-repeat: no-repeat;
+  background-size:100%;
+}
+.upload-img{
+  position: absolute;
+  background-image: url('../images/upload_icon.png');
+  background-repeat: no-repeat;
+  background-size:100%;
+  height: 20px;
+  width: 20px;
+  top: 0px;
+  bottom: 0px;
+  left:0px;
+  right: 0px;
+  margin: auto;
+}
+.admin-header{
+  font-size: 18px;
+  font-family: Kievit;
+  font-weight: bolder;
+  text-align: center;
+  margin-bottom: 20px;
+  color: indigo;
+}
+.edi-user{
+  position: relative;
+  height: 20px;
+  width: 30px;
+  margin-left: 20px;
+  background-color: darkgray;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 10px;
+  cursor: pointer;
+  line-height: 18px;
+}
+.user-profile-button-group{
+  float:right;
+  display: inline-block;
+}
+.backgroundImage{
+  background-image: url('../images/backgroundimage.jpg');
+  background-repeat: no-repeat;
+  background-size:100%;
+}
+.delete-icon{
+  position: absolute;
+  background-image: url('../images/delete.png');
+  background-repeat: no-repeat;
+  background-size:100%;
+  height: 20px;
+  width: 20px;
+  top: 0px;
+  bottom: 0px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+.white-board{
+  position: absolute;
+  background-image: url('../images/whiteboard.jpg');
+  background-repeat: no-repeat;
+  background-size:100%;
+  height: 50px;
+  width: 50px;
+  top: 0px;
+  bottom: 0px;
+  cursor: pointer;
+}
+.video-call{
+  position: absolute;
+  background-image: url('../images/video.png');
+  background-repeat: no-repeat;
+  background-size:100%;
+  height: 40px;
+  width: 40px;
+  top: 0px;
+  bottom: 0px;
+  cursor: pointer;
+}
+.audio-call{
+  position: absolute;
+  background-image: url('../images/audio.png');
+  background-repeat: no-repeat;
+  background-size:100%;
+  height: 40px;
+  width: 40px;
+  top: 0px;
+  bottom: 0px;
+  cursor: pointer;
+}
+.emp-row .delete-icon{
+  right: 0px;
+}
+.employee-parent-div{
+  margin: 50px;
+}
+.employee-parent-div .white-board{
+  margin-left: 80px;
+}
+.local-video{
+  
+}
+
+
