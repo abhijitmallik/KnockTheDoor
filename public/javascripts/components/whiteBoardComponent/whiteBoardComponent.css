@@ -47,8 +47,7 @@
   display: inline-block;
   margin-right: 5px;
 }
-.canvas_outer .audio-call{
-  right: 70px;
+.canvas_outer .conference-call{
   z-index: 1;
 }
 .canvas_outer .video-call{
@@ -58,7 +57,7 @@
 .canvas_outer .video-display{
   height: 250px;
   width: 250px;
-  background-color: black;
+  background-color: gainsboro;
   display: inline-block;
   float: right;
   position: relative;

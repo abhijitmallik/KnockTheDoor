@@ -10,10 +10,11 @@ let canvas;
 let ctx;
 let coordinatesArr = [];
 let rtcConnection;
-let constraints = {video:true,audio:true};
+let constraints = {video:false,audio:false};
 let connectedUser;
 let initiateUser;
 let isReady = false;
+let stream;
  
 export default class WhiteBoardComponent extends Component{
     static defaultProps = {
@@ -22,7 +23,7 @@ export default class WhiteBoardComponent extends Component{
     };
     constructor(props){
        super(props);
-       this.state = {isPainting:false,showVideoAudio:false,videoSrc:"",localStream:"",remoteStreamSrc:"",remoteStream:"",enableVideoCall:false};
+       this.state = {isPainting:false,showVideoAudio:false,videoSrc:"",localStream:"",remoteStreamSrc:"",remoteStream:"",enableVideoCall:false,voiceClass:"mute-audio",videoClass:"stop-video",constraints:{video:true,audio:true}};
     }
     componentDidMount() {
       console.log("=====adminInfo===this.props.adminInfo===",this.props.adminInfo);
@@ -129,7 +130,7 @@ export default class WhiteBoardComponent extends Component{
 
       }
     }
-    audioCall(){
+    audioVideoCall(){
        if(this.state.showVideoAudio){
          this.setState({showVideoAudio:false});
        }else{
@@ -156,9 +157,7 @@ export default class WhiteBoardComponent extends Component{
             });
         }
     }
-    videoCall(){
-        this.createOffer();
-    }
+
     initConnection(){
        socket.on('message',(obj)=>{
           console.log("=======get data from server in client side====",obj);
@@ -172,7 +171,6 @@ export default class WhiteBoardComponent extends Component{
                 initiateUser = obj.connected;
                 connectedUser = obj.connected;
                 this.setState({enableVideoCall:true});
-                //this.createOffer();
               }else{
                 this.startConnection();
               }
@@ -191,10 +189,11 @@ export default class WhiteBoardComponent extends Component{
     }
     startConnection(){
        if(this.hasUserMedia()){
-          navigator.getUserMedia(constraints,(myStream)=>{
+          navigator.getUserMedia(this.state.constraints,(myStream)=>{
              this.setState({"videoSrc":window.URL.createObjectURL(myStream)});
              if(this.hasRTCPeerConnection()){
                 this.setupPeerConnection(myStream);
+                stream = myStream;
                 console.log("============isReady====",isReady);
                 //if(isReady){
                 //  this.createOffer();
@@ -246,15 +245,6 @@ export default class WhiteBoardComponent extends Component{
          });
          rtcConnection.setLocalDescription(offer);
       })
-      /*rtcConnection.createOffer((offer)=>{
-        console.log("========not called=====");
-       this.messageSend({
-         type:"offer",
-         offer:offer,
-         connectedUser:connectedUser
-       });
-       rtcConnection.setLocalDescription(offer);
-      });*/
     }
     onOffer(offer,name){
       connectedUser = "adminId";
@@ -273,18 +263,64 @@ export default class WhiteBoardComponent extends Component{
     }
     onCandidate(candidate) {
         rtcConnection.addIceCandidate(new RTCIceCandidate(candidate));
-    };
+    }
     messageSend(obj){
       socket.emit('message', obj);
+    }
+    enableAudio(){
+      if(this.state.voiceClass == "mute-audio"){
+        this.setState({voiceClass:"audio-call"})
+      }else{
+        this.setState({voiceClass:"mute-audio"})
+      }
+      //this.enableAudioVideo();
+      //stream.getVideoTracks()[0].enabled = this.setState.constraints.video;
+      this.createOffer();
+    } 
+    videoCall(){
+      if(this.state.videoClass == "stop-video"){
+        this.setState({videoClass:"video-call"})
+      }else{
+        this.setState({videoClass:"stop-video"})
+      }
+      console.log("=====stream====",stream);
+      this.enableAudioVideo();
+      //stream.getAudioTracks()[0].enabled = this.setState.constraints.audio;
+      this.createOffer();
+    }
+    enableAudioVideo(){
+      this.setState({constraints:{video:true,audio:true}});
+      if(this.state.videoClass == "stop-video"){
+        this.setState({constraints:{video:false,audio:true}});
+      }
+      if(this.state.voiceClass == "mute-audio"){
+        this.setState({constraints:{video:true,audio:false}});
+      }
+      if(this.state.videoClass == "stop-video" && this.state.voiceClass == "mute-audio"){
+        this.setState({constraints:{video:false,audio:false}});
+      }
+      if(!this.state.constraints.audio){
+        stream.removeTrack(stream.getAudioTracks()[0]);
+      }
+      if(!this.setState.constraints.video){
+        stream.removeTrack(stream.getVideoTracks()[0]);
+      }
+      
+      
+      //stream.getAudioTracks()[0].enabled = this.state.constraints.audio;
+      //stream.getVideoTracks()[0].enabled = this.setState.constraints.video;
+      
     }
    
     render() {
         return (
           <div className='canvas_outer'>
-                <div className='video-audio'><span className="audio-call" title="Audio call" onClick={this.audioCall.bind(this)}></span></div>
+                <div className='video-audio'><span className="conference-call" title="Audio/Video call" onClick={this.audioVideoCall.bind(this)}></span></div>
                 {this.state.showVideoAudio ?
                   <div className='video-display'>
-                    {this.state.enableVideoCall ? <span className="video-call" title="Video Call" onClick={this.videoCall.bind(this)}></span> : ""}
+                    {this.state.enableVideoCall ?
+                      <div className='video-audio-icons'><span className={this.state.voiceClass} title="Voice Call" onClick={this.enableAudio.bind(this)}></span><span className={this.state.videoClass} title="Video Call" onClick={this.videoCall.bind(this)}></span></div>
+                    : ""}
                     <video  autoPlay="true"   class='local-video' src={this.state.remoteStreamSrc}></video>
                     <div className="local-video-display"><video  autoPlay="true"  src={this.state.videoSrc}></video></div>
                   </div> : ""
