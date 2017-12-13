@@ -1,0 +1,53 @@
+.parent-profile-div{
+    text-align: center;
+    padding-top: 100px;
+}
+.parent-profile-div .profile-class{
+	width:900px;
+	height: 800px;
+	display: inline-block;
+	margin: auto 0px;
+}
+.profile-class .userform-field-label,.profile-class .userform-field-value{
+	height: 40px;
+    width: 380px;
+    display: inline-block;
+    color:inherit;
+}
+.parent-profile-div .profile-class .userinfo-header{
+	position: relative;
+    font-size: 18px;
+    font-family: Kievit;
+    font-weight: bolder;
+    text-align: center;
+    margin-bottom: 40px;
+    color: indigo;
+}
+.profile-class .user-name{
+	font-size: 16px;
+    font-family: Kievit;
+}
+.profile-class .userform-field-label{
+	color: inherit;
+}
+.parent-profile-div .user-info-div,.parent-profile-div .profile-image{
+    display: inline-block;
+}
+.parent-profile-div .profile-image{
+	display: inline-block;
+    float: right;
+    width: 100px;
+    position: relative;
+}
+.parent-profile-div .profile-edit{
+    margin-left: 20px;
+}
+.parent-profile-div .form-div{
+	padding: 0px;
+}
+.parent-profile-div .employee-form{
+    margin-left: 20%;
+}
+.parent-profile-div .employee-form .form-button{
+	margin-left: -350px;
+}
