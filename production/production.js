@@ -7078,7 +7078,7 @@ var _socket2 = _interopRequireDefault(_socket);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 //const socket = io(`${protocol}//${hostname}:${port}`);
-var socket = (0, _socket2.default)("http://localhost:8000");
+var socket = (0, _socket2.default)("http://138.208.17.54:8000");
 exports.default = socket;
 
 /***/ }),
@@ -44889,7 +44889,7 @@ var WhiteBoardComponent = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (WhiteBoardComponent.__proto__ || Object.getPrototypeOf(WhiteBoardComponent)).call(this, props));
 
-    _this.state = { isPainting: false, showVideoAudio: false, videoSrc: "", localStream: "", remoteStreamSrc: "", remoteStream: "" };
+    _this.state = { isPainting: false, showVideoAudio: false, videoSrc: "", localStream: "", remoteStreamSrc: "", remoteStream: "", enableVideoCall: false };
     return _this;
   }
 
@@ -45013,28 +45013,31 @@ var WhiteBoardComponent = function (_Component) {
       } else {
         this.setState({ showVideoAudio: true });
       }
-    }
-  }, {
-    key: 'videoCall',
-    value: function videoCall() {
       var room = "Online Session";
       if (room !== "") {
         console.log('Trying to create or join room: ', room);
         console.log("====this.props.adminInfo====", this.props.adminInfo);
         console.log("====this.props.invitedIds====", this.props.invitedIds);
         if (this.props.adminInfo.status) {
-          connectedUser = { id: this.props.adminInfo.id };
+          //connectedUser = {id:this.props.adminInfo.id};
+          connectedUser = { id: 'adminId' };
         } else {
-          connectedUser = { id: this.props.invitedIds };
+          //connectedUser = {id:this.props.invitedIds};
+          connectedUser = { id: 'clientId' };
         }
         this.initConnection();
         // Send 'create or join' to the server
         this.messageSend({
           type: 'create or join',
           room: room,
-          connectedUser: connectedUser
+          connectedUser: connectedUser.id
         });
       }
+    }
+  }, {
+    key: 'videoCall',
+    value: function videoCall() {
+      this.createOffer();
     }
   }, {
     key: 'initConnection',
@@ -45048,10 +45051,15 @@ var WhiteBoardComponent = function (_Component) {
             _this3.startConnection();
             break;
           case 'joined':
-            isReady = true;
-            initiateUser = obj.connected;
-            connectedUser = obj.connected;
-            _this3.startConnection();
+            if (_this3.props.adminInfo.status) {
+              isReady = true;
+              initiateUser = obj.connected;
+              connectedUser = obj.connected;
+              _this3.setState({ enableVideoCall: true });
+              //this.createOffer();
+            } else {
+              _this3.startConnection();
+            }
             break;
           case "candidate":
             _this3.onCandidate(obj.candidate);
@@ -45076,9 +45084,9 @@ var WhiteBoardComponent = function (_Component) {
           if (_this4.hasRTCPeerConnection()) {
             _this4.setupPeerConnection(myStream);
             console.log("============isReady====", isReady);
-            if (isReady) {
-              _this4.createOffer();
-            }
+            //if(isReady){
+            //  this.createOffer();
+            //}
           }
         }, function (error) {
           console.log("error", error);
@@ -45109,7 +45117,7 @@ var WhiteBoardComponent = function (_Component) {
           _this5.messageSend({
             type: "candidate",
             candidate: event.candidate,
-            connectedUser: initiateUser
+            connectedUser: connectedUser
           });
         }
       };
@@ -45152,6 +45160,7 @@ var WhiteBoardComponent = function (_Component) {
     value: function onOffer(offer, name) {
       var _this7 = this;
 
+      connectedUser = "adminId";
       rtcConnection.setRemoteDescription(new RTCSessionDescription(offer));
       rtcConnection.createAnswer().then(function (answer) {
         rtcConnection.setLocalDescription(answer);
@@ -45191,7 +45200,7 @@ var WhiteBoardComponent = function (_Component) {
         this.state.showVideoAudio ? _react2.default.createElement(
           'div',
           { className: 'video-display' },
-          _react2.default.createElement('span', { className: 'video-call', title: 'Video Call', onClick: this.videoCall.bind(this) }),
+          this.state.enableVideoCall ? _react2.default.createElement('span', { className: 'video-call', title: 'Video Call', onClick: this.videoCall.bind(this) }) : "",
           _react2.default.createElement('video', { autoPlay: 'true', 'class': 'local-video', src: this.state.remoteStreamSrc }),
           _react2.default.createElement(
             'div',
