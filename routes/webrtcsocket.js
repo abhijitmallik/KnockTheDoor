@@ -71,8 +71,8 @@ module.exports =(io)=>{
                        conn.emit('message',{
                        	 type:'offer',
                        	 offer:data.offer,
-                       	 caller:conn.callee,
-                       	 callee:conn.caller
+                       	 caller:data.callee,
+                       	 callee:data.caller
                        })
 		             }
 		             break;
