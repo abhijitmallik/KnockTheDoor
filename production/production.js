@@ -43724,7 +43724,7 @@ var Employees = function (_Component) {
 		_this.onOk = _this.onOk.bind(_this);
 		_this.onCancel = _this.onCancel.bind(_this);
 		_this.shareWhiteBoard = _this.shareWhiteBoard.bind(_this);
-		_this.state = { showDialog: false, id: "", userName: "", showWhiteBoard: false, refreshEmployee: false, invitedMemberIds: undefined };
+		_this.state = { showDialog: false, id: "", userName: "", showWhiteBoard: false, refreshEmployee: false, invitedMemberIds: undefined, user: { id: "", canAcceptSession: false } };
 		return _this;
 	}
 
@@ -43742,6 +43742,9 @@ var Employees = function (_Component) {
 				if (_this2.state.refreshEmployee) {
 					_this2.props.fetchEmp();
 				}
+			});
+			_socket2.default.on('acceptWhiteBoardSharing', function (user) {
+				_this2.setState({ 'user': user });
 			});
 		}
 	}, {
@@ -43809,7 +43812,7 @@ var Employees = function (_Component) {
 			} else {
 				if (this.state.showWhiteBoard) {
 					console.log("======v====this.props.adminUserLogin==", this.props.adminUserLogin);
-					return _react2.default.createElement(_whiteBoardComponent2.default, { closeCanvasPopup: this.closeWhiteBoard.bind(this), adminInfo: this.props.adminUserLogin, invitedIds: this.state.invitedMemberIds });
+					return _react2.default.createElement(_whiteBoardComponent2.default, { closeCanvasPopup: this.closeWhiteBoard.bind(this), adminInfo: this.props.adminUserLogin, invitedIds: this.state.invitedMemberIds, userInfo: this.state.user });
 				}
 				if (this.props.employees.employees.length > 0) {
 					var employeesList = this.props.employees.employees[0].map(function (emp) {
@@ -43821,7 +43824,7 @@ var Employees = function (_Component) {
 							onlineStatus = true;
 						}
 						var canAcceptSession = false;
-						if (this.props.userLoggedin && emp.canAcceptSession && emp._id == this.props.userLoggedin.id) {
+						if (this.props.adminUserLogin.status || emp._id == this.props.userLoggedin.id && emp._id == this.state.user.id && this.state.user.canAcceptSession) {
 							canAcceptSession = true;
 						}
 						console.log("=====emp=====", emp);
@@ -43870,7 +43873,7 @@ var Employees = function (_Component) {
 							),
 							_react2.default.createElement('img', { className: 'emp-image', src: emp.croppedImage }),
 							this.props.adminUserLogin.status ? _react2.default.createElement('span', { className: 'white-board', title: 'Start white board sharing', onClick: function onClick() {
-									_this5.shareWhiteBoard(emp._id);_socket2.default.emit("shareWhiteBoard", { id: emp._id, show: true });
+									_this5.shareWhiteBoard(emp._id);_socket2.default.emit("shareWhiteBoard", { id: emp._id, show: true, adminId: _this5.props.adminUserLogin.id });
 								} }) : "",
 							this.props.adminUserLogin.status ? _react2.default.createElement('span', { className: 'delete-icon', title: titleMsg, onClick: function onClick(e) {
 									_this5.deleteEmployee(emp._id, emp.firstname);
@@ -44878,8 +44881,8 @@ var coordinatesArr = [];
 var rtcConnection = void 0;
 var constraints = { video: false, audio: false };
 var connectedUser = void 0;
-var initiateUser = void 0;
-var isReady = false;
+var callee = void 0;
+var caller = void 0;
 var stream = void 0;
 
 var WhiteBoardComponent = function (_Component) {
@@ -45017,22 +45020,30 @@ var WhiteBoardComponent = function (_Component) {
       var room = "Online Session";
       if (room !== "") {
         console.log('Trying to create or join room: ', room);
-        console.log("====this.props.adminInfo====", this.props.adminInfo);
-        console.log("====this.props.invitedIds====", this.props.invitedIds);
         if (this.props.adminInfo.status) {
-          //connectedUser = {id:this.props.adminInfo.id};
-          connectedUser = { id: 'adminId' };
+          console.log("===Admin Id===", this.props.adminInfo.id);
+          console.log("===Client Id====", this.props.invitedIds);
+          this.messageSend({
+            type: 'create or join',
+            room: room,
+            adminId: this.props.adminInfo.id,
+            clientId: this.props.invitedIds
+          });
+          // connectedUser = {id:this.props.adminInfo.id};
         } else {
+          console.log("===adminId===", this.props.userInfo.adminId);
+          console.log("===clientId====", this.props.invitedIds);
+          this.messageSend({
+            id: this.props.invitedIds,
+            type: 'create or join',
+            room: room,
+            adminId: this.props.userInfo.adminId,
+            clientId: this.props.invitedIds
+          });
           //connectedUser = {id:this.props.invitedIds};
-          connectedUser = { id: 'clientId' };
         }
         this.initConnection();
         // Send 'create or join' to the server
-        this.messageSend({
-          type: 'create or join',
-          room: room,
-          connectedUser: connectedUser.id
-        });
       }
     }
   }, {
@@ -45044,15 +45055,21 @@ var WhiteBoardComponent = function (_Component) {
         console.log("=======get data from server in client side====", obj);
         switch (obj.type) {
           case 'created':
+            caller = obj.adminId;
+            callee = obj.clientId;
             _this3.startConnection();
             break;
           case 'joined':
             if (_this3.props.adminInfo.status) {
-              isReady = true;
-              initiateUser = obj.connected;
-              connectedUser = obj.connected;
+              caller = obj.adminId;
+              callee = obj.clientId;
               _this3.setState({ enableVideoCall: true });
+              console.log("connected user for 1st user", connectedUser);
             } else {
+              callee = obj.adminId;
+              caller = obj.clientId;
+              connectedUser = obj.clientId;
+              console.log("connected user for 2nd user", connectedUser);
               _this3.startConnection();
             }
             break;
@@ -45060,7 +45077,7 @@ var WhiteBoardComponent = function (_Component) {
             _this3.onCandidate(obj.candidate);
             break;
           case "offer":
-            _this3.onOffer(obj.offer, obj.name);
+            _this3.onOffer(obj);
             break;
           case "answer":
             _this3.onAnswer(obj.answer);
@@ -45079,10 +45096,6 @@ var WhiteBoardComponent = function (_Component) {
           if (_this4.hasRTCPeerConnection()) {
             _this4.setupPeerConnection(myStream);
             stream = myStream;
-            console.log("============isReady====", isReady);
-            //if(isReady){
-            //  this.createOffer();
-            //}
           }
         }, function (error) {
           console.log("error", error);
@@ -45100,6 +45113,8 @@ var WhiteBoardComponent = function (_Component) {
     value: function setupPeerConnection(stream) {
       var _this5 = this;
 
+      console.log("====caller====", caller);
+      console.log("====callee====", callee);
       var configuration = {
         "iceServers": [{ "url": "stun:stun.1.google.com:19302" }]
       };
@@ -45110,10 +45125,12 @@ var WhiteBoardComponent = function (_Component) {
       };
       rtcConnection.onicecandidate = function (event) {
         if (event.candidate) {
+          console.log("=====event.candidate====", event.candidate);
           _this5.messageSend({
             type: "candidate",
             candidate: event.candidate,
-            connectedUser: connectedUser
+            caller: caller,
+            callee: callee
           });
         }
       };
@@ -45131,30 +45148,31 @@ var WhiteBoardComponent = function (_Component) {
     value: function createOffer() {
       var _this6 = this;
 
-      console.log("=====create offer=====");
+      console.log("=====create offer=====", callee);
       rtcConnection.createOffer().then(function (offer) {
+        rtcConnection.setLocalDescription(offer);
         console.log("======== called offer=====");
         _this6.messageSend({
           type: "offer",
           offer: offer,
-          connectedUser: connectedUser
+          callee: callee,
+          caller: caller
         });
-        rtcConnection.setLocalDescription(offer);
       });
     }
   }, {
     key: 'onOffer',
-    value: function onOffer(offer, name) {
+    value: function onOffer(obj) {
       var _this7 = this;
 
-      connectedUser = "adminId";
-      rtcConnection.setRemoteDescription(new RTCSessionDescription(offer));
+      rtcConnection.setRemoteDescription(new RTCSessionDescription(obj.offer));
       rtcConnection.createAnswer().then(function (answer) {
         rtcConnection.setLocalDescription(answer);
         _this7.messageSend({
           type: "answer",
           answer: answer,
-          connectedUser: connectedUser
+          callee: obj.callee,
+          caller: obj.caller
         });
       });
     }
@@ -45194,7 +45212,7 @@ var WhiteBoardComponent = function (_Component) {
         this.setState({ videoClass: "stop-video" });
       }
       console.log("=====stream====", stream);
-      this.enableAudioVideo();
+      //this.enableAudioVideo();
       //stream.getAudioTracks()[0].enabled = this.setState.constraints.audio;
       this.createOffer();
     }

@@ -23,12 +23,7 @@ module.exports.load =(app,path,config)=>{
      }); 
 
      client.on('shareWhiteBoard',(user)=>{ 
-        employees.update({_id:user.id},{canAcceptSession:user.show},function(err,obj){
-          if(err){
-            res.send(err);
-          }
-          client.broadcast.emit('onlineStatus');
-        })
+      client.broadcast.emit('acceptWhiteBoardSharing',{id:user.id,adminId:user.adminId,canAcceptSession:user.show});
      });
 
 

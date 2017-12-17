@@ -12,8 +12,8 @@ let coordinatesArr = [];
 let rtcConnection;
 let constraints = {video:false,audio:false};
 let connectedUser;
-let initiateUser;
-let isReady = false;
+let callee;
+let caller;
 let stream;
  
 export default class WhiteBoardComponent extends Component{
@@ -139,22 +139,31 @@ export default class WhiteBoardComponent extends Component{
        let room =  "Online Session";
        if (room !== "") {
             console.log('Trying to create or join room: ', room);
-            console.log("====this.props.adminInfo====",this.props.adminInfo);
-            console.log("====this.props.invitedIds====",this.props.invitedIds);
-            if(this.props.adminInfo.status){
-                //connectedUser = {id:this.props.adminInfo.id};
-                connectedUser = {id:'adminId'};
+            if(this.props.adminInfo.status){  
+              console.log("===Admin Id===",this.props.adminInfo.id);
+              console.log("===Client Id====",this.props.invitedIds);
+              this.messageSend({
+                type:'create or join',
+                room:room,
+                adminId:this.props.adminInfo.id,
+                clientId:this.props.invitedIds
+              });
+             // connectedUser = {id:this.props.adminInfo.id};
             }else{
-                //connectedUser = {id:this.props.invitedIds};
-                connectedUser = {id:'clientId'};
+              console.log("===adminId===",this.props.userInfo.adminId);
+              console.log("===clientId====",this.props.invitedIds);
+              this.messageSend({
+                id:this.props.invitedIds,
+                type:'create or join',
+                room:room,
+                adminId:this.props.userInfo.adminId,
+                clientId:this.props.invitedIds
+              });
+              //connectedUser = {id:this.props.invitedIds};
             }
             this.initConnection();
             // Send 'create or join' to the server
-            this.messageSend({
-              type:'create or join',
-              room:room,
-              connectedUser:connectedUser.id
-            });
+            
         }
     }
 
@@ -163,15 +172,21 @@ export default class WhiteBoardComponent extends Component{
           console.log("=======get data from server in client side====",obj);
           switch(obj.type){
             case 'created':
+             caller = obj.adminId;
+             callee = obj.clientId;
              this.startConnection();
              break;
             case 'joined' :
               if(this.props.adminInfo.status){
-                isReady = true;
-                initiateUser = obj.connected;
-                connectedUser = obj.connected;
+                caller = obj.adminId;
+                callee = obj.clientId;
                 this.setState({enableVideoCall:true});
+                console.log("connected user for 1st user",connectedUser);
               }else{
+                callee = obj.adminId;
+                caller = obj.clientId;
+                connectedUser = obj.clientId;
+                console.log("connected user for 2nd user",connectedUser);
                 this.startConnection();
               }
              break; 
@@ -179,7 +194,7 @@ export default class WhiteBoardComponent extends Component{
              this.onCandidate(obj.candidate);
              break; 
             case "offer" :
-              this.onOffer(obj.offer,obj.name); 
+              this.onOffer(obj); 
               break; 
             case "answer":
               this.onAnswer(obj.answer);  
@@ -194,11 +209,6 @@ export default class WhiteBoardComponent extends Component{
              if(this.hasRTCPeerConnection()){
                 this.setupPeerConnection(myStream);
                 stream = myStream;
-                console.log("============isReady====",isReady);
-                //if(isReady){
-                //  this.createOffer();
-                //}
-                
              }
           },(error)=>{
             console.log("error",error);
@@ -210,6 +220,8 @@ export default class WhiteBoardComponent extends Component{
       return !!navigator.getUserMedia;
     }
     setupPeerConnection(stream){
+      console.log("====caller====",caller);
+      console.log("====callee====",callee);
       let configuration = {
         "iceServers": [{ "url": "stun:stun.1.google.com:19302" }]
       };
@@ -220,10 +232,12 @@ export default class WhiteBoardComponent extends Component{
       }
       rtcConnection.onicecandidate = (event) => {
         if(event.candidate){
+          console.log("=====event.candidate====",event.candidate);
           this.messageSend({
             type:"candidate",
             candidate:event.candidate,
-            connectedUser:connectedUser
+            caller:caller,
+            callee:callee
           })
         }
       }
@@ -235,26 +249,28 @@ export default class WhiteBoardComponent extends Component{
       return !!window.RTCPeerConnection;
     }
     createOffer(){
-      console.log("=====create offer=====");
+      console.log("=====create offer=====",callee);
       rtcConnection.createOffer().then((offer) => {
+        rtcConnection.setLocalDescription(offer);
         console.log("======== called offer=====");
          this.messageSend({
            type:"offer",
            offer:offer,
-           connectedUser:connectedUser
+           callee:callee,
+           caller:caller
          });
-         rtcConnection.setLocalDescription(offer);
+         
       })
     }
-    onOffer(offer,name){
-      connectedUser = "adminId";
-      rtcConnection.setRemoteDescription(new RTCSessionDescription(offer));
+    onOffer(obj){
+      rtcConnection.setRemoteDescription(new RTCSessionDescription(obj.offer));
       rtcConnection.createAnswer().then((answer)=>{
         rtcConnection.setLocalDescription(answer);
         this.messageSend({
           type:"answer",
           answer:answer,
-          connectedUser:connectedUser
+          callee:obj.callee,
+          caller:obj.caller
         })
       })
     }
@@ -284,7 +300,7 @@ export default class WhiteBoardComponent extends Component{
         this.setState({videoClass:"stop-video"})
       }
       console.log("=====stream====",stream);
-      this.enableAudioVideo();
+      //this.enableAudioVideo();
       //stream.getAudioTracks()[0].enabled = this.setState.constraints.audio;
       this.createOffer();
     }

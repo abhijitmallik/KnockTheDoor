@@ -17,7 +17,7 @@ class Employees  extends Component{
 		this.onOk = this.onOk.bind(this);
 		this.onCancel = this.onCancel.bind(this);
 		this.shareWhiteBoard = this.shareWhiteBoard.bind(this);
-		this.state = {showDialog: false,id:"",userName:"",showWhiteBoard:false,refreshEmployee:false,invitedMemberIds:undefined};
+		this.state = {showDialog: false,id:"",userName:"",showWhiteBoard:false,refreshEmployee:false,invitedMemberIds:undefined,user:{id:"",canAcceptSession:false}};
 	}
 	componentWillMount(){
 		
@@ -29,6 +29,9 @@ class Employees  extends Component{
 			if(this.state.refreshEmployee){
 				this.props.fetchEmp();
 			}
+		});
+		socket.on('acceptWhiteBoardSharing',(user)=>{
+			this.setState({'user':user});
 		});
 	}
 	selectedUser(bol,id){
@@ -79,7 +82,7 @@ class Employees  extends Component{
 		}else{
 			if(this.state.showWhiteBoard){
 				console.log("======v====this.props.adminUserLogin==",this.props.adminUserLogin);
-               return(<WhiteBoardComponent closeCanvasPopup={this.closeWhiteBoard.bind(this)} adminInfo={this.props.adminUserLogin} invitedIds={this.state.invitedMemberIds} />)
+               return(<WhiteBoardComponent closeCanvasPopup={this.closeWhiteBoard.bind(this)} adminInfo={this.props.adminUserLogin} invitedIds={this.state.invitedMemberIds} userInfo = {this.state.user} />)
 			}
 			if(this.props.employees.employees.length > 0){
 				const employeesList =  this.props.employees.employees[0].map(function(emp){
@@ -89,7 +92,7 @@ class Employees  extends Component{
 						onlineStatus = true;
 					}
 					let canAcceptSession = false;
-					if(this.props.userLoggedin && emp.canAcceptSession && (emp._id == this.props.userLoggedin.id)){
+					if(this.props.adminUserLogin.status || (emp._id == this.props.userLoggedin.id && emp._id == this.state.user.id && this.state.user.canAcceptSession)){
                        canAcceptSession = true;
 					}
 					console.log("=====emp=====",emp);
@@ -98,7 +101,7 @@ class Employees  extends Component{
 					let titleMsg = "Delete "+emp.firstname;
 				return(
 					  <div className="emp-row" key={emp._id}>
-					   {checkBox} {onlineStatus ?<span className="emp-name active-emp">{emp.firstname} {emp.lastname}</span> : <span className="emp-name">{emp.firstname} {emp.lastname}</span>}<span className="emp-occupation">{emp.occupation}</span><span className="emp-city">{emp.city}</span><span className="emp-state">{emp.state}</span><span className="emp-doj">{dt}</span><img className="emp-image"  src={emp.croppedImage}/>{this.props.adminUserLogin.status ? <span className="white-board" title="Start white board sharing" onClick={()=>{this.shareWhiteBoard(emp._id);socket.emit("shareWhiteBoard",{id:emp._id,show:true})}}></span> :""}{this.props.adminUserLogin.status ? <span className="delete-icon" title={titleMsg} onClick={(e)=>{this.deleteEmployee(emp._id,emp.firstname)}}></span> : ""}{(canAcceptSession && !this.props.adminUserLogin.status) ? <span className="accept-session white-board" title="Join Session" onClick={()=>{this.shareWhiteBoard(emp._id)}}></span> :""}
+					   {checkBox} {onlineStatus ?<span className="emp-name active-emp">{emp.firstname} {emp.lastname}</span> : <span className="emp-name">{emp.firstname} {emp.lastname}</span>}<span className="emp-occupation">{emp.occupation}</span><span className="emp-city">{emp.city}</span><span className="emp-state">{emp.state}</span><span className="emp-doj">{dt}</span><img className="emp-image"  src={emp.croppedImage}/>{this.props.adminUserLogin.status ? <span className="white-board" title="Start white board sharing" onClick={()=>{this.shareWhiteBoard(emp._id);socket.emit("shareWhiteBoard",{id:emp._id,show:true,adminId:this.props.adminUserLogin.id})}}></span> :""}{this.props.adminUserLogin.status ? <span className="delete-icon" title={titleMsg} onClick={(e)=>{this.deleteEmployee(emp._id,emp.firstname)}}></span> : ""}{(canAcceptSession && !this.props.adminUserLogin.status) ? <span className="accept-session white-board" title="Join Session" onClick={()=>{this.shareWhiteBoard(emp._id)}}></span> :""}
 					  </div>
 					)
 			    },this)

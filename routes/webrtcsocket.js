@@ -20,33 +20,42 @@ module.exports =(io)=>{
 			           if (numClients == 1) {
 				            io.sockets.in(channel).emit('join', channel);
 				            socket.join(channel);
-				            conn = users["adminId"];
+				            conn = users[data.adminId];
 				            conn.emit('message', {
 				            	type:'joined',
 				            	success:true,
-				            	connected:data.connectedUser
+				            	adminId:data.adminId,
+				            	clientId:data.clientId
 				            });
 				            socket.emit('message', {
 			                	type:'joined',
-			                	success:true
+			                	success:true,
+			                	adminId:data.adminId,
+				            	clientId:data.clientId
 			                });
+			                socket.name = data.clientId;
+			                users[data.clientId] = socket;
 				        } else { // max two clients
 				            socket.emit('full', channel);
 				        }
+				        
 		           	
 		            }else{
 		            	socket.join(channel);
 		                socket.emit('message', {
 		                	type:'created',
-		                	success:true
+		                	success:true,
+		                	adminId:data.adminId,
+				            clientId:data.clientId
 		                });
+		                socket.name = data.adminId;
+		                users[data.adminId] = socket;
 		            }
-		            socket.name = data.connectedUser;
-		            users[data.connectedUser] = socket;
+		            
+		            
 		            break;
 		        case "candidate" :
-		            console.log("===users=====",users,"===data.connectedUser===",data.connectedUser);
-		            conn = users[data.connectedUser];
+		            conn = users[data.callee];
 		            if(conn !== null){
 		            	conn.emit('message',{
 		            		type:'candidate',
@@ -55,21 +64,22 @@ module.exports =(io)=>{
 		            }
 		            break;   
 		        case "offer":
-		             conn = users[data.connectedUser];
+		             conn = users[data.callee];
 		             console.log("======conn=====",conn);
 		             if(conn != null){
-                       socket.otherName = data.connectedUser;
+                       socket.otherName = data.callee;
                        conn.emit('message',{
                        	 type:'offer',
                        	 offer:data.offer,
-                       	 name:socket.name
+                       	 caller:conn.callee,
+                       	 callee:conn.caller
                        })
 		             }
 		             break;
 		        case "answer":
-		             conn = users[data.connectedUser];
+		             conn = users[data.callee];
 		             if(conn != null){
-		             	socket.otherName = data.connectedUser;
+		             	socket.otherName = data.callee;
 		             	conn.emit('message',{
 		             		type:'answer',
 		             		answer:data.answer
