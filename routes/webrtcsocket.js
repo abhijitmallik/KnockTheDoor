@@ -1,11 +1,13 @@
 
 module.exports =(io)=>{
-	let users = {};
+	let users = [];
 	io.sockets.on('connection', (socket) => {
 	    socket.on('message',(data) => {
 	    	let channel = data.room;
 	    	let conn;
-	    	console.log("====data===",data);
+	    	console.log("=====data.type====",data.type);
+	    	console.log("=====users length=====",Object.keys(users).length);
+	    	console.log("=====users=====",users);
 	    	switch(data.type){
 	    		case "create or join":
 	    		 // First client joining...
@@ -15,18 +17,23 @@ module.exports =(io)=>{
 		                	success:true
 		                });
 	    		   }
-		           if(io.sockets.adapter.rooms[channel]){
-		           	 let numClients = io.sockets.adapter.rooms[channel].length; 
+		           if(Object.keys(users).length > 0){
+		           	 let numClients = Object.keys(users).length; 
+		           	 console.log("===========numClients==========",numClients);
+		           	 console.log("=====users=====",users);
 			           if (numClients == 1) {
 				            io.sockets.in(channel).emit('join', channel);
 				            socket.join(channel);
 				            conn = users[data.adminId];
-				            conn.emit('message', {
-				            	type:'joined',
-				            	success:true,
-				            	adminId:data.adminId,
-				            	clientId:data.clientId
-				            });
+				             if(conn !== null){
+				             	conn.emit('message', {
+					            	type:'joined',
+					            	success:true,
+					            	adminId:data.adminId,
+					            	clientId:data.clientId
+					            });
+				             }
+				            
 				            socket.emit('message', {
 			                	type:'joined',
 			                	success:true,
@@ -65,9 +72,7 @@ module.exports =(io)=>{
 		            break;   
 		        case "offer":
 		             conn = users[data.callee];
-		             console.log("======conn=====",conn);
 		             if(conn != null){
-                       socket.otherName = data.callee;
                        conn.emit('message',{
                        	 type:'offer',
                        	 offer:data.offer,
@@ -79,11 +84,23 @@ module.exports =(io)=>{
 		        case "answer":
 		             conn = users[data.callee];
 		             if(conn != null){
-		             	socket.otherName = data.callee;
 		             	conn.emit('message',{
 		             		type:'answer',
 		             		answer:data.answer
 		             	})
+		             }
+		             break;  
+		        case "leave":
+		        console.log("====leave====",data.caller);
+		        console.log("===data.callee====",data.callee);
+		             conn = users[data.callee];    
+		             if(conn != null){
+		             	conn.emit('message',{
+		             		type:'leave',
+		             		caller:data.caller,
+                            callee:data.callee
+		             	})
+		             	delete users[data.caller];
 		             }
 		             break;     
 	    	}

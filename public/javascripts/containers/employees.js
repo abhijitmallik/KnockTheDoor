@@ -17,18 +17,15 @@ class Employees  extends Component{
 		this.onOk = this.onOk.bind(this);
 		this.onCancel = this.onCancel.bind(this);
 		this.shareWhiteBoard = this.shareWhiteBoard.bind(this);
-		this.state = {showDialog: false,id:"",userName:"",showWhiteBoard:false,refreshEmployee:false,invitedMemberIds:undefined,user:{id:"",canAcceptSession:false}};
+		this.state = {showDialog: false,id:"",userName:"",showWhiteBoard:false,invitedMemberIds:undefined,user:{id:"",canAcceptSession:false},userOnline:[]};
 	}
 	componentWillMount(){
 		
 	}
 	componentDidMount(){
 		this.props.fetchEmp();
-		socket.on('onlineStatus',()=>{
-			this.setState({refreshEmployee:true});
-			if(this.state.refreshEmployee){
-				this.props.fetchEmp();
-			}
+		socket.on('onlineStatus',(users)=>{
+			this.setState({'userOnline':users.onlineUsers});
 		});
 		socket.on('acceptWhiteBoardSharing',(user)=>{
 			this.setState({'user':user});
@@ -88,7 +85,7 @@ class Employees  extends Component{
 				const employeesList =  this.props.employees.employees[0].map(function(emp){
 					emp.dateOfJoin = new Date(emp.dateOfJoin);
 					let onlineStatus = false;
-					if(emp.online && emp.online == "true"){
+					if(this.state.userOnline.indexOf(emp._id) > -1){
 						onlineStatus = true;
 					}
 					let canAcceptSession = false;

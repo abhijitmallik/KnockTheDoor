@@ -43724,7 +43724,7 @@ var Employees = function (_Component) {
 		_this.onOk = _this.onOk.bind(_this);
 		_this.onCancel = _this.onCancel.bind(_this);
 		_this.shareWhiteBoard = _this.shareWhiteBoard.bind(_this);
-		_this.state = { showDialog: false, id: "", userName: "", showWhiteBoard: false, refreshEmployee: false, invitedMemberIds: undefined, user: { id: "", canAcceptSession: false } };
+		_this.state = { showDialog: false, id: "", userName: "", showWhiteBoard: false, invitedMemberIds: undefined, user: { id: "", canAcceptSession: false }, userOnline: [] };
 		return _this;
 	}
 
@@ -43737,11 +43737,8 @@ var Employees = function (_Component) {
 			var _this2 = this;
 
 			this.props.fetchEmp();
-			_socket2.default.on('onlineStatus', function () {
-				_this2.setState({ refreshEmployee: true });
-				if (_this2.state.refreshEmployee) {
-					_this2.props.fetchEmp();
-				}
+			_socket2.default.on('onlineStatus', function (users) {
+				_this2.setState({ 'userOnline': users.onlineUsers });
 			});
 			_socket2.default.on('acceptWhiteBoardSharing', function (user) {
 				_this2.setState({ 'user': user });
@@ -43820,7 +43817,7 @@ var Employees = function (_Component) {
 
 						emp.dateOfJoin = new Date(emp.dateOfJoin);
 						var onlineStatus = false;
-						if (emp.online && emp.online == "true") {
+						if (this.state.userOnline.indexOf(emp._id) > -1) {
 							onlineStatus = true;
 						}
 						var canAcceptSession = false;
@@ -45014,33 +45011,26 @@ var WhiteBoardComponent = function (_Component) {
     value: function audioVideoCall() {
       if (this.state.showVideoAudio) {
         this.setState({ showVideoAudio: false });
+        this.closeConnection();
       } else {
         this.setState({ showVideoAudio: true });
       }
       var room = "Online Session";
       if (room !== "") {
-        console.log('Trying to create or join room: ', room);
         if (this.props.adminInfo.status) {
-          console.log("===Admin Id===", this.props.adminInfo.id);
-          console.log("===Client Id====", this.props.invitedIds);
           this.messageSend({
             type: 'create or join',
             room: room,
             adminId: this.props.adminInfo.id,
             clientId: this.props.invitedIds
           });
-          // connectedUser = {id:this.props.adminInfo.id};
         } else {
-          console.log("===adminId===", this.props.userInfo.adminId);
-          console.log("===clientId====", this.props.invitedIds);
           this.messageSend({
-            id: this.props.invitedIds,
             type: 'create or join',
             room: room,
             adminId: this.props.userInfo.adminId,
             clientId: this.props.invitedIds
           });
-          //connectedUser = {id:this.props.invitedIds};
         }
         this.initConnection();
         // Send 'create or join' to the server
@@ -45052,7 +45042,6 @@ var WhiteBoardComponent = function (_Component) {
       var _this3 = this;
 
       _socket2.default.on('message', function (obj) {
-        console.log("=======get data from server in client side====", obj);
         switch (obj.type) {
           case 'created':
             caller = obj.adminId;
@@ -45064,12 +45053,10 @@ var WhiteBoardComponent = function (_Component) {
               caller = obj.adminId;
               callee = obj.clientId;
               _this3.setState({ enableVideoCall: true });
-              console.log("connected user for 1st user", connectedUser);
             } else {
               callee = obj.adminId;
               caller = obj.clientId;
               connectedUser = obj.clientId;
-              console.log("connected user for 2nd user", connectedUser);
               _this3.startConnection();
             }
             break;
@@ -45081,6 +45068,9 @@ var WhiteBoardComponent = function (_Component) {
             break;
           case "answer":
             _this3.onAnswer(obj.answer);
+            break;
+          case "leave":
+            _this3.onLeave();
             break;
         }
       });
@@ -45125,7 +45115,6 @@ var WhiteBoardComponent = function (_Component) {
       };
       rtcConnection.onicecandidate = function (event) {
         if (event.candidate) {
-          console.log("=====event.candidate====", event.candidate);
           _this5.messageSend({
             type: "candidate",
             candidate: event.candidate,
@@ -45148,10 +45137,8 @@ var WhiteBoardComponent = function (_Component) {
     value: function createOffer() {
       var _this6 = this;
 
-      console.log("=====create offer=====", callee);
       rtcConnection.createOffer().then(function (offer) {
         rtcConnection.setLocalDescription(offer);
-        console.log("======== called offer=====");
         _this6.messageSend({
           type: "offer",
           offer: offer,
@@ -45238,6 +45225,35 @@ var WhiteBoardComponent = function (_Component) {
 
       //stream.getAudioTracks()[0].enabled = this.state.constraints.audio;
       //stream.getVideoTracks()[0].enabled = this.setState.constraints.video;
+    }
+  }, {
+    key: 'closeConnection',
+    value: function closeConnection() {
+      rtcConnection.close();
+      rtcConnection.onicecandidate = null;
+      rtcConnection.onaddstream = null;
+      this.setState({ remoteStreamSrc: null });
+      this.messageSend({
+        type: "leave",
+        callee: callee,
+        caller: caller
+      });
+      caller = null;
+    }
+  }, {
+    key: 'onLeave',
+    value: function onLeave() {
+      console.log("=======call here leave ==========");
+      callee = null;
+      rtcConnection.close();
+      rtcConnection.onicecandidate = null;
+      rtcConnection.onaddstream = null;
+      this.setState({ remoteStreamSrc: null });
+      this.setState({ voiceClass: "mute-audio" });
+      this.setState({ videoClass: "stop-video" });
+      //this.startConnection();
+      this.setupPeerConnection(stream);
+      this.setState({ enableVideoCall: false });
     }
   }, {
     key: 'render',
@@ -77008,7 +77024,7 @@ var SignIn = function (_Component) {
 
 			this.props.signin(obj, function (user) {
 				_this2.setState({ redirectToUser: user.status });
-				_socket2.default.emit("signin", { id: user.id, name: user.firstname });
+				_socket2.default.emit("signin", { id: user.id });
 			});
 		}
 	}, {

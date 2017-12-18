@@ -133,33 +133,26 @@ export default class WhiteBoardComponent extends Component{
     audioVideoCall(){
        if(this.state.showVideoAudio){
          this.setState({showVideoAudio:false});
+         this.closeConnection();
        }else{
          this.setState({showVideoAudio:true});
        }
        let room =  "Online Session";
        if (room !== "") {
-            console.log('Trying to create or join room: ', room);
             if(this.props.adminInfo.status){  
-              console.log("===Admin Id===",this.props.adminInfo.id);
-              console.log("===Client Id====",this.props.invitedIds);
               this.messageSend({
                 type:'create or join',
                 room:room,
                 adminId:this.props.adminInfo.id,
                 clientId:this.props.invitedIds
               });
-             // connectedUser = {id:this.props.adminInfo.id};
             }else{
-              console.log("===adminId===",this.props.userInfo.adminId);
-              console.log("===clientId====",this.props.invitedIds);
               this.messageSend({
-                id:this.props.invitedIds,
                 type:'create or join',
                 room:room,
                 adminId:this.props.userInfo.adminId,
                 clientId:this.props.invitedIds
               });
-              //connectedUser = {id:this.props.invitedIds};
             }
             this.initConnection();
             // Send 'create or join' to the server
@@ -169,7 +162,6 @@ export default class WhiteBoardComponent extends Component{
 
     initConnection(){
        socket.on('message',(obj)=>{
-          console.log("=======get data from server in client side====",obj);
           switch(obj.type){
             case 'created':
              caller = obj.adminId;
@@ -181,12 +173,10 @@ export default class WhiteBoardComponent extends Component{
                 caller = obj.adminId;
                 callee = obj.clientId;
                 this.setState({enableVideoCall:true});
-                console.log("connected user for 1st user",connectedUser);
               }else{
                 callee = obj.adminId;
                 caller = obj.clientId;
                 connectedUser = obj.clientId;
-                console.log("connected user for 2nd user",connectedUser);
                 this.startConnection();
               }
              break; 
@@ -199,6 +189,9 @@ export default class WhiteBoardComponent extends Component{
             case "answer":
               this.onAnswer(obj.answer);  
               break;
+            case "leave":
+              this.onLeave();
+              break;  
           }
        })
     }
@@ -232,7 +225,6 @@ export default class WhiteBoardComponent extends Component{
       }
       rtcConnection.onicecandidate = (event) => {
         if(event.candidate){
-          console.log("=====event.candidate====",event.candidate);
           this.messageSend({
             type:"candidate",
             candidate:event.candidate,
@@ -249,10 +241,8 @@ export default class WhiteBoardComponent extends Component{
       return !!window.RTCPeerConnection;
     }
     createOffer(){
-      console.log("=====create offer=====",callee);
-      rtcConnection.createOffer().then((offer) => {
+        rtcConnection.createOffer().then((offer) => {
         rtcConnection.setLocalDescription(offer);
-        console.log("======== called offer=====");
          this.messageSend({
            type:"offer",
            offer:offer,
@@ -326,6 +316,31 @@ export default class WhiteBoardComponent extends Component{
       //stream.getAudioTracks()[0].enabled = this.state.constraints.audio;
       //stream.getVideoTracks()[0].enabled = this.setState.constraints.video;
       
+    }
+    closeConnection(){
+      rtcConnection.close();
+      rtcConnection.onicecandidate = null;
+      rtcConnection.onaddstream = null;
+      this.setState({remoteStreamSrc:null});
+      this.messageSend({
+          type:"leave",
+          callee:callee,
+          caller:caller
+      })
+      caller = null;
+    }
+    onLeave(){
+      console.log("=======call here leave ==========");
+      callee = null;
+      rtcConnection.close();
+      rtcConnection.onicecandidate = null;
+      rtcConnection.onaddstream = null;
+      this.setState({remoteStreamSrc:null});
+      this.setState({voiceClass:"mute-audio"});
+      this.setState({videoClass:"stop-video"});
+      //this.startConnection();
+      this.setupPeerConnection(stream);
+      this.setState({enableVideoCall:false});
     }
    
     render() {
