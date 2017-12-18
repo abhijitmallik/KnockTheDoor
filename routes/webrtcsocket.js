@@ -58,9 +58,27 @@ module.exports =(io)=>{
 		                socket.name = data.adminId;
 		                users[data.adminId] = socket;
 		            }
-		            
-		            
 		            break;
+		        case "ringing" :
+                      conn = users[data.callee];
+                      if(conn !== null){
+                      	conn.emit('message',{
+                      		type:'ringing',
+                      		caller:data.callee,
+                      		callee:data.caller
+                      	})
+                      }
+		             break;  
+		        case "acceptCall" :
+		              conn = users[data.callee];
+                      if(conn !== null){
+                      	conn.emit('message',{
+                      		type:'acceptCall',
+                      		caller:data.callee,
+                      		callee:data.caller
+                      	})
+                      }
+		             break;       
 		        case "candidate" :
 		            conn = users[data.callee];
 		            if(conn !== null){

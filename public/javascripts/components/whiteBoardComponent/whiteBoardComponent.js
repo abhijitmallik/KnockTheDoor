@@ -15,6 +15,7 @@ let connectedUser;
 let callee;
 let caller;
 let stream;
+let callPhoneInterval;
  
 export default class WhiteBoardComponent extends Component{
     static defaultProps = {
@@ -23,7 +24,7 @@ export default class WhiteBoardComponent extends Component{
     };
     constructor(props){
        super(props);
-       this.state = {isPainting:false,showVideoAudio:false,videoSrc:"",localStream:"",remoteStreamSrc:"",remoteStream:"",enableVideoCall:false,voiceClass:"mute-audio",videoClass:"stop-video",constraints:{video:true,audio:true}};
+       this.state = {isPainting:false,showVideoAudio:false,videoSrc:"",localStream:"",remoteStreamSrc:"",remoteStream:"",enableVideoCall:false,voiceClass:"mute-audio",videoClass:"stop-video",constraints:{video:true,audio:false},showRingingPhone:false};
     }
     componentDidMount() {
       console.log("=====adminInfo===this.props.adminInfo===",this.props.adminInfo);
@@ -162,6 +163,7 @@ export default class WhiteBoardComponent extends Component{
 
     initConnection(){
        socket.on('message',(obj)=>{
+          console.log("=====obj======",obj);
           switch(obj.type){
             case 'created':
              caller = obj.adminId;
@@ -183,6 +185,12 @@ export default class WhiteBoardComponent extends Component{
             case "candidate":
              this.onCandidate(obj.candidate);
              break; 
+            case "ringing":
+              this.onRinging(obj);
+              break;
+            case "acceptCall" :
+              this.acceptCall();
+              break;    
             case "offer" :
               this.onOffer(obj); 
               break; 
@@ -273,15 +281,20 @@ export default class WhiteBoardComponent extends Component{
     messageSend(obj){
       socket.emit('message', obj);
     }
+    acceptCall(){
+      this.createOffer();
+    }
     enableAudio(){
       if(this.state.voiceClass == "mute-audio"){
         this.setState({voiceClass:"audio-call"})
       }else{
         this.setState({voiceClass:"mute-audio"})
       }
-      //this.enableAudioVideo();
-      //stream.getVideoTracks()[0].enabled = this.setState.constraints.video;
-      this.createOffer();
+      this.messageSend({
+          type:"ringing",
+          callee:callee,
+          caller:caller
+      })
     } 
     videoCall(){
       if(this.state.videoClass == "stop-video"){
@@ -289,10 +302,29 @@ export default class WhiteBoardComponent extends Component{
       }else{
         this.setState({videoClass:"stop-video"})
       }
-      console.log("=====stream====",stream);
-      //this.enableAudioVideo();
-      //stream.getAudioTracks()[0].enabled = this.setState.constraints.audio;
-      this.createOffer();
+       this.messageSend({
+          type:"ringing",
+          callee:callee,
+          caller:caller
+      })
+    }
+    onRinging(obj){
+       this.setState({showRingingPhone:true});
+       callPhoneInterval = setInterval(()=>{
+          this.refs.myAudio.play();
+       }, 1000);
+       
+    }
+    receiveCall(){
+      this.refs.myAudio.pause();
+      clearTimeout(callPhoneInterval);
+      this.setState({showRingingPhone:false});
+      this.messageSend({
+          type:"acceptCall",
+          callee:callee,
+          caller:caller
+       })
+      
     }
     enableAudioVideo(){
       this.setState({constraints:{video:true,audio:true}});
@@ -349,6 +381,7 @@ export default class WhiteBoardComponent extends Component{
                 <div className='video-audio'><span className="conference-call" title="Audio/Video call" onClick={this.audioVideoCall.bind(this)}></span></div>
                 {this.state.showVideoAudio ?
                   <div className='video-display'>
+                    {this.state.showRingingPhone ? <span className="ringingphone" onClick={this.receiveCall.bind(this)}/> : ""}
                     {this.state.enableVideoCall ?
                       <div className='video-audio-icons'><span className={this.state.voiceClass} title="Voice Call" onClick={this.enableAudio.bind(this)}></span><span className={this.state.videoClass} title="Video Call" onClick={this.videoCall.bind(this)}></span></div>
                     : ""}
@@ -356,6 +389,12 @@ export default class WhiteBoardComponent extends Component{
                     <div className="local-video-display"><video  autoPlay="true"  src={this.state.videoSrc}></video></div>
                   </div> : ""
                 }
+                <div>
+                <audio ref="myAudio">
+                    <source src='http://www.thesoundarchive.com/ringtones/old-phone-ringing.wav' />
+                    Your browser does not support the audio element.
+                </audio>
+                </div>
                 <div className='canvas_inner'>
                    <canvas ref="canvas" width={this.props.width} height={this.props.height} onMouseUp={this.mouseUp.bind(this)} onMouseMove={this.mouseMove.bind(this)} onMouseDown={this.startWriting.bind(this)}/>
                    <div className="canvas-button-group">

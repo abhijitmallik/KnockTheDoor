@@ -24032,7 +24032,7 @@ var _reactRouterDom = __webpack_require__(89);
 
 __webpack_require__(913);
 
-__webpack_require__(928);
+__webpack_require__(929);
 
 var _socket = __webpack_require__(92);
 
@@ -44881,6 +44881,7 @@ var connectedUser = void 0;
 var callee = void 0;
 var caller = void 0;
 var stream = void 0;
+var callPhoneInterval = void 0;
 
 var WhiteBoardComponent = function (_Component) {
   _inherits(WhiteBoardComponent, _Component);
@@ -44890,7 +44891,7 @@ var WhiteBoardComponent = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (WhiteBoardComponent.__proto__ || Object.getPrototypeOf(WhiteBoardComponent)).call(this, props));
 
-    _this.state = { isPainting: false, showVideoAudio: false, videoSrc: "", localStream: "", remoteStreamSrc: "", remoteStream: "", enableVideoCall: false, voiceClass: "mute-audio", videoClass: "stop-video", constraints: { video: true, audio: true } };
+    _this.state = { isPainting: false, showVideoAudio: false, videoSrc: "", localStream: "", remoteStreamSrc: "", remoteStream: "", enableVideoCall: false, voiceClass: "mute-audio", videoClass: "stop-video", constraints: { video: true, audio: false }, showRingingPhone: false };
     return _this;
   }
 
@@ -45042,6 +45043,7 @@ var WhiteBoardComponent = function (_Component) {
       var _this3 = this;
 
       _socket2.default.on('message', function (obj) {
+        console.log("=====obj======", obj);
         switch (obj.type) {
           case 'created':
             caller = obj.adminId;
@@ -45062,6 +45064,12 @@ var WhiteBoardComponent = function (_Component) {
             break;
           case "candidate":
             _this3.onCandidate(obj.candidate);
+            break;
+          case "ringing":
+            _this3.onRinging(obj);
+            break;
+          case "acceptCall":
+            _this3.acceptCall();
             break;
           case "offer":
             _this3.onOffer(obj);
@@ -45179,6 +45187,11 @@ var WhiteBoardComponent = function (_Component) {
       _socket2.default.emit('message', obj);
     }
   }, {
+    key: 'acceptCall',
+    value: function acceptCall() {
+      this.createOffer();
+    }
+  }, {
     key: 'enableAudio',
     value: function enableAudio() {
       if (this.state.voiceClass == "mute-audio") {
@@ -45186,9 +45199,11 @@ var WhiteBoardComponent = function (_Component) {
       } else {
         this.setState({ voiceClass: "mute-audio" });
       }
-      //this.enableAudioVideo();
-      //stream.getVideoTracks()[0].enabled = this.setState.constraints.video;
-      this.createOffer();
+      this.messageSend({
+        type: "ringing",
+        callee: callee,
+        caller: caller
+      });
     }
   }, {
     key: 'videoCall',
@@ -45198,10 +45213,33 @@ var WhiteBoardComponent = function (_Component) {
       } else {
         this.setState({ videoClass: "stop-video" });
       }
-      console.log("=====stream====", stream);
-      //this.enableAudioVideo();
-      //stream.getAudioTracks()[0].enabled = this.setState.constraints.audio;
-      this.createOffer();
+      this.messageSend({
+        type: "ringing",
+        callee: callee,
+        caller: caller
+      });
+    }
+  }, {
+    key: 'onRinging',
+    value: function onRinging(obj) {
+      var _this8 = this;
+
+      this.setState({ showRingingPhone: true });
+      callPhoneInterval = setInterval(function () {
+        _this8.refs.myAudio.play();
+      }, 1000);
+    }
+  }, {
+    key: 'receiveCall',
+    value: function receiveCall() {
+      this.refs.myAudio.pause();
+      clearTimeout(callPhoneInterval);
+      this.setState({ showRingingPhone: false });
+      this.messageSend({
+        type: "acceptCall",
+        callee: callee,
+        caller: caller
+      });
     }
   }, {
     key: 'enableAudioVideo',
@@ -45269,6 +45307,7 @@ var WhiteBoardComponent = function (_Component) {
         this.state.showVideoAudio ? _react2.default.createElement(
           'div',
           { className: 'video-display' },
+          this.state.showRingingPhone ? _react2.default.createElement('span', { className: 'ringingphone', onClick: this.receiveCall.bind(this) }) : "",
           this.state.enableVideoCall ? _react2.default.createElement(
             'div',
             { className: 'video-audio-icons' },
@@ -45282,6 +45321,16 @@ var WhiteBoardComponent = function (_Component) {
             _react2.default.createElement('video', { autoPlay: 'true', src: this.state.videoSrc })
           )
         ) : "",
+        _react2.default.createElement(
+          'div',
+          null,
+          _react2.default.createElement(
+            'audio',
+            { ref: 'myAudio' },
+            _react2.default.createElement('source', { src: 'http://www.thesoundarchive.com/ringtones/old-phone-ringing.wav' }),
+            'Your browser does not support the audio element.'
+          )
+        ),
         _react2.default.createElement(
           'div',
           { className: 'canvas_inner' },
@@ -77692,7 +77741,7 @@ exports = module.exports = __webpack_require__(49)(undefined);
 
 
 // module
-exports.push([module.i, "\nbody {\n  font: 14px \"Lucida Grande\", Helvetica, Arial, sans-serif;\n  background-image: url(" + __webpack_require__(915) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n}\n\na {\n  color: cornsilk;\n  text-decoration: none;\n}\n\n.main-container{\n\t \n}\n.emp-row{\n  margin: 10px;\n  position: relative;\n  height: 50px;\n}\n.active-emp{\n  color:green !important;\n}\n.emp-city,.emp-name,.emp-occupation,.emp-phone,.emp-state,.emp-city,.emp-doj,.edi-user,.accept-session{\n  margin-right: 20px;\n  font-size: 14px;\n  width: 150px;\n  display: inline-block;\n  color:inherit;\n}\n.accept-session{\n  text-align: right;\n}\n.emp-image{\n  height: 40px;\n  position: absolute;\n}\n.link-button{\n  display: inline-block;\n}\n.login-div{\n\n}\n.login-button{\n  margin-right: 10px;\n}\n.show-login{\n\tdisplay: none;\n}\n.admin-form{\n  position: absolute;\n  left: 0px;\n  right: 0px;\n  margin: 0px auto;\n  width:  400px;;\n  top: 200px;\n}\n.form-field{\n  height: 25px;\n  padding-bottom: 5px;\n}\n.form-field .form-label{\n    display: inline-block;\n    font-size: 14px;\n    margin-right: 5px;\n    font-family: Kievit;\n    width: 80px;\n    color: inherit;\n}\n.button-groups{\n  text-align: right;\n  padding-right: 60px;\n}\n.ok-button{\n  margin-right: 5px;\n}\n.label-name{\n  width: 10%;\n  display: inline-block;\n  text-align: right;\n  margin-right: 10px;\n  font-size: 14px;\n  font-family: Kievit;\n  color: inherit;\n}\n.employee-form{\n  width: 100%;\n  height: 100%;\n  margin-left: 30%;\n  margin-right: 30%;\n  position: relative;\n}\n.form-div{\n  height: 800px;\n  padding: 100px;\n}\n.field-div{\n  margin-bottom: 10px;\n}\n.form-button{\n  margin-left: 20%;\n}\n.error-msg{\n  margin-left: 75px;\n  color: crimson;\n  display: block;\n}\n.form-input{\n  width: 250px;\n  height: 20px;\n}\n.form-header{\n  font-size: 18px;\n  font-family: Kievit;\n  font-weight: bolder;\n  text-align: center;\n  margin-bottom: 20px;\n  color: indigo;\n}\n.edit-icon{\n  position: absolute;\n  background-image: url(" + __webpack_require__(916) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 20px;\n  width: 20px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n}\n.default-img{\n  background-image: url(" + __webpack_require__(917) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n}\n.upload-img{\n  position: absolute;\n  background-image: url(" + __webpack_require__(918) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 20px;\n  width: 20px;\n  top: 0px;\n  bottom: 0px;\n  left:0px;\n  right: 0px;\n  margin: auto;\n}\n.admin-header{\n  font-size: 18px;\n  font-family: Kievit;\n  font-weight: bolder;\n  text-align: center;\n  margin-bottom: 20px;\n  color: indigo;\n}\n.edi-user{\n  position: relative;\n  height: 20px;\n  width: 30px;\n  margin-left: 20px;\n  background-color: darkgray;\n  border-radius: 5px;\n  text-align: center;\n  font-size: 10px;\n  cursor: pointer;\n  line-height: 18px;\n}\n.user-profile-button-group{\n  float:right;\n  display: inline-block;\n}\n.backgroundImage{\n  background-image: url(" + __webpack_require__(919) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n}\n.delete-icon{\n  position: absolute;\n  background-image: url(" + __webpack_require__(920) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 20px;\n  width: 20px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n  margin-left: 10px;\n}\n.white-board{\n  position: absolute;\n  background-image: url(" + __webpack_require__(921) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 50px;\n  width: 50px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n}\n.video-call{\n  position: absolute;\n  background-image: url(" + __webpack_require__(922) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n}\n.audio-call{\n  position: absolute;\n  background-image: url(" + __webpack_require__(923) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  right:55px;\n  cursor: pointer;\n  z-index:1;\n}\n.mute-audio{\n  position: absolute;\n  background-image: url(" + __webpack_require__(924) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  right:55px;\n  cursor: pointer;\n  z-index:1;\n}\n.unmute-audio{\n  position: absolute;\n  background-image: url(" + __webpack_require__(925) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  right:90px;\n  cursor: pointer;\n  z-index:1;\n}\n.stop-video{\n  position: absolute;\n  background-image: url(" + __webpack_require__(926) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  right:10px;\n  cursor: pointer;\n  z-index:1;\n}\n.conference-call{\n  position: absolute;\n  background-image: url(" + __webpack_require__(927) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 60px;\n  width: 60px;\n  bottom: 10px;\n  right:10px;\n  cursor: pointer;\n}\n.emp-row .delete-icon{\n  right: 0px;\n}\n.employee-parent-div{\n  margin: 50px;\n}\n.employee-parent-div .white-board{\n  margin-left: 80px;\n}\n.local-video{\n  \n}\n\n\n", ""]);
+exports.push([module.i, "\nbody {\n  font: 14px \"Lucida Grande\", Helvetica, Arial, sans-serif;\n  background-image: url(" + __webpack_require__(915) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n}\n\na {\n  color: cornsilk;\n  text-decoration: none;\n}\n\n.main-container{\n\t \n}\n.emp-row{\n  margin: 10px;\n  position: relative;\n  height: 50px;\n}\n.active-emp{\n  color:green !important;\n}\n.emp-city,.emp-name,.emp-occupation,.emp-phone,.emp-state,.emp-city,.emp-doj,.edi-user,.accept-session{\n  margin-right: 20px;\n  font-size: 14px;\n  width: 150px;\n  display: inline-block;\n  color:inherit;\n}\n.accept-session{\n  text-align: right;\n}\n.emp-image{\n  height: 40px;\n  position: absolute;\n}\n.link-button{\n  display: inline-block;\n}\n.login-div{\n\n}\n.login-button{\n  margin-right: 10px;\n}\n.show-login{\n\tdisplay: none;\n}\n.admin-form{\n  position: absolute;\n  left: 0px;\n  right: 0px;\n  margin: 0px auto;\n  width:  400px;;\n  top: 200px;\n}\n.form-field{\n  height: 25px;\n  padding-bottom: 5px;\n}\n.form-field .form-label{\n    display: inline-block;\n    font-size: 14px;\n    margin-right: 5px;\n    font-family: Kievit;\n    width: 80px;\n    color: inherit;\n}\n.button-groups{\n  text-align: right;\n  padding-right: 60px;\n}\n.ok-button{\n  margin-right: 5px;\n}\n.label-name{\n  width: 10%;\n  display: inline-block;\n  text-align: right;\n  margin-right: 10px;\n  font-size: 14px;\n  font-family: Kievit;\n  color: inherit;\n}\n.employee-form{\n  width: 100%;\n  height: 100%;\n  margin-left: 30%;\n  margin-right: 30%;\n  position: relative;\n}\n.form-div{\n  height: 800px;\n  padding: 100px;\n}\n.field-div{\n  margin-bottom: 10px;\n}\n.form-button{\n  margin-left: 20%;\n}\n.error-msg{\n  margin-left: 75px;\n  color: crimson;\n  display: block;\n}\n.form-input{\n  width: 250px;\n  height: 20px;\n}\n.form-header{\n  font-size: 18px;\n  font-family: Kievit;\n  font-weight: bolder;\n  text-align: center;\n  margin-bottom: 20px;\n  color: indigo;\n}\n.edit-icon{\n  position: absolute;\n  background-image: url(" + __webpack_require__(916) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 20px;\n  width: 20px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n}\n.default-img{\n  background-image: url(" + __webpack_require__(917) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n}\n.upload-img{\n  position: absolute;\n  background-image: url(" + __webpack_require__(918) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 20px;\n  width: 20px;\n  top: 0px;\n  bottom: 0px;\n  left:0px;\n  right: 0px;\n  margin: auto;\n}\n.admin-header{\n  font-size: 18px;\n  font-family: Kievit;\n  font-weight: bolder;\n  text-align: center;\n  margin-bottom: 20px;\n  color: indigo;\n}\n.edi-user{\n  position: relative;\n  height: 20px;\n  width: 30px;\n  margin-left: 20px;\n  background-color: darkgray;\n  border-radius: 5px;\n  text-align: center;\n  font-size: 10px;\n  cursor: pointer;\n  line-height: 18px;\n}\n.user-profile-button-group{\n  float:right;\n  display: inline-block;\n}\n.backgroundImage{\n  background-image: url(" + __webpack_require__(919) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n}\n.delete-icon{\n  position: absolute;\n  background-image: url(" + __webpack_require__(920) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 20px;\n  width: 20px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n  margin-left: 10px;\n}\n.white-board{\n  position: absolute;\n  background-image: url(" + __webpack_require__(921) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 50px;\n  width: 50px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n}\n.video-call{\n  position: absolute;\n  background-image: url(" + __webpack_require__(922) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n}\n.audio-call{\n  position: absolute;\n  background-image: url(" + __webpack_require__(923) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  right:55px;\n  cursor: pointer;\n  z-index:1;\n}\n.mute-audio{\n  position: absolute;\n  background-image: url(" + __webpack_require__(924) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  right:55px;\n  cursor: pointer;\n  z-index:1;\n}\n.unmute-audio{\n  position: absolute;\n  background-image: url(" + __webpack_require__(925) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  right:90px;\n  cursor: pointer;\n  z-index:1;\n}\n.stop-video{\n  position: absolute;\n  background-image: url(" + __webpack_require__(926) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  right:10px;\n  cursor: pointer;\n  z-index:1;\n}\n.conference-call{\n  position: absolute;\n  background-image: url(" + __webpack_require__(927) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 60px;\n  width: 60px;\n  bottom: 10px;\n  right:10px;\n  cursor: pointer;\n}\n.ringingphone{\n  position: absolute;\n  background-image: url(" + __webpack_require__(928) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 30px;\n  width: 30px;\n  top:10px;\n  right:10px;\n  margin:auto 0px;\n  z-index:1;\n  cursor: pointer;\n}\n.emp-row .delete-icon{\n  right: 0px;\n}\n.employee-parent-div{\n  margin: 50px;\n}\n.employee-parent-div .white-board{\n  margin-left: 80px;\n}\n.local-video{\n  \n}\n\n\n", ""]);
 
 // exports
 
@@ -77779,10 +77828,16 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACt
 /* 928 */
 /***/ (function(module, exports, __webpack_require__) {
 
+module.exports = __webpack_require__.p + "98df0ea60e4a6156e9654a449f2419f3.gif";
+
+/***/ }),
+/* 929 */
+/***/ (function(module, exports, __webpack_require__) {
+
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(929);
+var content = __webpack_require__(930);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -77807,7 +77862,7 @@ if(false) {
 }
 
 /***/ }),
-/* 929 */
+/* 930 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(49)(undefined);
