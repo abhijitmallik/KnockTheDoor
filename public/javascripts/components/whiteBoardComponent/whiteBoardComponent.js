@@ -2,6 +2,7 @@
 import React,{Component} from 'react';
 import './whiteBoardComponent.css';
 import socket from '../../socket.js';
+import ReactAudioPlayer from 'react-audio-player';
 
 let lastX = 0;
 let lastY = 0;
@@ -10,10 +11,12 @@ let canvas;
 let ctx;
 let coordinatesArr = [];
 let rtcConnection;
-let constraints = {video:true,audio:true};
+let constraints = {video:false,audio:false};
 let connectedUser;
-let initiateUser;
-let isReady = false;
+let callee;
+let caller;
+let stream;
+let callPhoneInterval;
  
 export default class WhiteBoardComponent extends Component{
     static defaultProps = {
@@ -22,7 +25,7 @@ export default class WhiteBoardComponent extends Component{
     };
     constructor(props){
        super(props);
-       this.state = {isPainting:false,showVideoAudio:false,videoSrc:"",localStream:"",remoteStreamSrc:"",remoteStream:"",enableVideoCall:false};
+       this.state = {isPainting:false,showVideoAudio:false,videoSrc:"",localStream:"",remoteStreamSrc:"",remoteStream:"",enableVideoCall:false,voiceClass:"mute-audio",videoClass:"stop-video",constraints:{video:true,audio:false},showRingingPhone:false};
     }
     componentDidMount() {
       console.log("=====adminInfo===this.props.adminInfo===",this.props.adminInfo);
@@ -129,77 +132,85 @@ export default class WhiteBoardComponent extends Component{
 
       }
     }
-    audioCall(){
+    audioVideoCall(){
        if(this.state.showVideoAudio){
          this.setState({showVideoAudio:false});
+         this.closeConnection();
        }else{
          this.setState({showVideoAudio:true});
        }
        let room =  "Online Session";
        if (room !== "") {
-            console.log('Trying to create or join room: ', room);
-            console.log("====this.props.adminInfo====",this.props.adminInfo);
-            console.log("====this.props.invitedIds====",this.props.invitedIds);
-            if(this.props.adminInfo.status){
-                //connectedUser = {id:this.props.adminInfo.id};
-                connectedUser = {id:'adminId'};
+            if(this.props.adminInfo.status){  
+              this.messageSend({
+                type:'create or join',
+                room:room,
+                adminId:this.props.adminInfo.id,
+                clientId:this.props.invitedIds
+              });
             }else{
-                //connectedUser = {id:this.props.invitedIds};
-                connectedUser = {id:'clientId'};
+              this.messageSend({
+                type:'create or join',
+                room:room,
+                adminId:this.props.userInfo.adminId,
+                clientId:this.props.invitedIds
+              });
             }
             this.initConnection();
             // Send 'create or join' to the server
-            this.messageSend({
-              type:'create or join',
-              room:room,
-              connectedUser:connectedUser.id
-            });
+            
         }
     }
-    videoCall(){
-        this.createOffer();
-    }
+
     initConnection(){
        socket.on('message',(obj)=>{
-          console.log("=======get data from server in client side====",obj);
+          console.log("=====obj======",obj);
           switch(obj.type){
             case 'created':
+             caller = obj.adminId;
+             callee = obj.clientId;
              this.startConnection();
              break;
             case 'joined' :
               if(this.props.adminInfo.status){
-                isReady = true;
-                initiateUser = obj.connected;
-                connectedUser = obj.connected;
+                caller = obj.adminId;
+                callee = obj.clientId;
                 this.setState({enableVideoCall:true});
-                //this.createOffer();
               }else{
+                callee = obj.adminId;
+                caller = obj.clientId;
+                connectedUser = obj.clientId;
                 this.startConnection();
               }
              break; 
             case "candidate":
              this.onCandidate(obj.candidate);
              break; 
+            case "ringing":
+              this.onRinging(obj);
+              break;
+            case "acceptCall" :
+              this.acceptCall();
+              break;    
             case "offer" :
-              this.onOffer(obj.offer,obj.name); 
+              this.onOffer(obj); 
               break; 
             case "answer":
               this.onAnswer(obj.answer);  
               break;
+            case "leave":
+              this.onLeave();
+              break;  
           }
        })
     }
     startConnection(){
        if(this.hasUserMedia()){
-          navigator.getUserMedia(constraints,(myStream)=>{
+          navigator.getUserMedia(this.state.constraints,(myStream)=>{
              this.setState({"videoSrc":window.URL.createObjectURL(myStream)});
              if(this.hasRTCPeerConnection()){
                 this.setupPeerConnection(myStream);
-                console.log("============isReady====",isReady);
-                //if(isReady){
-                //  this.createOffer();
-                //}
-                
+                stream = myStream;
              }
           },(error)=>{
             console.log("error",error);
@@ -211,6 +222,8 @@ export default class WhiteBoardComponent extends Component{
       return !!navigator.getUserMedia;
     }
     setupPeerConnection(stream){
+      console.log("====caller====",caller);
+      console.log("====callee====",callee);
       let configuration = {
         "iceServers": [{ "url": "stun:stun.1.google.com:19302" }]
       };
@@ -224,7 +237,8 @@ export default class WhiteBoardComponent extends Component{
           this.messageSend({
             type:"candidate",
             candidate:event.candidate,
-            connectedUser:connectedUser
+            caller:caller,
+            callee:callee
           })
         }
       }
@@ -236,35 +250,26 @@ export default class WhiteBoardComponent extends Component{
       return !!window.RTCPeerConnection;
     }
     createOffer(){
-      console.log("=====create offer=====");
-      rtcConnection.createOffer().then((offer) => {
-        console.log("======== called offer=====");
+        rtcConnection.createOffer().then((offer) => {
+        rtcConnection.setLocalDescription(offer);
          this.messageSend({
            type:"offer",
            offer:offer,
-           connectedUser:connectedUser
+           callee:callee,
+           caller:caller
          });
-         rtcConnection.setLocalDescription(offer);
+         
       })
-      /*rtcConnection.createOffer((offer)=>{
-        console.log("========not called=====");
-       this.messageSend({
-         type:"offer",
-         offer:offer,
-         connectedUser:connectedUser
-       });
-       rtcConnection.setLocalDescription(offer);
-      });*/
     }
-    onOffer(offer,name){
-      connectedUser = "adminId";
-      rtcConnection.setRemoteDescription(new RTCSessionDescription(offer));
+    onOffer(obj){
+      rtcConnection.setRemoteDescription(new RTCSessionDescription(obj.offer));
       rtcConnection.createAnswer().then((answer)=>{
         rtcConnection.setLocalDescription(answer);
         this.messageSend({
           type:"answer",
           answer:answer,
-          connectedUser:connectedUser
+          callee:obj.callee,
+          caller:obj.caller
         })
       })
     }
@@ -273,22 +278,129 @@ export default class WhiteBoardComponent extends Component{
     }
     onCandidate(candidate) {
         rtcConnection.addIceCandidate(new RTCIceCandidate(candidate));
-    };
+    }
     messageSend(obj){
       socket.emit('message', obj);
+    }
+    acceptCall(){
+      this.createOffer();
+    }
+    enableAudio(){
+      if(this.state.voiceClass == "mute-audio"){
+        this.setState({voiceClass:"audio-call"})
+      }else{
+        this.setState({voiceClass:"mute-audio"})
+      }
+      this.messageSend({
+          type:"ringing",
+          callee:callee,
+          caller:caller
+      })
+    } 
+    videoCall(){
+      if(this.state.videoClass == "stop-video"){
+        this.setState({videoClass:"video-call"})
+      }else{
+        this.setState({videoClass:"stop-video"})
+      }
+       this.messageSend({
+          type:"ringing",
+          callee:callee,
+          caller:caller
+      })
+    }
+    onRinging(obj){
+       this.setState({showRingingPhone:true});
+       if(!callPhoneInterval){
+          callPhoneInterval = setInterval(()=>{
+            this.refs.myAudio.play();
+          }, 1000);
+       }
+       
+       
+    }
+    receiveCall(){
+      this.refs.myAudio.pause();
+      this.refs.myAudio.currentTime = 0
+      clearTimeout(callPhoneInterval);
+      callPhoneInterval = null;
+      this.setState({showRingingPhone:false});
+      this.messageSend({
+          type:"acceptCall",
+          callee:callee,
+          caller:caller
+       })
+      
+    }
+    enableAudioVideo(){
+      this.setState({constraints:{video:true,audio:true}});
+      if(this.state.videoClass == "stop-video"){
+        this.setState({constraints:{video:false,audio:true}});
+      }
+      if(this.state.voiceClass == "mute-audio"){
+        this.setState({constraints:{video:true,audio:false}});
+      }
+      if(this.state.videoClass == "stop-video" && this.state.voiceClass == "mute-audio"){
+        this.setState({constraints:{video:false,audio:false}});
+      }
+      if(!this.state.constraints.audio){
+        stream.removeTrack(stream.getAudioTracks()[0]);
+      }
+      if(!this.setState.constraints.video){
+        stream.removeTrack(stream.getVideoTracks()[0]);
+      }
+      
+      
+      //stream.getAudioTracks()[0].enabled = this.state.constraints.audio;
+      //stream.getVideoTracks()[0].enabled = this.setState.constraints.video;
+      
+    }
+    closeConnection(){
+      rtcConnection.close();
+      rtcConnection.onicecandidate = null;
+      rtcConnection.onaddstream = null;
+      this.setState({remoteStreamSrc:null});
+      this.messageSend({
+          type:"leave",
+          callee:callee,
+          caller:caller
+      })
+      caller = null;
+    }
+    onLeave(){
+      console.log("=======call here leave ==========");
+      callee = null;
+      rtcConnection.close();
+      rtcConnection.onicecandidate = null;
+      rtcConnection.onaddstream = null;
+      this.setState({remoteStreamSrc:null});
+      this.setState({voiceClass:"mute-audio"});
+      this.setState({videoClass:"stop-video"});
+      //this.startConnection();
+      this.setupPeerConnection(stream);
+      this.setState({enableVideoCall:false});
     }
    
     render() {
         return (
           <div className='canvas_outer'>
-                <div className='video-audio'><span className="audio-call" title="Audio call" onClick={this.audioCall.bind(this)}></span></div>
+                <div className='video-audio'><span className="conference-call" title="Audio/Video call" onClick={this.audioVideoCall.bind(this)}></span></div>
                 {this.state.showVideoAudio ?
                   <div className='video-display'>
-                    {this.state.enableVideoCall ? <span className="video-call" title="Video Call" onClick={this.videoCall.bind(this)}></span> : ""}
+                    {this.state.showRingingPhone ? <span className="ringingphone" onClick={this.receiveCall.bind(this)}/> : ""}
+                    {this.state.enableVideoCall ?
+                      <div className='video-audio-icons'><span className={this.state.voiceClass} title="Voice Call" onClick={this.enableAudio.bind(this)}></span><span className={this.state.videoClass} title="Video Call" onClick={this.videoCall.bind(this)}></span></div>
+                    : ""}
                     <video  autoPlay="true"   class='local-video' src={this.state.remoteStreamSrc}></video>
                     <div className="local-video-display"><video  autoPlay="true"  src={this.state.videoSrc}></video></div>
                   </div> : ""
                 }
+                <div>
+                <audio ref="myAudio">
+                    <source src="audio/romantic.mp3" />
+                    Your browser does not support the audio element.
+                </audio>
+                </div>
                 <div className='canvas_inner'>
                    <canvas ref="canvas" width={this.props.width} height={this.props.height} onMouseUp={this.mouseUp.bind(this)} onMouseMove={this.mouseMove.bind(this)} onMouseDown={this.startWriting.bind(this)}/>
                    <div className="canvas-button-group">

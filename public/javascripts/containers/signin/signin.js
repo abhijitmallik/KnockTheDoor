@@ -29,7 +29,7 @@ class SignIn extends Component{
 	onSubmit(obj){
 		this.props.signin(obj,(user) => {  
 			this.setState({redirectToUser:user.status});
-            socket.emit("signin",{id:user.id,name:user.firstname});
+            socket.emit("signin",{id:user.id});
 	    });
      
 	}

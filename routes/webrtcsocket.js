@@ -1,11 +1,13 @@
 
 module.exports =(io)=>{
-	let users = {};
+	let users = [];
 	io.sockets.on('connection', (socket) => {
 	    socket.on('message',(data) => {
 	    	let channel = data.room;
 	    	let conn;
-	    	console.log("====data===",data);
+	    	console.log("=====data.type====",data.type);
+	    	console.log("=====users length=====",Object.keys(users).length);
+	    	console.log("=====users=====",users);
 	    	switch(data.type){
 	    		case "create or join":
 	    		 // First client joining...
@@ -15,38 +17,70 @@ module.exports =(io)=>{
 		                	success:true
 		                });
 	    		   }
-		           if(io.sockets.adapter.rooms[channel]){
-		           	 let numClients = io.sockets.adapter.rooms[channel].length; 
+		           if(Object.keys(users).length > 0){
+		           	 let numClients = Object.keys(users).length; 
+		           	 console.log("===========numClients==========",numClients);
+		           	 console.log("=====users=====",users);
 			           if (numClients == 1) {
 				            io.sockets.in(channel).emit('join', channel);
 				            socket.join(channel);
-				            conn = users["adminId"];
-				            conn.emit('message', {
-				            	type:'joined',
-				            	success:true,
-				            	connected:data.connectedUser
-				            });
+				            conn = users[data.adminId];
+				             if(conn !== null){
+				             	conn.emit('message', {
+					            	type:'joined',
+					            	success:true,
+					            	adminId:data.adminId,
+					            	clientId:data.clientId
+					            });
+				             }
+				            
 				            socket.emit('message', {
 			                	type:'joined',
-			                	success:true
+			                	success:true,
+			                	adminId:data.adminId,
+				            	clientId:data.clientId
 			                });
+			                socket.name = data.clientId;
+			                users[data.clientId] = socket;
 				        } else { // max two clients
 				            socket.emit('full', channel);
 				        }
+				        
 		           	
 		            }else{
 		            	socket.join(channel);
 		                socket.emit('message', {
 		                	type:'created',
-		                	success:true
+		                	success:true,
+		                	adminId:data.adminId,
+				            clientId:data.clientId
 		                });
+		                socket.name = data.adminId;
+		                users[data.adminId] = socket;
 		            }
-		            socket.name = data.connectedUser;
-		            users[data.connectedUser] = socket;
 		            break;
+		        case "ringing" :
+                      conn = users[data.callee];
+                      if(conn !== null){
+                      	conn.emit('message',{
+                      		type:'ringing',
+                      		caller:data.callee,
+                      		callee:data.caller
+                      	})
+                      }
+		             break;  
+		        case "acceptCall" :
+		              conn = users[data.callee];
+                      if(conn !== null){
+                      	conn.emit('message',{
+                      		type:'acceptCall',
+                      		caller:data.callee,
+                      		callee:data.caller
+                      	})
+                      }
+		             break;       
 		        case "candidate" :
-		            console.log("===users=====",users,"===data.connectedUser===",data.connectedUser);
-		            conn = users[data.connectedUser];
+		            conn = users[data.callee];
 		            if(conn !== null){
 		            	conn.emit('message',{
 		            		type:'candidate',
@@ -55,25 +89,36 @@ module.exports =(io)=>{
 		            }
 		            break;   
 		        case "offer":
-		             conn = users[data.connectedUser];
-		             console.log("======conn=====",conn);
+		             conn = users[data.callee];
 		             if(conn != null){
-                       socket.otherName = data.connectedUser;
                        conn.emit('message',{
                        	 type:'offer',
                        	 offer:data.offer,
-                       	 name:socket.name
+                       	 caller:data.callee,
+                       	 callee:data.caller
                        })
 		             }
 		             break;
 		        case "answer":
-		             conn = users[data.connectedUser];
+		             conn = users[data.callee];
 		             if(conn != null){
-		             	socket.otherName = data.connectedUser;
 		             	conn.emit('message',{
 		             		type:'answer',
 		             		answer:data.answer
 		             	})
+		             }
+		             break;  
+		        case "leave":
+		        console.log("====leave====",data.caller);
+		        console.log("===data.callee====",data.callee);
+		             conn = users[data.callee];    
+		             if(conn != null){
+		             	conn.emit('message',{
+		             		type:'leave',
+		             		caller:data.caller,
+                            callee:data.callee
+		             	})
+		             	delete users[data.caller];
 		             }
 		             break;     
 	    	}
