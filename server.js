@@ -10,8 +10,8 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const socketIo = require('./routes/socket');
 const config = {server:{
-                        port:3000,
-                        ioPort:8000
+                        port:process.env.PORT || 3000,
+                        ioPort:process.env.PORT || 8000
                       },
                       dbURL:'mongodb://127.0.0.1:27017/'};
 
