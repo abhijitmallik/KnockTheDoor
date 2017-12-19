@@ -6,9 +6,14 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const config = require('config');
+//const config = require('config');
 const mongoose = require('mongoose');
 const socketIo = require('./routes/socket');
+const config = {server:{
+                        port:3000,
+                        ioPort:8000
+                      },
+                      dbURL:'mongodb://127.0.0.1:27017/'};
 
 
 
