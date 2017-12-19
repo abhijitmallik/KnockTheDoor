@@ -2,6 +2,7 @@
 import React,{Component} from 'react';
 import './whiteBoardComponent.css';
 import socket from '../../socket.js';
+import ReactAudioPlayer from 'react-audio-player';
 
 let lastX = 0;
 let lastY = 0;
@@ -310,14 +311,19 @@ export default class WhiteBoardComponent extends Component{
     }
     onRinging(obj){
        this.setState({showRingingPhone:true});
-       callPhoneInterval = setInterval(()=>{
-          this.refs.myAudio.play();
-       }, 1000);
+       if(!callPhoneInterval){
+          callPhoneInterval = setInterval(()=>{
+            this.refs.myAudio.play();
+          }, 1000);
+       }
+       
        
     }
     receiveCall(){
       this.refs.myAudio.pause();
+      this.refs.myAudio.currentTime = 0
       clearTimeout(callPhoneInterval);
+      callPhoneInterval = null;
       this.setState({showRingingPhone:false});
       this.messageSend({
           type:"acceptCall",
@@ -391,7 +397,7 @@ export default class WhiteBoardComponent extends Component{
                 }
                 <div>
                 <audio ref="myAudio">
-                    <source src='http://www.thesoundarchive.com/ringtones/old-phone-ringing.wav' />
+                    <source src="audio/romantic.mp3" />
                     Your browser does not support the audio element.
                 </audio>
                 </div>
