@@ -6,6 +6,7 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const server = require('http').createServer(app);  
 //const config = require('config');
 const mongoose = require('mongoose');
 const socketIo = require('./routes/socket');
@@ -40,10 +41,10 @@ mongoose.connect(uristring , function (err, res) {
       
       }
 });
-app.listen(config.server.port,function(){
+server.listen(config.server.port,function(){
     console.log("application is listening on port",config.server.port);
 })
-socketIo.socketId(app,path,config);
+socketIo.socketId(server,path,config);
 require('./routes/employee')(app,path,config);
 require('./routes/login')(app,path,config);
 
