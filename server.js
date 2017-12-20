@@ -11,7 +11,7 @@ const mongoose = require('mongoose');
 const socketIo = require('./routes/socket');
 const config = {server:{
                         port:process.env.PORT || 3000,
-                        ioPort:process.env.PORT+1 || 8000
+                        ioPort:56432 
                       },
                       dbURL:'mongodb://knockthedoor:laptoppc84@ds231245.mlab.com:31245/knockthedoor'};
 
