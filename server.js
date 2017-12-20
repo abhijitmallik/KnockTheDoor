@@ -11,12 +11,12 @@ const mongoose = require('mongoose');
 const socketIo = require('./routes/socket');
 const config = {server:{
                         port:process.env.PORT || 3000,
-                        ioPort:process.env.PORT || 8000
+                        ioPort:process.env.PORT+1 || 8000
                       },
-                      dbURL:'mongodb://127.0.0.1:27017/'};
+                      dbURL:'mongodb://knockthedoor:laptoppc84@ds231245.mlab.com:31245/knockthedoor'};
 
-
-
+//dbURL:'mongodb://127.0.0.1:27017/'
+//mongodb://<dbuser>:<dbpassword>@ds231245.mlab.com:31245/knockthedoor
 
 const fs = require('fs');
 
@@ -31,23 +31,12 @@ app.use(express.static(path.join(__dirname, 'production')));
 
 
 
-const uristring = config.dbURL + 'Employees';
+const uristring = config.dbURL;
 mongoose.connect(uristring , function (err, res) {
       if (err) {
       console.log ('ERROR connecting to: ' + uristring + '. ' + err);
       } else {
       console.log ('Succeeded connected to: ' + uristring);
-      
-      }
-});
-
-const userString = config.dbURL + 'Users';
-
-mongoose.connect(uristring , function (err, res) {
-      if (err) {
-      console.log ('ERROR connecting to: ' + userString + '. ' + err);
-      } else {
-      console.log ('Succeeded connected to: ' + userString);
       
       }
 });
