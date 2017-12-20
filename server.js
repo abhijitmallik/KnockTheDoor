@@ -20,7 +20,7 @@ const config = {server:{
 
 const fs = require('fs');
 
-app.engine('html', require('ejs').renderFile);
+//app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 app.use(logger('dev'));
 app.use(bodyParser.json());
