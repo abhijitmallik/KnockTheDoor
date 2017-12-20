@@ -5,6 +5,8 @@ module.exports =(app,path,config)=>{
 	app.post('/adminUser',function(req,res){
        admin = req.body;
        adminModal.find({userName:admin.userName,password:admin.password},function(err,user){
+       	console.log("======admin err=====",err);
+        console.log("admin user1111 ",user);
        	if(err){
        		throw err;
        	}
