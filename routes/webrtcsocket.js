@@ -1,7 +1,7 @@
 
 module.exports =(io)=>{
 	let users = [];
-	io.sockets.on('connection', (socket) => {
+	io.on('connection', (socket) => {
 	    socket.on('message',(data) => {
 	    	let channel = data.room;
 	    	let conn;
