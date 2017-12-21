@@ -109,8 +109,6 @@ module.exports =(io)=>{
 		             }
 		             break;  
 		        case "leave":
-		        console.log("====leave====",data.caller);
-		        console.log("===data.callee====",data.callee);
 		             conn = users[data.callee];    
 		             if(conn != null){
 		             	conn.emit('message',{
@@ -119,8 +117,18 @@ module.exports =(io)=>{
                             callee:data.callee
 		             	})
 		             	delete users[data.caller];
+		             	delete users[data.callee];
+		             	users = [];
 		             }
-		             break;     
+		             break;    
+		        case "terminate":
+		             var clientsLength = Object.keys(users).length;
+		             if(clientsLength > 0){
+		             	for(var i=0;i<clientsLength;i++){
+		             		delete users[Object.keys(users)];
+		             	}
+		             	users = [];
+		             }      
 	    	}
           
 	    });

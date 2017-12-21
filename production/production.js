@@ -43786,6 +43786,7 @@ var Employees = function (_Component) {
 		value: function closeWhiteBoard() {
 			console.log("=====this.state.invitedMemberIds=====", this.state.invitedMemberIds);
 			_socket2.default.emit("shareWhiteBoard", { id: this.state.invitedMemberIds, show: false });
+			_socket2.default.emit('message', { type: 'terminate' });
 			this.setState({ showWhiteBoard: false });
 		}
 	}, {
@@ -45116,8 +45117,6 @@ var WhiteBoardComponent = function (_Component) {
     value: function setupPeerConnection(stream) {
       var _this5 = this;
 
-      console.log("====caller====", caller);
-      console.log("====callee====", callee);
       var configuration = {
         "iceServers": [{ "url": "stun:stun.1.google.com:19302" }]
       };
