@@ -18739,6 +18739,50 @@ var Init = function (_Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'login-div' },
+				_react2.default.createElement(
+					'div',
+					{ className: 'current-affairs-div' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'dropdown' },
+						_react2.default.createElement(
+							'button',
+							{ className: 'dropbtn' },
+							'Menu'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'dropdown-content' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'gk-div-current-affairs' },
+								_react2.default.createElement(
+									_reactRouterDom.Link,
+									{ to: '/current-affairs' },
+									'Current Affairs'
+								)
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'gk-div-current-affairs' },
+								_react2.default.createElement(
+									_reactRouterDom.Link,
+									{ to: '/signup' },
+									'Daily GK'
+								)
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'gk-div-current-affairs' },
+								_react2.default.createElement(
+									_reactRouterDom.Link,
+									{ to: '/signup' },
+									'Daily Quiz'
+								)
+							)
+						)
+					)
+				),
 				this.props.show ? _react2.default.createElement(
 					'div',
 					{ className: 'link-button' },
@@ -24025,6 +24069,10 @@ var _profile = __webpack_require__(905);
 
 var _profile2 = _interopRequireDefault(_profile);
 
+var _currentaffairs = __webpack_require__(932);
+
+var _currentaffairs2 = _interopRequireDefault(_currentaffairs);
+
 var _reducers = __webpack_require__(908);
 
 var _reducers2 = _interopRequireDefault(_reducers);
@@ -24057,7 +24105,8 @@ _reactDom2.default.render(_react2.default.createElement(
       _react2.default.createElement(_reactRouterDom.Route, { path: '/admin', component: _adminLogin2.default }),
       _react2.default.createElement(_reactRouterDom.Route, { path: '/signin', component: _signin2.default }),
       _react2.default.createElement(_reactRouterDom.Route, { path: '/profile', component: _profile2.default }),
-      _react2.default.createElement(_reactRouterDom.Route, { path: '/init', component: _profile2.default })
+      _react2.default.createElement(_reactRouterDom.Route, { path: '/init', component: _profile2.default }),
+      _react2.default.createElement(_reactRouterDom.Route, { path: '/current-affairs', component: _currentaffairs2.default })
     )
   )
 ), document.getElementById('app'));
@@ -77755,7 +77804,7 @@ exports = module.exports = __webpack_require__(49)(undefined);
 
 
 // module
-exports.push([module.i, "\nbody {\n  font: 14px \"Lucida Grande\", Helvetica, Arial, sans-serif;\n  background-image: url(" + __webpack_require__(916) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n}\n\na {\n  color: cornsilk;\n  text-decoration: none;\n}\n\n.main-container{\n\t \n}\n.emp-row{\n  margin: 10px;\n  position: relative;\n  height: 50px;\n}\n.active-emp{\n  color:green !important;\n}\n.emp-city,.emp-name,.emp-occupation,.emp-phone,.emp-state,.emp-city,.emp-doj,.edi-user,.accept-session{\n  margin-right: 20px;\n  font-size: 14px;\n  width: 150px;\n  display: inline-block;\n  color:inherit;\n}\n.accept-session{\n  text-align: right;\n}\n.emp-image{\n  height: 40px;\n  position: absolute;\n}\n.link-button{\n  display: inline-block;\n}\n.login-div{\n\n}\n.login-button{\n  margin-right: 10px;\n}\n.show-login{\n\tdisplay: none;\n}\n.admin-form{\n  position: absolute;\n  left: 0px;\n  right: 0px;\n  margin: 0px auto;\n  width:  400px;;\n  top: 200px;\n}\n.form-field{\n  height: 25px;\n  padding-bottom: 5px;\n}\n.form-field .form-label{\n    display: inline-block;\n    font-size: 14px;\n    margin-right: 5px;\n    font-family: Kievit;\n    width: 80px;\n    color: inherit;\n}\n.button-groups{\n  text-align: right;\n  padding-right: 60px;\n}\n.ok-button{\n  margin-right: 5px;\n}\n.label-name{\n  width: 10%;\n  display: inline-block;\n  text-align: right;\n  margin-right: 10px;\n  font-size: 14px;\n  font-family: Kievit;\n  color: inherit;\n}\n.employee-form{\n  width: 100%;\n  height: 100%;\n  margin-left: 30%;\n  margin-right: 30%;\n  position: relative;\n}\n.form-div{\n  height: 800px;\n  padding: 100px;\n}\n.field-div{\n  margin-bottom: 10px;\n}\n.form-button{\n  margin-left: 20%;\n}\n.error-msg{\n  margin-left: 75px;\n  color: crimson;\n  display: block;\n}\n.form-input{\n  width: 250px;\n  height: 20px;\n}\n.form-header{\n  font-size: 18px;\n  font-family: Kievit;\n  font-weight: bolder;\n  text-align: center;\n  margin-bottom: 20px;\n  color: indigo;\n}\n.edit-icon{\n  position: absolute;\n  background-image: url(" + __webpack_require__(917) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 20px;\n  width: 20px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n}\n.default-img{\n  background-image: url(" + __webpack_require__(918) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n}\n.upload-img{\n  position: absolute;\n  background-image: url(" + __webpack_require__(919) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 20px;\n  width: 20px;\n  top: 0px;\n  bottom: 0px;\n  left:0px;\n  right: 0px;\n  margin: auto;\n}\n.admin-header{\n  font-size: 18px;\n  font-family: Kievit;\n  font-weight: bolder;\n  text-align: center;\n  margin-bottom: 20px;\n  color: indigo;\n}\n.edi-user{\n  position: relative;\n  height: 20px;\n  width: 30px;\n  margin-left: 20px;\n  background-color: darkgray;\n  border-radius: 5px;\n  text-align: center;\n  font-size: 10px;\n  cursor: pointer;\n  line-height: 18px;\n}\n.user-profile-button-group{\n  float:right;\n  display: inline-block;\n}\n.backgroundImage{\n  background-image: url(" + __webpack_require__(920) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n}\n.delete-icon{\n  position: absolute;\n  background-image: url(" + __webpack_require__(921) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 20px;\n  width: 20px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n  margin-left: 10px;\n}\n.white-board{\n  position: absolute;\n  background-image: url(" + __webpack_require__(922) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 50px;\n  width: 50px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n}\n.video-call{\n  position: absolute;\n  background-image: url(" + __webpack_require__(923) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n}\n.audio-call{\n  position: absolute;\n  background-image: url(" + __webpack_require__(924) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  right:55px;\n  cursor: pointer;\n  z-index:1;\n}\n.mute-audio{\n  position: absolute;\n  background-image: url(" + __webpack_require__(925) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  right:55px;\n  cursor: pointer;\n  z-index:1;\n}\n.unmute-audio{\n  position: absolute;\n  background-image: url(" + __webpack_require__(926) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  right:90px;\n  cursor: pointer;\n  z-index:1;\n}\n.stop-video{\n  position: absolute;\n  background-image: url(" + __webpack_require__(927) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  right:10px;\n  cursor: pointer;\n  z-index:1;\n}\n.conference-call{\n  position: absolute;\n  background-image: url(" + __webpack_require__(928) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 60px;\n  width: 60px;\n  bottom: 10px;\n  right:10px;\n  cursor: pointer;\n}\n.ringingphone{\n  position: absolute;\n  background-image: url(" + __webpack_require__(929) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 30px;\n  width: 30px;\n  top:10px;\n  right:10px;\n  margin:auto 0px;\n  z-index:1;\n  cursor: pointer;\n}\n.emp-row .delete-icon{\n  right: 0px;\n}\n.employee-parent-div{\n  margin: 50px;\n}\n.employee-parent-div .white-board{\n  margin-left: 80px;\n}\n.local-video{\n  \n}\n\n\n", ""]);
+exports.push([module.i, "\nbody {\n  font: 14px \"Lucida Grande\", Helvetica, Arial, sans-serif;\n  background-image: url(" + __webpack_require__(916) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n}\n\na {\n  color: cornsilk;\n  text-decoration: none;\n}\n\n.main-container{\n\t \n}\n.emp-row{\n  margin: 10px;\n  position: relative;\n  height: 50px;\n}\n.active-emp{\n  color:green !important;\n}\n.emp-city,.emp-name,.emp-occupation,.emp-phone,.emp-state,.emp-city,.emp-doj,.edi-user,.accept-session{\n  margin-right: 20px;\n  font-size: 14px;\n  width: 150px;\n  display: inline-block;\n  color:inherit;\n}\n.accept-session{\n  text-align: right;\n}\n.emp-image{\n  height: 40px;\n  position: absolute;\n}\n.link-button{\n  display: inline-block;\n}\n.login-div{\n\n}\n.login-button{\n  margin-right: 10px;\n}\n.show-login{\n\tdisplay: none;\n}\n.admin-form{\n  position: absolute;\n  left: 0px;\n  right: 0px;\n  margin: 0px auto;\n  width:  400px;;\n  top: 200px;\n}\n.form-field{\n  height: 25px;\n  padding-bottom: 5px;\n}\n.form-field .form-label{\n    display: inline-block;\n    font-size: 14px;\n    margin-right: 5px;\n    font-family: Kievit;\n    width: 80px;\n    color: inherit;\n}\n.button-groups{\n  text-align: right;\n  padding-right: 60px;\n}\n.ok-button{\n  margin-right: 5px;\n}\n.label-name{\n  width: 10%;\n  display: inline-block;\n  text-align: right;\n  margin-right: 10px;\n  font-size: 14px;\n  font-family: Kievit;\n  color: inherit;\n}\n.employee-form{\n  width: 100%;\n  height: 100%;\n  margin-left: 30%;\n  margin-right: 30%;\n  position: relative;\n}\n.form-div{\n  height: 800px;\n  padding: 100px;\n}\n.field-div{\n  margin-bottom: 10px;\n}\n.form-button{\n  margin-left: 20%;\n}\n.error-msg{\n  margin-left: 75px;\n  color: crimson;\n  display: block;\n}\n.form-input{\n  width: 250px;\n  height: 20px;\n}\n.form-header{\n  font-size: 18px;\n  font-family: Kievit;\n  font-weight: bolder;\n  text-align: center;\n  margin-bottom: 20px;\n  color: indigo;\n}\n.edit-icon{\n  position: absolute;\n  background-image: url(" + __webpack_require__(917) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 20px;\n  width: 20px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n}\n.default-img{\n  background-image: url(" + __webpack_require__(918) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n}\n.upload-img{\n  position: absolute;\n  background-image: url(" + __webpack_require__(919) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 20px;\n  width: 20px;\n  top: 0px;\n  bottom: 0px;\n  left:0px;\n  right: 0px;\n  margin: auto;\n}\n.admin-header{\n  font-size: 18px;\n  font-family: Kievit;\n  font-weight: bolder;\n  text-align: center;\n  margin-bottom: 20px;\n  color: indigo;\n}\n.edi-user{\n  position: relative;\n  height: 20px;\n  width: 30px;\n  margin-left: 20px;\n  background-color: darkgray;\n  border-radius: 5px;\n  text-align: center;\n  font-size: 10px;\n  cursor: pointer;\n  line-height: 18px;\n}\n.user-profile-button-group{\n  float:right;\n  display: inline-block;\n}\n.backgroundImage{\n  background-image: url(" + __webpack_require__(920) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n}\n.delete-icon{\n  position: absolute;\n  background-image: url(" + __webpack_require__(921) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 20px;\n  width: 20px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n  margin-left: 10px;\n}\n.white-board{\n  position: absolute;\n  background-image: url(" + __webpack_require__(922) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 50px;\n  width: 50px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n}\n.video-call{\n  position: absolute;\n  background-image: url(" + __webpack_require__(923) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  cursor: pointer;\n}\n.audio-call{\n  position: absolute;\n  background-image: url(" + __webpack_require__(924) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  right:55px;\n  cursor: pointer;\n  z-index:1;\n}\n.mute-audio{\n  position: absolute;\n  background-image: url(" + __webpack_require__(925) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  right:55px;\n  cursor: pointer;\n  z-index:1;\n}\n.unmute-audio{\n  position: absolute;\n  background-image: url(" + __webpack_require__(926) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  right:90px;\n  cursor: pointer;\n  z-index:1;\n}\n.stop-video{\n  position: absolute;\n  background-image: url(" + __webpack_require__(927) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 40px;\n  width: 40px;\n  top: 0px;\n  bottom: 0px;\n  right:10px;\n  cursor: pointer;\n  z-index:1;\n}\n.conference-call{\n  position: absolute;\n  background-image: url(" + __webpack_require__(928) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 60px;\n  width: 60px;\n  bottom: 10px;\n  right:10px;\n  cursor: pointer;\n}\n.ringingphone{\n  position: absolute;\n  background-image: url(" + __webpack_require__(929) + ");\n  background-repeat: no-repeat;\n  background-size:100%;\n  height: 30px;\n  width: 30px;\n  top:10px;\n  right:10px;\n  margin:auto 0px;\n  z-index:1;\n  cursor: pointer;\n}\n.emp-row .delete-icon{\n  right: 0px;\n}\n.employee-parent-div{\n  margin: 70px;\n}\n.employee-parent-div .white-board{\n  margin-left: 80px;\n}\n.local-video{\n  \n}\n.current-affairs-div{\n  width:200px;\n  height: 100px;\n  position: fixed;\n  top:80px;\n  left:30px;\n  color: cornsilk;\n  text-decoration: none;\n}\n.dropbtn {\n    /*background-color: #4CAF50;\n    color: white;*/\n    padding: 16px;\n    font-size: 16px;\n    border: none;\n    cursor: pointer;\n    background: none;\n}\n\n.dropdown {\n    position: relative;\n    display: inline-block;\n}\n\n.dropdown-content {\n    display: none;\n    position: absolute;\n    /*background-color: #f9f9f9;*/\n    min-width: 160px;\n    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\n    z-index: 1;\n}\n\n.dropdown-content .gk-div-current-affairs {\n    padding: 12px 16px;\n    text-decoration: none;\n    display: block;\n}\n.dropdown-content .gk-div-current-affairs:hover{\n  background: olivedrab;\n}\n\n.dropdown:hover .dropdown-content {\n    display: block;\n}\n\n.dropdown .dropbtn {\n    color: cornsilk;\n}\n\n\n", ""]);
 
 // exports
 
@@ -77885,6 +77934,115 @@ exports = module.exports = __webpack_require__(49)(undefined);
 
 // module
 exports.push([module.i, ".Cropper {\n  position: relative;\n  display: inline-block;\n  max-width:100%;\n  max-height:100%;\n}\n\n.box {\n  position: absolute;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  right: 0;\n}\n\n.Cropper-box {\n  position: absolute;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  right: 0;\n  cursor: move;\n  border: #fff solid 1px;\n}\n\n.Cropper-canvas {\n  visibility: hidden;\n  position: absolute;\n}\n\n.Cropper-image {\n  vertical-align: middle;\n  max-width: 100%;\n  position: relative;\n  transform: translate(-50%, -50%);\n  left: 50%;\n}\n\n.resize-handle {\n  position: absolute;\n  background-color: #ECEEEF;\n  border: #8295AB solid 1px;\n  width: 13px;\n  height: 13px;\n  z-index: 1;\n}\n\n.resize-handle-se {\n  bottom: 0;\n  right: 0;\n  cursor: nwse-resize;\n  transform: translate(50%, 50%);\n}\n.resize-handle-ne {\n  right: 0;\n  top: 0;\n  cursor: nesw-resize;\n  transform: translate(50%, -50%);\n}\n.resize-handle-sw {\n  bottom: 0;\n  left: 0;\n  cursor: nesw-resize;\n  transform: translate(-50%, 50%);\n}\n.resize-handle-nw {\n  top: 0;\n  bottom: 0;\n  cursor: nwse-resize;\n  transform: translate(-50%, -50%);\n}\n\n.DraggableResizable {\n  position: relative;\n  width: 100%;\n  height: 100%;\n}\n\n.DraggableResizable-controls {\n  border: 0;\n  clip: rect(0 0 0 0);\n  height: 1px;\n  margin: -1px;\n  overflow: hidden;\n  padding: 0;\n  position: absolute;\n  width: 1px;\n}\n\n.DraggableResizable-top,\n.DraggableResizable-left,\n.DraggableResizable-bottom,\n.DraggableResizable-right {\n  position: absolute;\n  background-color: rgba(0,0,0,.7);\n}\n\n.DraggableResizable-top {\n  top: 0;\n  left: 0;\n  right: 0;\n}\n.DraggableResizable-bottom {\n  bottom: 0;\n  left: 0;\n  right: 0;\n}\n.DraggableResizable-left {\n  left: 0;\n}\n.DraggableResizable-right {\n  right: 0;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 932 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(4);
+
+var _react2 = _interopRequireDefault(_react);
+
+__webpack_require__(933);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var CurrentAffairs = function (_Component) {
+	_inherits(CurrentAffairs, _Component);
+
+	function CurrentAffairs() {
+		_classCallCheck(this, CurrentAffairs);
+
+		return _possibleConstructorReturn(this, (CurrentAffairs.__proto__ || Object.getPrototypeOf(CurrentAffairs)).apply(this, arguments));
+	}
+
+	_createClass(CurrentAffairs, [{
+		key: 'Constructor',
+		value: function Constructor(props) {}
+	}, {
+		key: 'render',
+		value: function render() {
+			return _react2.default.createElement(
+				'div',
+				{ className: 'currentaffairs-containt' },
+				_react2.default.createElement(
+					'div',
+					{ className: 'label' },
+					'Current Affairs'
+				),
+				_react2.default.createElement(
+					'span',
+					{ className: 'description' },
+					'`This article is about the Republic of India. For other uses, see India (disambiguation). Republic of India Bh\u0101rat Ga\u1E47ar\u0101jya Horizontal tricolor flag bearing, from top to bottom, deep saffron, white, and green horizontal bands. In the centre of the white band is a navy-blue wheel with 24 spokes. Flag Three lions facing left, right, and toward viewer, atop a frieze containing a galloping horse, a 24-spoke wheel, and an elephant. Underneath is a motto: "\u0938\u0924\u094D\u092F\u092E\u0947\u0935 \u091C\u092F\u0924\u0947". State emblem Motto: "Satyameva Jayate" (Sanskrit) "Truth Alone Triumphs"[1] Anthem: "Jana Gana Mana" (Hindi)[2] "Thou Art the Ruler of the Minds of All People"[3][2] MENU0:00 National song "Vande Mataram" (Sanskrit) "I Bow to Thee, Mother"[a][1][2] Image of a globe centred on India, with India highlighted. Area controlled by India shown in dark green; claimed but uncontrolled regions shown in light green. Capital New Delhi 28\xB036.8\u2032N 77\xB012.5\u2032E Largest city Mumbai 18\xB058\u203230\u2033N 72\xB049\u203233\u2033E Official languages Hindi English[b][6] Recognised regional languages State level and Eighth Schedule[7][show] National language None[8][9][10] Religion 79.8% Hinduism 14.2% Islam 2.3% Christianity 1.7% Sikhism 0.7% Buddhism 0.4% Jainism 0.9% others[c][11] Demonym Indian Government Federal parliamentary constitutional socialist[12] republic[1] \u2022 President Ram Nath Kovind \u2022 Vice-President Venkaiah Naidu \u2022 Prime Minister Narendra Modi \u2022 Chief Justice Dipak Misra \u2022 Lok Sabha Speaker Sumitra Mahajan Legislature Parliament of India \u2022 Upper house Rajya Sabha \u2022 Lower house Lok Sabha Independence from the United Kingdom \u2022 Dominion 15 August 1947 \u2022 Republic 26 January 1950 Area \u2022 Total 3,287,263[5] km2 (1,269,219 sq mi)[d] (7th) \u2022 Water (%) 9.6 Population \u2022 2016 estimate 1,324,171,354[13] (2nd) \u2022 2011 census 1,210,854,977[14][15] (2nd) \u2022 Density 394.9/km2 (1,022.8/sq mi) (31st) GDP (PPP) 2017 estimate \u2022 Total $9.446 trillion[16] (3rd) \u2022 Per capita $7,173[16] (122nd) GDP (nominal) 2017 estimate \u2022 Total $2.439 trillion[16] (6th) \u2022 Per capita $1,852[16] (141st) Gini (2013) 33.9[17] medium \xB7 79th HDI (2015) Increase 0.624[18] medium \xB7 131st Currency Indian rupee (\u20B9) (INR) Time zone IST (UTC+05:30) DST is not observed Date format DD-MM-YYYY Drives on the left Calling code +91 ISO 3166 code IN Internet TLD .in Website india.gov.in India, officially the Republic of India (Bh\u0101rat Ga\u1E47ar\u0101jya),[e] is a country in South Asia. It is the seventh-largest country by area, the second-most populous country (with over 1.2 billion people), and the most populous democracy in the world. It is bounded by the Indian Ocean on the south, the Arabian Sea on the southwest, and the Bay of Bengal on the southeast. It shares land borders with Pakistan to the west;[f] China, Nepal, and Bhutan to the northeast; and Myanmar (Burma) and Bangladesh to the east. In the Indian Ocean, India is in the vicinity of Sri Lanka and the Maldives. India\'s Andaman and Nicobar Islands share a maritime border with Thailand and Indonesia. The Indian subcontinent was home to the urban Indus Valley Civilisation of the 3rd millennium BCE. In the following millennium, the oldest scriptures associated with Hinduism began to be composed. Social stratification, based on caste, emerged in the first millennium BCE, and Buddhism and Jainism arose. Early political consolidations took place under the Maurya and Gupta empires; the later peninsular Middle Kingdoms influenced cultures as far as Southeast Asia. In the medieval era, Judaism, Zoroastrianism, Christianity, and Islam arrived, and Sikhism emerged, all adding to the region\'s diverse culture. Much of the north fell to the Delhi sultanate; the south was united under the Vijayanagara Empire. The economy expanded in the 17th century in the Mughal Empire. In the mid-18th century, the subcontinent came under British East India Company rule, and in the mid-19th under British crown rule. A nationalist movement emerged in the late 19th century, which later, under Mahatma Gandhi, was noted for nonviolent resistance and led to India\'s independence in 1947. The earliest authenticated human remains in South Asia date to about 30,000 years ago.[31] Nearly contemporaneous Mesolithic rock art sites have been found in many parts of the Indian subcontinent, including at the Bhimbetka rock shelters in Madhya Pradesh.[32] Around 7000 BCE, one of the first known Neolithic settlements appeared on the subcontinent in Mehrgarh and other sites in the subcontinent.[33] These gradually developed into the Indus Valley Civilisation,[34] the first urban culture in South Asia;[35] it flourished during 2500\u20131900 BCE in northeast Afghanistan to Pakistan and northwest India. [36] Centred around cities such as Mohenjo-daro, Harappa, Dholavira, and Kalibangan, and relying on varied forms of subsistence, the civilisation engaged robustly in crafts production and wide-ranging trade.[35] During the period 2000\u2013500 BCE, in terms of culture, many regions of the subcontinent transitioned from the Chalcolithic to the Iron Age.[37] The Vedas, the oldest scriptures associated with Hinduism,[38] were composed during this period,[39] and historians have analysed these to posit a Vedic culture in the Punjab region and the upper Gangetic Plain.[37] Most historians also consider this period to have encompassed several waves of Indo-Aryan migration into the subcontinent from the north-west.[38] The caste system, which created a hierarchy of priests, warriors, and free peasants, but which excluded indigenous peoples by labeling their occupations impure, arose during this period.[40] On the Deccan Plateau, archaeological evidence from this period suggests the existence of a chiefdom stage of political organisation.[37] In South India, a progression to sedentary life is indicated by the large number of megalithic monuments dating from this period,[41] as well as by nearby traces of agriculture, irrigation tanks, and craft traditions.[41]`'
+				)
+			);
+		}
+	}]);
+
+	return CurrentAffairs;
+}(_react.Component);
+
+exports.default = CurrentAffairs;
+
+/***/ }),
+/* 933 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(934);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(50)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../../../node_modules/css-loader/index.js!./currentaffairs.css", function() {
+			var newContent = require("!!../../../../node_modules/css-loader/index.js!./currentaffairs.css");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 934 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(49)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, ".currentaffairs-containt{\n\tpadding: 80px;\n}\n.currentaffairs-containt .description{\n\tmax-height: 500px;\n\toverflow: auto;\n\tdisplay: block;\n}\n.currentaffairs-containt .label{\n    font-weight: bold;\n    color: blue;\n    margin-bottom: 30px;\n}", ""]);
 
 // exports
 

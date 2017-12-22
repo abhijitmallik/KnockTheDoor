@@ -9,6 +9,7 @@ import userForm from './containers/signup';
 import AdminLogin from './containers/adminLogin';
 import SignIn from './containers/signin/signin';
 import Profile from './containers/profile/profile';
+import CurrentAffairs from './containers/currentaffairs/currentaffairs';
 import reducers from './reducers';
 import {BrowserRouter,Route,Switch} from 'react-router-dom';
 import '.././stylesheets/style.css';
@@ -29,6 +30,7 @@ ReactDOM.render(
        <Route path="/signin" component={SignIn}/>
        <Route path="/profile" component={Profile}/>
        <Route path="/init" component={Profile}/>
+       <Route path="/current-affairs" component={CurrentAffairs}/>
       </div> 
     </BrowserRouter>
   </Provider>,document.getElementById('app'));

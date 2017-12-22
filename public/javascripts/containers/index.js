@@ -30,6 +30,16 @@ class Init extends Component{
 	render(){
 			return(
 		       <div className='login-div'>
+		        <div className='current-affairs-div'>
+		         <div className="dropdown">
+				  <button className="dropbtn">Menu</button>
+				  <div className="dropdown-content">
+				    <div className="gk-div-current-affairs"><Link to="/current-affairs">Current Affairs</Link></div>
+				    <div className="gk-div-current-affairs"><Link to="/signup">Daily GK</Link></div>
+				    <div className="gk-div-current-affairs"><Link to="/signup">Daily Quiz</Link></div>
+				  </div>
+				</div>
+			    </div>
 		         {this.props.show   ? <div className="link-button"><Link className='login-button' to="/profile">Profile</Link></div> : ""}
 		         {(this.props.show || this.props.adminLogin.status)  ? <div className="link-button"><Link className='login-button' to="/employee">Users</Link></div> : ""}
 		         <div className="user-profile-button-group">

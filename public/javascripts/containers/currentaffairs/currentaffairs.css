@@ -1,0 +1,13 @@
+.currentaffairs-containt{
+	padding: 80px;
+}
+.currentaffairs-containt .description{
+	max-height: 500px;
+	overflow: auto;
+	display: block;
+}
+.currentaffairs-containt .label{
+    font-weight: bold;
+    color: blue;
+    margin-bottom: 30px;
+}
