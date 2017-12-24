@@ -1,0 +1,15 @@
+.content-div{
+	height: 800px;
+    width: 1200px;
+    position: relative;
+}
+.content-button-save{
+	position: absolute;
+    bottom: 50px;
+    right: 0px;
+    left: 0px;
+    margin: 0px auto;
+    height: 20px;
+    width: 50px;
+    cursor: pointer;
+}

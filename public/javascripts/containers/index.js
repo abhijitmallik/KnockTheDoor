@@ -44,7 +44,7 @@ class Init extends Component{
 		         {(this.props.show || this.props.adminLogin.status)  ? <div className="link-button"><Link className='login-button' to="/employee">Users</Link></div> : ""}
 		         <div className="user-profile-button-group">
 		             {!this.props.adminLogin.status ? <div className="link-button"><Link className='login-button' to="/admin">Admin</Link></div> : ""}
-		             {!this.props.show ? <div className="link-button"><Link className='login-button' to="/textEditor">Insert Data</Link></div> :""}
+		             {!this.props.show ? <div className="link-button"><Link className='login-button' to="/content">Insert Data</Link></div> :""}
 		             {!this.props.show ? <div className="link-button"><Link className='login-button' to="/signup">Sign Up</Link></div> : ""}
 		             {!this.props.show ? <div className="link-button"><Link className='login-button' to="/signin">Sign in</Link></div> : ""}
 			         {(this.props.show || this.props.adminLogin.status)  ? <div className="link-button"><Link className='login-button' to="/" onClick={this.signOut.bind(this)}>Sign out</Link></div>:""}
