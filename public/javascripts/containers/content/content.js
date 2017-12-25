@@ -5,21 +5,29 @@ import {saveContent} from "../../actions/saveContent";
 import {bindActionCreators} from 'redux';
 import './contents.css';
 import TextEditor from "../../components/textEditor/textEditor.js";
+import { Redirect } from 'react-router-dom';
 
 class Content extends Component{
 	constructor(props){
 		super(props);
+		this.state={navigateToCurrentAffairs:false};
 	}
-	saveContent(){
-		var el = ReactDOM.findDOMNode(this);
-		var textEditorValue = el.querySelector('textarea').value;
-		this.props.saveContent(textEditorValue);
+	save(){
+		let el = ReactDOM.findDOMNode(this);
+		let textEditorValue = el.querySelector('textarea').value;
+        let obj = {id:"",desc:textEditorValue}
+		this.props.saveContent(obj,()=>{
+			this.setState({navigateToCurrentAffairs:true});
+		});
 	}
 	render(){
+		if(this.state.navigateToCurrentAffairs){
+			return (<Redirect to="/current-affairs"/>);
+		}
 		return(
           <div className="content-div">
              <TextEditor/>
-             <button className="content-button-save" onClick={this.saveContent.bind(this)}>Save</button>
+             <button className="content-button-save" onClick={this.save.bind(this)}>Save</button>
           </div>
 		)
 	}

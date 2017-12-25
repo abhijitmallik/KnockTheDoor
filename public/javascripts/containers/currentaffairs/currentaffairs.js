@@ -3,39 +3,44 @@ import './currentaffairs.css';
 import { EditorState, convertToRaw, ContentState } from 'draft-js';
 import htmlToDraft from 'html-to-draftjs';
 import {connect} from 'react-redux';
+import {getContent} from "../../actions/saveContent";
+import {bindActionCreators} from 'redux';
 
 class CurrentAffairs extends Component{
 	constructor(props){
 	   super(props);	
       this.state = {desc:""};
+      //this.callDesc = this.callDesc.bind(this);
 	}
-    componentDidMount(){
-    	if(this.props.getContent){
-    	  let html = this.props.getContent;
-    	  console.log("111111111",html);
-    	  let contentBlock = htmlToDraft(html);
-    	  console.log("222222222",contentBlock);
-    	  let contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks);
-    	  console.log("3333333333",contentState);
-          let editorState = EditorState.createWithContent(contentState);
-          console.log("========editorState======",editorState);
-          //this.setState({desc:editorState});
-          this.setState({desc:this.props.getContent})
-    	}
-    } 
+  componentDidMount(){
+      this.props.getContent((obj)=>{
+            console.log("========current affairs===",obj); 
+           this.setState({desc:obj});
+           console.log("====this.state.desc===",this.state.desc);
+      });
+  } 
 	render(){
-		return(
+    let data = this.state.desc;
+    if(data.length > 0){
+      console.log("this.state.desc",data);
+      let template = data.map((obj)=>{
+          return <span className="description" dangerouslySetInnerHTML={{__html:obj.desc}} key={obj._id}></span>
+      });
+      return(
           <div className="currentaffairs-containt">
-             <div className="label">Current Affairs</div>
-             <span className="description" dangerouslySetInnerHTML={{__html:this.state.desc}}>
-             </span>
+            <div className="label">Current Affairs</div>
+             {template}
           </div>
-		)
+      )
+    }else{
+      return(<div>No Data</div>);
+    }
+	
 	}
 }
 
-function setPropsToClass(state){
-	return ({getContent:state.getContent});
+function getActionToClass(dispatch){
+  return bindActionCreators({getContent},dispatch);
 }
 
-export default connect(setPropsToClass)(CurrentAffairs);
+export default connect(null,getActionToClass)(CurrentAffairs);

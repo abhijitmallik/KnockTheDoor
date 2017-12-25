@@ -47,6 +47,7 @@ server.listen(config.server.port,function(){
 socketIo.socketId(server,path,config);
 require('./routes/employee')(app,path,config);
 require('./routes/login')(app,path,config);
+require('./routes/saveContent')(app,path,config);
 
 
 

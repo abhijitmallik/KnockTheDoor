@@ -11,3 +11,7 @@
     color: blue;
     margin-bottom: 30px;
 }
+.currentaffairs-containt .row-data{
+	height: 20px;
+	display: inline-block;
+}
