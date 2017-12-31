@@ -1,24 +1,13 @@
 const adminModal = require('../models/admin.js');
-
-module.exports =(app,path,config)=>{
+module.exports =(app,path,config,passport)=>{
 	var user;
-	app.post('/adminUser',function(req,res){
-       admin = req.body;
-       adminModal.find({userName:admin.userName,password:admin.password},function(err,user){
-       	console.log("======admin err=====",err);
-        console.log("admin user1111 ",user);
-       	if(err){
-       		throw err;
-       	}
-       	console.log("admin user ",user);
-       	if(user.length > 0){
-       		res.json({status:true,id:user[0]._id,name:user[0].userName});
-       	}else{		
-       	   res.json({status:false});
-       	}
-       })
-	})
-
+    app.post('/adminUser',function(req,res,next){
+        passport.authenticate('adminsignup',{
+	       failureRedirect: '/'
+	    },function(obj){
+	    	res.json(obj);
+	    })(req,res,next);
+    });
 	app.post('/createAdmin',function(req,res){
 		admin = req.body;
 		adminModal.create(admin,function(err,user){

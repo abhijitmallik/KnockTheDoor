@@ -222,8 +222,6 @@ export default class WhiteBoardComponent extends Component{
       return !!navigator.getUserMedia;
     }
     setupPeerConnection(stream){
-      console.log("====caller====",caller);
-      console.log("====callee====",callee);
       let configuration = {
         "iceServers": [{ "url": "stun:stun.1.google.com:19302" }]
       };

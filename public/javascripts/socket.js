@@ -1,4 +1,5 @@
 import io from 'socket.io-client';
 //const socket = io(`${protocol}//${hostname}:${port}`);
-const socket = io("http://"+window.location.host);
+//io(window.location.protocol+"//"+window.location.hostname+":56432");
+const socket = io(window.location.origin);
 export default socket;

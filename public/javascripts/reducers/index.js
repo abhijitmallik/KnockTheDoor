@@ -6,6 +6,7 @@ import {croppedImage} from './croppedImageReducer';
 import {userLogIn} from './login';
 import {editUser} from './login';
 import {adminUserLogin} from './adminUserLoginReducer';
+import {getContent} from './saveContent';
 
 const rootReducer = combineReducers({
 	employeeReducer:getEmployees,
@@ -14,7 +15,8 @@ const rootReducer = combineReducers({
 	croppedImage:croppedImage,
 	userLogIn:userLogIn,
 	adminUserLogin:adminUserLogin,
-	editUser:editUser
+	editUser:editUser,
+	getContent:getContent
 });
 
 export default rootReducer;

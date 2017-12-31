@@ -1,12 +1,15 @@
 const socketIo = require("socket.io");
 const employees = require('../../models/employees.js');
-const http = require("http");
-module.exports.load =(app,path,config)=>{
-   const server = http.createServer(app);
-   const io = socketIo(server);
+module.exports.load =(server,path,config)=>{
+   //const server = http.createServer(app);
+   const io = require('socket.io')(server);
    let userLogin = [];
-   io.listen(config.server.ioPort);
-   console.log('io listening on port ', config.server.ioPort);
+   //io.listen(config.server.ioPort);
+   //io.configure(function () {  
+      //io.set("transports", ["xhr-polling"]); 
+      //io.set("polling duration", 10); 
+  // });
+   //console.log('io listening on port ', config.server.ioPort);
    require('../webrtcsocket')(io);
    io.on('connection', (client) => {
 	  client.on('signin', (user) => {
