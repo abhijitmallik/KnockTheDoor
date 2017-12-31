@@ -87944,7 +87944,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function authenticateUser(user, callback) {
    return function (dispatch) {
-      _axios2.default.post("/adminUser", user).then(function (res) {
+      _axios2.default.post("/adminUser", user, { headers: {
+            'Content-Type': 'application/json'
+         } }).then(function (res) {
          console.log("=====res=====", res);
          dispatch({ type: "LOGIN-USER", payload: res.data });
          callback(res.data.status);
