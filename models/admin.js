@@ -1,9 +1,9 @@
-var mongoose = require('mongoose');
+let mongoose = require('mongoose');
 
-var adminSchema = mongoose.Schema({
+let adminSchema = mongoose.Schema({
     userName:String,
     password:String
 });
-var AdminUser = mongoose.model('AdminUsers',adminSchema);
+let AdminUser = mongoose.model('AdminUsers',adminSchema);
 
 module.exports = AdminUser;

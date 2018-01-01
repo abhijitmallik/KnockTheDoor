@@ -15,6 +15,8 @@ const config = {server:{
                         ioPort:56432 
                       },
                       dbURL:'mongodb://knockthedoor:laptoppc84@ds231245.mlab.com:31245/knockthedoor'};
+const passport = require('passport');
+                      
 
 //dbURL:'mongodb://127.0.0.1:27017/'
 //mongodb://<dbuser>:<dbpassword>@ds231245.mlab.com:31245/knockthedoor
@@ -25,10 +27,12 @@ const fs = require('fs');
 app.set('view engine', 'html');
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static('public'));
 app.use(express.static(path.join(__dirname, 'production')));
+app.use(passport.initialize());
+app.use(passport.session());
 
 
 
@@ -45,8 +49,9 @@ server.listen(config.server.port,function(){
     console.log("application is listening on port",config.server.port);
 })
 socketIo.socketId(server,path,config);
+require('./routes/passport')(passport);
 require('./routes/employee')(app,path,config);
-require('./routes/login')(app,path,config);
+require('./routes/login')(app,path,config,passport);
 require('./routes/saveContent')(app,path,config);
 
 
@@ -54,7 +59,7 @@ require('./routes/saveContent')(app,path,config);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
+  var err = new Error('Not Found',res);
   err.status = 404;
   next(err);
 });
