@@ -50,7 +50,8 @@ server.listen(config.server.port,function(){
 })
 socketIo.socketId(server,path,config);
 require('./routes/passport')(passport);
-require('./routes/employee')(app,path,config);
+require('./routes/userloginpassport')(passport);
+require('./routes/employee')(app,path,config,passport);
 require('./routes/login')(app,path,config,passport);
 require('./routes/saveContent')(app,path,config);
 
