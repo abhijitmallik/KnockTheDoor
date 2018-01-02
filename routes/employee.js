@@ -2,8 +2,7 @@
 /* GET home page. */
 const Employees = require('../models/employees.js');
 const util = require('../util/util.js').util;
-const Cookies = require("cookies");
-module.exports =(app,path,config,passport)=>{
+module.exports =(app,path,config,passport,Cookies)=>{
 	let emp;
 	app.get('/', function(req, res, next) {
 	  res.sendFile(path.resolve(__dirname,'public','index.html'))
@@ -79,7 +78,8 @@ module.exports =(app,path,config,passport)=>{
 	app.post('/userLogin',function(req,res){
 		console.log("1212121212121212");
 	   const cookiejar = new Cookies(req, res);
-	   if(typeof cookiejar.get("user-loggedin") != 'undefined'){
+	   if(typeof cookiejar.get("user-loggedin") != 'undefined' && cookiejar.get("user-loggedin") != "undefined"){
+	   	        console.log("======",cookiejar.get("user-loggedin")); 
 	        	let user = JSON.parse(cookiejar.get("user-loggedin"));
             	console.log("not undefined");
             	res.json({status:true,id:user[0]._id,firstname:user[0].firstname,lastname:user[0].lastname,age:user[0].age,
@@ -97,11 +97,14 @@ module.exports =(app,path,config,passport)=>{
 		    	if(obj.length > 0){
 		    		console.log("111111111");
 		    		if(util.validPassword(emp.password,obj[0].password)){
-		    			        console.log("1222222222");     
-		    			        //console.log("===JSON.stringify(user)==",JSON.stringify(user));
-		    			        cookiejar.set("user-loggedin",JSON.stringify(user));
-		    			        var getCookies = cookiejar.get("user-loggedin");
-		    			        console.log("===cookiejar.get(user-loggedin)==",getCookies);
+		    			        console.log("1222222222"); 
+		    			        let cookiejar = new Cookies(req, res);    
+		    			        //console.log("===cookiejar==",cookiejar);
+		    			        res.cookie('user-loggedin',JSON.stringify(obj));
+
+		    			        cookiejar.set("user-loggedin",JSON.stringify(obj));
+		    			        //var getCookies = cookiejar.get("user-loggedin");
+		    			        console.log("===cookiejar.get(user-loggedin)==",cookiejar.get("user-loggedin"));
 					       		res.json({status:true,id:obj[0]._id,firstname:obj[0].firstname,lastname:obj[0].lastname,age:obj[0].age,
 					       		         occupation:obj[0].occupation,city:obj[0].city,state:obj[0].state,
 					       		         phone:obj[0].phone,pin:obj[0].pin,email:obj[0].email,dateOfJoin:obj[0].dateOfJoin,croppedImage:obj[0].croppedImage});    
@@ -110,7 +113,7 @@ module.exports =(app,path,config,passport)=>{
 			       		}
 		    	}
 		    	
-		    });
+		    })(req,res);
 	       })
 	   }
      

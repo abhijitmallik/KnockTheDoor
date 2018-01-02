@@ -16,6 +16,7 @@ const config = {server:{
                       },
                       dbURL:'mongodb://knockthedoor:laptoppc84@ds231245.mlab.com:31245/knockthedoor'};
 const passport = require('passport');
+const Cookies = require("cookies");
                       
 
 //dbURL:'mongodb://127.0.0.1:27017/'
@@ -51,8 +52,8 @@ server.listen(config.server.port,function(){
 socketIo.socketId(server,path,config);
 require('./routes/passport')(passport);
 require('./routes/userloginpassport')(passport);
-require('./routes/employee')(app,path,config,passport);
-require('./routes/login')(app,path,config,passport);
+require('./routes/employee')(app,path,config,passport,Cookies);
+require('./routes/login')(app,path,config,passport,Cookies);
 require('./routes/saveContent')(app,path,config);
 
 

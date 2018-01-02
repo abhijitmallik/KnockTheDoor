@@ -1,6 +1,5 @@
 const adminModal = require('../models/admin.js');
-const Cookies = require("cookies");
-module.exports =(app,path,config,passport)=>{
+module.exports =(app,path,config,passport,Cookies)=>{
 	var user;
 	app.use((req, res, next) => {
         const cookiejar = new Cookies(req, res);
