@@ -1,15 +1,19 @@
 
 /* GET home page. */
-const employees = require('../models/employees.js');
+const Employees = require('../models/employees.js');
+const util = require('../util/util.js').util;
 module.exports =(app,path,config)=>{
-	var emp;
+	let emp;
 	app.get('/', function(req, res, next) {
 	  res.sendFile(path.resolve(__dirname,'public','index.html'))
 	});
 
 	app.post('/employee',function(req,res){
 		emp = req.body;
-		employees.create(emp,function(err,emps){
+		let empObj = new Employees();
+		emp.password = util.generateHash(emp.password);
+		emp.reenterpassword = util.generateHash(emp.reenterpassword);
+		Employees.create(emp,function(err,emps){
 			if(err){
 				throw err;
 			}
@@ -18,14 +22,13 @@ module.exports =(app,path,config)=>{
 	})
 
 	app.get('/employees',function(req,res){
-		employees.find(function(err,emps){
-			var objArr = [];
+		Employees.find(function(err,emps){
+			let objArr = [];
             if(err){
             	throw err;
             }
-            for(var i=0;i<emps.length;i++){
-            	var emp = emps[i];
-            	console.log("====emp.online====",emp.online);
+            for(let i=0;i<emps.length;i++){
+            	let emp = emps[i];
             	objArr.push({_id:emp._id,firstname:emp.firstname,lastname:emp.lastname,
             	age:emp.age,occupation:emp.occupation,dateOfJoin:emp.dateOfJoin,city:emp.city,state:emp.state,croppedImage:emp.croppedImage,online:emp.online,canAcceptSession:emp.canAcceptSession});
             }
@@ -36,7 +39,7 @@ module.exports =(app,path,config)=>{
 	app.put('/editemployee',function(req,res){
 		emp = req.body;
 		console.log("update information",emp.id);
-		 employees.update({_id: emp.id}, emp, function(err, obj) {
+		 Employees.update({_id: emp.id}, emp, function(err, obj) {
 		    if (err) {
 		      res.send(err);
 		    }
@@ -45,9 +48,8 @@ module.exports =(app,path,config)=>{
 	})
 
 	app.put('/deleteemployee',function(req,res){
-		console.log("=====req.body.id====",req.body.id);
-		var query = {_id: req.body.id}; 
-		employees.remove(query,function(err,emp){
+		let query = {_id: req.body.id}; 
+		Employees.remove(query,function(err,emp){
 			if(err){
 				throw err;
 			}
@@ -57,17 +59,16 @@ module.exports =(app,path,config)=>{
 
 	app.post('/userLogin',function(req,res){
        emp = req.body;
-       employees.find({firstname:emp.username,password:emp.password},function(err,user){
+       Employees.find({firstname:emp.username},function(err,user){
        	if(user.length > 0){
-       		employees.update({_id: user[0]._id}, {online:true}, function(err) {
-		    if(user.length > 0){
-	       		res.json({status:true,id:user[0]._id,firstname:user[0].firstname,lastname:user[0].lastname,age:user[0].age,
-	       		         occupation:user[0].occupation,city:user[0].city,state:user[0].state,
-	       		         phone:user[0].phone,pin:user[0].pin,email:user[0].email,dateOfJoin:user[0].dateOfJoin,croppedImage:user[0].croppedImage});    
-	       	    }else{
-	       		  res.json({status:false,id:null});
-	         	}
-		    });
+       		if(util.validPassword(emp.password,user[0].password)){
+		       		res.json({status:true,id:user[0]._id,firstname:user[0].firstname,lastname:user[0].lastname,age:user[0].age,
+		       		         occupation:user[0].occupation,city:user[0].city,state:user[0].state,
+		       		         phone:user[0].phone,pin:user[0].pin,email:user[0].email,dateOfJoin:user[0].dateOfJoin,croppedImage:user[0].croppedImage});    
+       		}else{
+       			res.json({status:false,id:null});
+       		}
+       		
        	}else{
 
        	}

@@ -27034,9 +27034,17 @@ var _reactRouterDom = __webpack_require__(89);
 
 var _reactRedux = __webpack_require__(25);
 
+var _reactDom = __webpack_require__(46);
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
 var _socket = __webpack_require__(102);
 
 var _socket2 = _interopRequireDefault(_socket);
+
+var _adminLogin = __webpack_require__(956);
+
+var _redux = __webpack_require__(48);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -27070,6 +27078,10 @@ var Init = function (_Component) {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
 			window.addEventListener('beforeunload', this.handleWindowClose);
+			//*********For User sign in page showing by default********//
+			var el = _reactDom2.default.findDOMNode(this);
+			el.querySelector('.signin-class').click();
+			////////////////////////////////////////////
 		}
 	}, {
 		key: 'handleWindowClose',
@@ -27081,9 +27093,15 @@ var Init = function (_Component) {
 	}, {
 		key: 'signOut',
 		value: function signOut() {
-			_socket2.default.emit("signout", { id: this.props.loggedInUser.id, online: false });
-			this.setState({ logout: true });
-			this.props.show = false;
+			var _this2 = this;
+
+			if (this.props.loggedInUser) {
+				_socket2.default.emit("signout", { id: this.props.loggedInUser.id, online: false });
+			}
+			this.props.logout(function () {
+				_this2.setState({ logout: true });
+				_this2.props.show = false;
+			}).bind(this);
 		}
 	}, {
 		key: 'render',
@@ -27188,7 +27206,7 @@ var Init = function (_Component) {
 						{ className: 'link-button' },
 						_react2.default.createElement(
 							_reactRouterDom.Link,
-							{ className: 'login-button', to: '/signin' },
+							{ className: 'login-button signin-class', to: '/signin' },
 							'Sign in'
 						)
 					) : "",
@@ -27212,8 +27230,11 @@ var Init = function (_Component) {
 function mapPropsToComponent(state) {
 	return { show: state.userLogIn.enable, adminLogin: state.adminUserLogin, editUserLogin: state.editUser.enable, loggedInUser: state.userLogIn.userData };
 }
+function mapDispatchAction(dispatch) {
+	return (0, _redux.bindActionCreators)({ logout: _adminLogin.logOutAdmin }, dispatch);
+}
 
-exports.default = (0, _reactRedux.connect)(mapPropsToComponent)(Init);
+exports.default = (0, _reactRedux.connect)(mapPropsToComponent, mapDispatchAction)(Init);
 
 /***/ }),
 /* 291 */
@@ -87821,7 +87842,9 @@ var AdminLogin = function (_Component) {
 
   }, {
     key: 'componentDidMount',
-    value: function componentDidMount() {}
+    value: function componentDidMount() {
+      this.submit();
+    }
   }, {
     key: 'render',
     value: function render() {
@@ -87932,9 +87955,10 @@ function toggleLogin(bool) {
 
 
 Object.defineProperty(exports, "__esModule", {
-   value: true
+  value: true
 });
 exports.authenticateUser = authenticateUser;
+exports.logOutAdmin = logOutAdmin;
 
 var _axios = __webpack_require__(128);
 
@@ -87943,17 +87967,28 @@ var _axios2 = _interopRequireDefault(_axios);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function authenticateUser(user, callback) {
-   return function (dispatch) {
-      _axios2.default.post("/adminUser", user, { headers: {
-            'Content-Type': 'application/json'
-         } }).then(function (res) {
-         console.log("=====res=====", res);
-         dispatch({ type: "LOGIN-USER", payload: res.data });
-         callback(res.data.status);
-      }).catch(function (err) {
-         console.log("=========err=====", err);
-      });
-   };
+  return function (dispatch) {
+    _axios2.default.post("/adminUser", user, { headers: {
+        'Content-Type': 'application/json'
+      } }).then(function (res) {
+      console.log("=====res=====", res);
+      dispatch({ type: "LOGIN-USER", payload: res.data });
+      callback(res.data.status);
+    }).catch(function (err) {
+      console.log("=========err=====", err);
+    });
+  };
+}
+
+function logOutAdmin(callback) {
+  debugger;
+  console.log("logout admin");
+  return function (dispatch) {
+    _axios2.default.post("/adminLogout").then(function (res) {
+      console.log("logout admin", res);
+      callback(res);
+    });
+  };
 }
 
 /***/ }),
