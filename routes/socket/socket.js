@@ -1,35 +1,32 @@
 const socketIo = require("socket.io");
 const employees = require('../../models/employees.js');
-module.exports.load =(server,path,config)=>{
+module.exports.load =(server,path,config,redisConfig,redis,emitter)=>{
    //const server = http.createServer(app);
    const io = require('socket.io')(server);
+   io.adapter(redis(redisConfig));
    let userLogin = [];
-   //io.listen(config.server.ioPort);
-   //io.configure(function () {  
-      //io.set("transports", ["xhr-polling"]); 
-      //io.set("polling duration", 10); 
-  // });
-   //console.log('io listening on port ', config.server.ioPort);
    require('../webrtcsocket')(io);
    io.on('connection', (client) => {
 	  client.on('signin', (user) => {
       userLogin.push(user.id);
-     // setInterval(() => {
+           emitter.emit('onlineStatus',{"onlineUsers":userLogin});
            client.broadcast.emit('onlineStatus',{"onlineUsers":userLogin});
-    //  }, 2000);
 	  }); 
 
      client.on('signout', (user) => {
       userLogin.splice(userLogin.indexOf(user.id),1);
+      emitter.emit('onlineStatus',{"onlineUsers":userLogin});
       client.broadcast.emit('onlineStatus',{"onlineUsers":userLogin});
      }); 
 
      client.on('shareWhiteBoard',(user)=>{ 
+      emitter.emit('acceptWhiteBoardSharing',{id:user.id,adminId:user.adminId,canAcceptSession:user.show});
       client.broadcast.emit('acceptWhiteBoardSharing',{id:user.id,adminId:user.adminId,canAcceptSession:user.show});
      });
 
 
     client.on('setcoordinates', (cord) => {
+      emitter.emit('getcoordinates',cord);
       client.broadcast.emit('getcoordinates',cord);
      });
    });

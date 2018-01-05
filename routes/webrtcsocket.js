@@ -5,9 +5,6 @@ module.exports =(io)=>{
 	    socket.on('message',(data) => {
 	    	let channel = data.room;
 	    	let conn;
-	    	console.log("=====data.type====",data.type);
-	    	console.log("=====users length=====",Object.keys(users).length);
-	    	console.log("=====users=====",users);
 	    	switch(data.type){
 	    		case "create or join":
 	    		 // First client joining...
@@ -19,8 +16,6 @@ module.exports =(io)=>{
 	    		   }
 		           if(Object.keys(users).length > 0){
 		           	 let numClients = Object.keys(users).length; 
-		           	 console.log("===========numClients==========",numClients);
-		           	 console.log("=====users=====",users);
 			           if (numClients == 1) {
 				            io.sockets.in(channel).emit('join', channel);
 				            socket.join(channel);

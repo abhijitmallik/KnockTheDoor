@@ -4,10 +4,6 @@ const Employees = require('../models/employees.js');
 const util = require('../util/util.js').util;
 module.exports =(app,path,config,passport,Cookies)=>{
 	let emp;
-	app.get('/', function(req, res, next) {
-	  res.sendFile(path.resolve(__dirname,'public','index.html'))
-	});
-
 	app.post('/employee',function(req,res){
 		emp = req.body;
 		let empObj = new Employees();
@@ -76,12 +72,9 @@ module.exports =(app,path,config,passport,Cookies)=>{
 	});*/
 
 	app.post('/userLogin',function(req,res){
-		console.log("1212121212121212");
 	   const cookiejar = new Cookies(req, res);
 	   if(typeof cookiejar.get("user-loggedin") != 'undefined' && cookiejar.get("user-loggedin") != "undefined"){
-	   	        console.log("======",cookiejar.get("user-loggedin")); 
 	        	let user = JSON.parse(cookiejar.get("user-loggedin"));
-            	console.log("not undefined");
             	res.json({status:true,id:user[0]._id,firstname:user[0].firstname,lastname:user[0].lastname,age:user[0].age,
    		         occupation:user[0].occupation,city:user[0].city,state:user[0].state,
    		         phone:user[0].phone,pin:user[0].pin,email:user[0].email,dateOfJoin:user[0].dateOfJoin,croppedImage:user[0].croppedImage});    
@@ -89,22 +82,13 @@ module.exports =(app,path,config,passport,Cookies)=>{
 	   	console.log("else",req.body);
 	   	   emp = req.body;
 	       Employees.find({firstname:emp.username},function(err,user){
-	       	console.log("user password db",user[0].password);
-		    console.log("=====emp.password===",emp.password);
 	       	passport.authenticate('usersignup',{
 		       failureRedirect: '/'
 		    },(obj)=>{
 		    	if(obj.length > 0){
-		    		console.log("111111111");
 		    		if(util.validPassword(emp.password,obj[0].password)){
-		    			        console.log("1222222222"); 
-		    			        let cookiejar = new Cookies(req, res);    
-		    			        //console.log("===cookiejar==",cookiejar);
-		    			        res.cookie('user-loggedin',JSON.stringify(obj));
-
-		    			        cookiejar.set("user-loggedin",JSON.stringify(obj));
-		    			        //var getCookies = cookiejar.get("user-loggedin");
-		    			        console.log("===cookiejar.get(user-loggedin)==",cookiejar.get("user-loggedin"));
+		    			        util.cookies.userLoogedIn = JSON.stringify(obj);
+		    			        res.cookie('loggedin',obj,{ maxAge: 1000 * 60 * 10, httpOnly: false });
 					       		res.json({status:true,id:obj[0]._id,firstname:obj[0].firstname,lastname:obj[0].lastname,age:obj[0].age,
 					       		         occupation:obj[0].occupation,city:obj[0].city,state:obj[0].state,
 					       		         phone:obj[0].phone,pin:obj[0].pin,email:obj[0].email,dateOfJoin:obj[0].dateOfJoin,croppedImage:obj[0].croppedImage});    

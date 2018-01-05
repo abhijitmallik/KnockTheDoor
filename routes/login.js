@@ -1,9 +1,10 @@
 const adminModal = require('../models/admin.js');
+const util = require('../util/util.js').util;
 module.exports =(app,path,config,passport,Cookies)=>{
 	var user;
 	app.use((req, res, next) => {
         const cookiejar = new Cookies(req, res);
-        const user = cookiejar.get("admin-user");
+        const user = req.cookies['admin-user'];
         if(req.url === "/adminLogout"){
         	res.clearCookie("admin-user");
         }
@@ -13,14 +14,15 @@ module.exports =(app,path,config,passport,Cookies)=>{
 		    },(obj)=>{
 		    	if(obj !== null){
 		    		if(obj.status === true){
-	                  cookiejar.set("admin-user",JSON.stringify(obj));
+		    		  util.cookies.adminLoggedIn = JSON.stringify(obj);
+		    	      res.cookie('admin-user',obj);
 			    	}
 			    	res.json(obj);
 		    	}
 		    	
 		    })(req,res,next);
         }else{
-            res.json(JSON.parse(user));
+            res.json(user);
         }
 	});
 	app.post('/createAdmin',(req,res)=>{

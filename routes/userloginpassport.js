@@ -18,7 +18,7 @@ module.exports = (passport)=>{
 	},(obj,username,password,done) =>{
 		console.log("call back method initiate");
 	  	employeeModal.find({firstname:obj.body.username},function(err,user){
-	  		console.log("callback method here",user);
+	  		//console.log("callback method here",user);
 	       	if(err){
 	       		done({status:false});
 	       	}
