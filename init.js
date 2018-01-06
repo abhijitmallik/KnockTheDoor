@@ -17,7 +17,7 @@ module.exports = (port,dbURL)=>{
       host: 'localhost',
       port: 6379
     };
-  const redis = require('socket.io-redis');
+  const redis = require('redis');
   const emitter = require('socket.io-emitter')(redisConfig);  
     app.set('view engine', 'html');
     app.use(logger('dev'));

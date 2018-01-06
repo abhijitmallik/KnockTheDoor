@@ -1,6 +1,7 @@
 
-module.exports =(io)=>{
+module.exports =(io,redisConfig)=>{
 	let users = [];
+	io.adapter(require('socket.io-redis')(redisConfig));
 	io.on('connection', (socket) => {
 	    socket.on('message',(data) => {
 	    	let channel = data.room;
