@@ -21,7 +21,10 @@ module.exports = (port,serverConfig)=>{
   redisConfig.port = redisURL.port;
   redisConfig.auth = redisURL.auth.split(":")[1];
   console.log("====redisConfig===",redisConfig);
-  //const redis = require('redis');
+  const redis = require('redis');
+  let redisClient = redis.createClient(redisConfig.port, redisConfig.host);
+  redisClient.auth(redisConfig.auth);
+  console.log("111111111111111");
   const emitter = require('socket.io-emitter')(redisConfig); 
     //emitter.auth(redisURL.auth.split(":")[1]); 
     console.log("12121212121212121212121");
