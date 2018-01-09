@@ -19,6 +19,7 @@ module.exports = (port,serverConfig)=>{
   const redisURL = url.parse(process.env.REDISCLOUD_ONYX_URL);
   redisConfig.host = redisURL.hostname;
   redisConfig.port = redisURL.port;
+  console.log("====redisConfig===",redisConfig);
   //const redis = require('redis');
   const emitter = require('socket.io-emitter')(redisConfig);  
     app.set('view engine', 'html');
