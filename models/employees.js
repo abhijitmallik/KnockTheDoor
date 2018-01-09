@@ -1,6 +1,6 @@
-var mongoose = require('mongoose');
+let mongoose = require('mongoose');
 
-var employeeSchema = mongoose.Schema({
+let employeeSchema = mongoose.Schema({
     firstname:String,
     lastname:String,
     age:Number,
@@ -17,6 +17,6 @@ var employeeSchema = mongoose.Schema({
     online:String,
     canAcceptSession:Boolean	
 });
-var Employees = mongoose.model('Employee',employeeSchema);
+let Employees = mongoose.model('Employee',employeeSchema);
 
 module.exports = Employees;

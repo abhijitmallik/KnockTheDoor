@@ -20,7 +20,6 @@ module.exports = (passport)=>{
 	       	if(err){
 	       		done({status:false});
 	       	}
-	       	console.log("admin user ",user);
 	       	if(user.length > 0){
 	       		done({status:true,id:user[0]._id,name:user[0].userName});
 	       	}else{		

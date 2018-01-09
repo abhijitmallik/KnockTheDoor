@@ -5,6 +5,7 @@ import './signin.css';
 import {connect} from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import socket from '../../socket.js';
+import cookie from 'react-cookies';
 
 const FIELDS = {
   username:{
@@ -25,6 +26,9 @@ class SignIn extends Component{
 	constructor(props){
       super(props);
       this.state = {redirectToUser:false};
+	}
+	componentWillMount() {
+	  console.log("===cookie.loadAll()===",cookie.loadAll());
 	}
 	onSubmit(obj){
 		this.props.signin(obj,(user) => {  
