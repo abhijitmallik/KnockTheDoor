@@ -1,4 +1,5 @@
-module.exports = (port,dbURL)=>{
+module.exports = (port,serverConfig)=>{
+  const dbURL = serverConfig.dbURL;
   const express = require('express');
   const app = express();
   const path = require('path');
@@ -13,10 +14,7 @@ module.exports = (port,dbURL)=>{
   const passport = require('passport');
   const Cookies = require("cookies");
   const fs = require('fs');
-  const redisConfig = {
-      host: '127.0.0.1',
-      port: 6379
-    };
+  const redisConfig = serverConfig.redis;
   //const redis = require('redis');
   const emitter = require('socket.io-emitter')(redisConfig);  
     app.set('view engine', 'html');
