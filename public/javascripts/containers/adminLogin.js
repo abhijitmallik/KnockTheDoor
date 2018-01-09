@@ -19,7 +19,7 @@ class AdminLogin extends Component{
   }
   //As soon as the render method has been executed the componentDidMount function is called. 
   componentDidMount(){
-
+    this.submit();
   }
 	render(){
     if (this.state.redirectToNewPage == true) {

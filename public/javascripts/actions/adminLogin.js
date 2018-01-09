@@ -13,3 +13,14 @@ export function authenticateUser(user,callback){
 	   })
    }
 }
+
+export function logOutAdmin(callback){
+  debugger;
+  console.log("logout admin");
+  return function(dispatch){
+    axios.post("/adminLogout").then((res)=>{
+      console.log("logout admin",res);
+      callback(res);
+    })
+  }
+}
