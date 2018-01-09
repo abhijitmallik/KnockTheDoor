@@ -15,8 +15,7 @@ module.exports = (port,serverConfig)=>{
   const Cookies = require("cookies");
   const fs = require('fs');
   const redisConfig = serverConfig.redis;
-  //const redis = require('redis');
-  const emitter = require('socket.io-emitter')(redisConfig);  
+  const emitter = require('socket.io-emitter')(redisConfig); 
     app.set('view engine', 'html');
     app.use(logger('dev'));
     app.use(bodyParser.json());
