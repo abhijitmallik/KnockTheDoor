@@ -19,11 +19,11 @@ module.exports = (port,serverConfig)=>{
   const redisURL = url.parse(process.env.REDISCLOUD_ONYX_URL);
   redisConfig.host = redisURL.hostname;
   redisConfig.port = redisURL.port;
- // redisConfig.auth = redisURL.auth.split(":")[1];
+  redisConfig.auth = redisURL.auth.split(":")[1];
   console.log("====redisConfig===",redisConfig);
   //const redis = require('redis');
   const emitter = require('socket.io-emitter')(redisConfig); 
-    emitter.auth(redisURL.auth.split(":")[1]); 
+    //emitter.auth(redisURL.auth.split(":")[1]); 
     console.log("12121212121212121212121");
     app.set('view engine', 'html');
     app.use(logger('dev'));
