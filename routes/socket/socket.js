@@ -2,9 +2,7 @@ const socketIo = require("socket.io");
 const employees = require('../../models/employees.js');
 module.exports.load =(server,path,config,redisConfig,emitter)=>{
    const io = require('socket.io')(server);
-   console.log("33333333333333");
    io.adapter(require('socket.io-redis')(redisConfig));
-   console.log("444444444444444");
    require('../webrtcsocket')(io,emitter);
    let userLogin = [];
    io.on('connection', (client) => {
