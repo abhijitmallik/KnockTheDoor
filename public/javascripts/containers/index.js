@@ -1,8 +1,11 @@
 import React,{Component} from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import ReactDOM from 'react-dom';
 import { Redirect } from 'react-router-dom';
 import socket from '../socket.js';
+import {logOutAdmin} from '../actions/adminLogin';
+import {bindActionCreators} from 'redux';
 class Init extends Component{
 	constructor(props){
 		super(props);
@@ -16,6 +19,10 @@ class Init extends Component{
 	}
 	componentDidMount(){
 		window.addEventListener('beforeunload', this.handleWindowClose);
+		//*********For User sign in page showing by default********//
+		var el = ReactDOM.findDOMNode(this);
+	    el.querySelector('.signin-class').click();
+	    ////////////////////////////////////////////
 	}
 	handleWindowClose(ev){
 		ev.preventDefault();
@@ -23,9 +30,14 @@ class Init extends Component{
         return ev.returnValue = 'Are you sure you want to close?';
 	}
 	signOut(){
-		socket.emit("signout",{id:this.props.loggedInUser.id,online:false});
-		this.setState({logout:true});
-		this.props.show = false;
+		if(this.props.loggedInUser){
+			socket.emit("signout",{id:this.props.loggedInUser.id,online:false});
+		}
+		this.props.logout(()=>{
+			this.setState({logout:true});
+		    this.props.show = false;
+		}).bind(this);
+		
 	}
 	render(){
 			return(
@@ -46,7 +58,7 @@ class Init extends Component{
 		             {!this.props.adminLogin.status ? <div className="link-button"><Link className='login-button' to="/admin">Admin</Link></div> : ""}
 		             {!this.props.show ? <div className="link-button"><Link className='login-button' to="/content">Insert Data</Link></div> :""}
 		             {!this.props.show ? <div className="link-button"><Link className='login-button' to="/signup">Sign Up</Link></div> : ""}
-		             {!this.props.show ? <div className="link-button"><Link className='login-button' to="/signin">Sign in</Link></div> : ""}
+		             {!this.props.show ? <div className="link-button"><Link className='login-button signin-class' to="/signin">Sign in</Link></div> : ""}
 			         {(this.props.show || this.props.adminLogin.status)  ? <div className="link-button"><Link className='login-button' to="/" onClick={this.signOut.bind(this)}>Sign out</Link></div>:""}
 		         </div>
 		       </div>
@@ -56,5 +68,8 @@ class Init extends Component{
  function mapPropsToComponent(state){
  	return({show:state.userLogIn.enable,adminLogin:state.adminUserLogin,editUserLogin:state.editUser.enable,loggedInUser:state.userLogIn.userData});
  } 
+ function mapDispatchAction(dispatch){
+  return bindActionCreators({logout:logOutAdmin},dispatch);
+}
 
- export default  connect(mapPropsToComponent)(Init);
+ export default  connect(mapPropsToComponent,mapDispatchAction)(Init);

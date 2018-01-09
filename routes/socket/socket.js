@@ -1,22 +1,14 @@
 const socketIo = require("socket.io");
 const employees = require('../../models/employees.js');
-module.exports.load =(server,path,config)=>{
-   //const server = http.createServer(app);
+module.exports.load =(server,path,config,redisConfig,emitter)=>{
    const io = require('socket.io')(server);
+   io.adapter(require('socket.io-redis')(redisConfig));
+   require('../webrtcsocket')(io,emitter);
    let userLogin = [];
-   //io.listen(config.server.ioPort);
-   //io.configure(function () {  
-      //io.set("transports", ["xhr-polling"]); 
-      //io.set("polling duration", 10); 
-  // });
-   //console.log('io listening on port ', config.server.ioPort);
-   require('../webrtcsocket')(io);
    io.on('connection', (client) => {
 	  client.on('signin', (user) => {
       userLogin.push(user.id);
-     // setInterval(() => {
-           client.broadcast.emit('onlineStatus',{"onlineUsers":userLogin});
-    //  }, 2000);
+      client.broadcast.emit('onlineStatus',{"onlineUsers":userLogin});
 	  }); 
 
      client.on('signout', (user) => {

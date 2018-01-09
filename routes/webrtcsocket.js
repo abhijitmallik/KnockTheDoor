@@ -1,139 +1,76 @@
-
-module.exports =(io)=>{
+module.exports =(io,emitter)=>{
 	let users = [];
 	io.on('connection', (socket) => {
 	    socket.on('message',(data) => {
 	    	let channel = data.room;
 	    	let conn;
-	    	console.log("=====data.type====",data.type);
-	    	console.log("=====users length=====",Object.keys(users).length);
-	    	console.log("=====users=====",users);
+	    	console.log("======data.type====",data.type);
 	    	switch(data.type){
-	    		case "create or join":
-	    		 // First client joining...
-	    		   if(users[data.connectedUser]){
-                        socket.emit('message', {
-		                	type:'alreadySignedIn',
-		                	success:true
-		                });
-	    		   }
-		           if(Object.keys(users).length > 0){
-		           	 let numClients = Object.keys(users).length; 
-		           	 console.log("===========numClients==========",numClients);
-		           	 console.log("=====users=====",users);
-			           if (numClients == 1) {
-				            io.sockets.in(channel).emit('join', channel);
-				            socket.join(channel);
-				            conn = users[data.adminId];
-				             if(conn !== null){
-				             	conn.emit('message', {
-					            	type:'joined',
-					            	success:true,
-					            	adminId:data.adminId,
-					            	clientId:data.clientId
-					            });
-				             }
-				            
-				            socket.emit('message', {
-			                	type:'joined',
-			                	success:true,
-			                	adminId:data.adminId,
-				            	clientId:data.clientId
-			                });
-			                socket.name = data.clientId;
-			                users[data.clientId] = socket;
-				        } else { // max two clients
-				            socket.emit('full', channel);
-				        }
-				        
-		           	
-		            }else{
-		            	socket.join(channel);
-		                socket.emit('message', {
+                case 'create or join':
+                  if(data.userType === 'admin'){
+                        emitter.broadcast.emit('message', {
 		                	type:'created',
 		                	success:true,
 		                	adminId:data.adminId,
-				            clientId:data.clientId
+				            clientId:data.clientId,
+				            sendTo:'admin'
 		                });
-		                socket.name = data.adminId;
-		                users[data.adminId] = socket;
-		            }
-		            break;
-		        case "ringing" :
-                      conn = users[data.callee];
-                      if(conn !== null){
-                      	conn.emit('message',{
+                  }else if(data.userType === 'client'){
+                        emitter.broadcast.emit('message', {
+		                	type:'joined',
+			                success:true,
+			                adminId:data.adminId,
+				            clientId:data.clientId,
+				            sendTo:'admin'
+		                });
+                  }
+                break;
+                case "ringing" :
+                    	emitter.broadcast.emit('message',{
                       		type:'ringing',
                       		caller:data.callee,
-                      		callee:data.caller
-                      	})
-                      }
-		             break;  
+                      	    callee:data.caller,
+                      	    sendTo:'client'
+                     	});
+		        break
 		        case "acceptCall" :
-		              conn = users[data.callee];
-                      if(conn !== null){
-                      	conn.emit('message',{
+                      	emitter.broadcast.emit('message',{
                       		type:'acceptCall',
                       		caller:data.callee,
-                      		callee:data.caller
+                      		callee:data.caller,
+                      		sendTo:'admin'
                       	})
-                      }
-		             break;       
-		        case "candidate" :
-		            conn = users[data.callee];
-		            if(conn !== null){
-		            	conn.emit('message',{
-		            		type:'candidate',
-		            		candidate:data.candidate
-		            	})
-		            }
-		            break;   
+		        break; 
 		        case "offer":
-		             conn = users[data.callee];
-		             if(conn != null){
-                       conn.emit('message',{
+                       emitter.broadcast.emit('message',{
                        	 type:'offer',
                        	 offer:data.offer,
                        	 caller:data.callee,
-                       	 callee:data.caller
-                       })
-		             }
+                       	 callee:data.caller,
+                       	 sendTo:'client'
+                       });
 		             break;
 		        case "answer":
-		             conn = users[data.callee];
-		             if(conn != null){
-		             	conn.emit('message',{
+		             	emitter.broadcast.emit('message',{
 		             		type:'answer',
-		             		answer:data.answer
+		             		answer:data.answer,
+		             		sendTo:'admin'
 		             	})
-		             }
-		             break;  
-		        case "leave":
-		             conn = users[data.callee];    
-		             if(conn != null){
-		             	conn.emit('message',{
-		             		type:'leave',
-		             		caller:data.caller,
-                            callee:data.callee
-		             	})
-		             	delete users[data.caller];
-		             	delete users[data.callee];
-		             	users = [];
-		             }
-		             break;    
-		        case "terminate":
-		             var clientsLength = Object.keys(users).length;
-		             if(clientsLength > 0){
-		             	for(var i=0;i<clientsLength;i++){
-		             		delete users[Object.keys(users)];
-		             	}
-		             	users = [];
-		             }      
+		             break;      
+		        case "leave" : 
+		                emitter.broadcast.emit('message',{
+                  	    	type:'leave',
+                  	    	sendTo:data.userType
+                  	    });
+                break;
+                case "candidate" :
+		            	emitter.broadcast.emit('message',{
+		            		type:'candidate',
+		            		candidate:data.candidate,
+		            		sendTo:data.userType
+		            	})
+		            break;  	    
 	    	}
-          
 	    });
-	 
-    });
-}	
-
-
+	});
+}

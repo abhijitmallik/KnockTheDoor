@@ -1,7 +1,7 @@
 // author: Abhijit Mallik
 
-var loadEndpoints = function(app,path,config) {
-    require('./socket').load(app,path,config);
+var loadEndpoints = function(app,path,config,redisConfig,redis,emitter) {
+    require('./socket').load(app,path,config,redisConfig,redis,emitter);
 };
 
 module.exports = {

@@ -3,6 +3,7 @@ import React,{Component} from 'react';
 import './whiteBoardComponent.css';
 import socket from '../../socket.js';
 import ReactAudioPlayer from 'react-audio-player';
+import io from 'socket.io-client';
 
 let lastX = 0;
 let lastY = 0;
@@ -11,12 +12,15 @@ let canvas;
 let ctx;
 let coordinatesArr = [];
 let rtcConnection;
-let constraints = {video:false,audio:false};
+let constraints = {video:true,audio:false};
 let connectedUser;
 let callee;
 let caller;
 let stream;
 let callPhoneInterval;
+let userType;
+
+
  
 export default class WhiteBoardComponent extends Component{
     static defaultProps = {
@@ -133,27 +137,34 @@ export default class WhiteBoardComponent extends Component{
       }
     }
     audioVideoCall(){
+       this.resetConnection();
        if(this.state.showVideoAudio){
          this.setState({showVideoAudio:false});
-         this.closeConnection();
        }else{
          this.setState({showVideoAudio:true});
        }
+       if(this.state.showVideoAudio){
+         this.closeConnection();
+       }
        let room =  "Online Session";
-       if (room !== "") {
+       if (room !== "" && !this.state.showVideoAudio) {
             if(this.props.adminInfo.status){  
+              userType = "admin";
               this.messageSend({
                 type:'create or join',
                 room:room,
                 adminId:this.props.adminInfo.id,
-                clientId:this.props.invitedIds
+                clientId:this.props.invitedIds,
+                userType:'admin'
               });
             }else{
+              userType = "client";
               this.messageSend({
                 type:'create or join',
                 room:room,
                 adminId:this.props.userInfo.adminId,
-                clientId:this.props.invitedIds
+                clientId:this.props.invitedIds,
+                userType:'client'
               });
             }
             this.initConnection();
@@ -184,22 +195,35 @@ export default class WhiteBoardComponent extends Component{
               }
              break; 
             case "candidate":
-             this.onCandidate(obj.candidate);
+              if(obj.sendTo != userType){
+                 this.onCandidate(obj.candidate);
+              }
+            
              break; 
             case "ringing":
-              this.onRinging(obj);
+              if(obj.sendTo === userType){
+               this.onRinging(obj);
+              }
               break;
             case "acceptCall" :
-              this.acceptCall();
+              if(obj.sendTo === userType){
+                this.acceptCall();
+              }
               break;    
             case "offer" :
-              this.onOffer(obj); 
+            if(obj.sendTo === userType){
+               this.onOffer(obj); 
+              }
               break; 
             case "answer":
-              this.onAnswer(obj.answer);  
+              if(obj.sendTo === userType){
+               this.onAnswer(obj.answer);  
+              }
               break;
             case "leave":
-              this.onLeave();
+              if(obj.sendTo != userType){
+               this.onLeave();
+              }
               break;  
           }
        })
@@ -236,7 +260,8 @@ export default class WhiteBoardComponent extends Component{
             type:"candidate",
             candidate:event.candidate,
             caller:caller,
-            callee:callee
+            callee:callee,
+            userType:userType
           })
         }
       }
@@ -278,7 +303,9 @@ export default class WhiteBoardComponent extends Component{
         rtcConnection.addIceCandidate(new RTCIceCandidate(candidate));
     }
     messageSend(obj){
+    	console.log("===obj sent=====",obj);
       socket.emit('message', obj);
+      //socket2.emit('message', obj);
     }
     acceptCall(){
       this.createOffer();
@@ -353,17 +380,25 @@ export default class WhiteBoardComponent extends Component{
       //stream.getVideoTracks()[0].enabled = this.setState.constraints.video;
       
     }
-    closeConnection(){
-      rtcConnection.close();
-      rtcConnection.onicecandidate = null;
-      rtcConnection.onaddstream = null;
+    resetConnection(){
+      if(stream){
+        stream.getTracks()[0].stop();
+      }
+      if(rtcConnection){
+        rtcConnection.close();
+        rtcConnection.onicecandidate = null;
+        rtcConnection.onaddstream = null;
+      }
       this.setState({remoteStreamSrc:null});
+      rtcConnection = null;
+      caller = null;
+      stream = null;
+    }
+    closeConnection(){
       this.messageSend({
           type:"leave",
-          callee:callee,
-          caller:caller
+          userType:userType
       })
-      caller = null;
     }
     onLeave(){
       console.log("=======call here leave ==========");
@@ -374,7 +409,7 @@ export default class WhiteBoardComponent extends Component{
       this.setState({remoteStreamSrc:null});
       this.setState({voiceClass:"mute-audio"});
       this.setState({videoClass:"stop-video"});
-      //this.startConnection();
+      this.startConnection();
       this.setupPeerConnection(stream);
       this.setState({enableVideoCall:false});
     }
