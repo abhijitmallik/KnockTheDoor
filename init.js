@@ -15,6 +15,10 @@ module.exports = (port,serverConfig)=>{
   const Cookies = require("cookies");
   const fs = require('fs');
   const redisConfig = serverConfig.redis;
+  const url = require('url');
+  const redisURL = url.parse(process.env.REDISCLOUD_ONYX_URL);
+  redisConfig.host = redisURL.hostname;
+  redisConfig.port = redisURL.port;
   //const redis = require('redis');
   const emitter = require('socket.io-emitter')(redisConfig);  
     app.set('view engine', 'html');
