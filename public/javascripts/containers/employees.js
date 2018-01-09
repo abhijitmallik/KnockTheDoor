@@ -59,9 +59,7 @@ class Employees  extends Component{
 		this.setState({showDialog:true});
 	}
 	closeWhiteBoard(){
-		console.log("=====this.state.invitedMemberIds=====",this.state.invitedMemberIds);
 		socket.emit("shareWhiteBoard",{id:this.state.invitedMemberIds,show:false});
-		socket.emit('message', {type:'terminate'});
 		this.setState({showWhiteBoard:false});
 		
 	}

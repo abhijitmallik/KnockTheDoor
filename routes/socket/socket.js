@@ -1,9 +1,9 @@
 const socketIo = require("socket.io");
 const employees = require('../../models/employees.js');
-module.exports.load =(server,path,config,redisConfig,redis,emitter)=>{
+module.exports.load =(server,path,config,redisConfig,emitter)=>{
    const io = require('socket.io')(server);
-   require('../webrtcsocket')(io,redisConfig);
    io.adapter(require('socket.io-redis')(redisConfig));
+   require('../webrtcsocket')(io,emitter);
    let userLogin = [];
    io.on('connection', (client) => {
 	  client.on('signin', (user) => {

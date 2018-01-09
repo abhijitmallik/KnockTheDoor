@@ -14,10 +14,10 @@ module.exports = (port,dbURL)=>{
   const Cookies = require("cookies");
   const fs = require('fs');
   const redisConfig = {
-      host: 'localhost',
+      host: '127.0.0.1',
       port: 6379
     };
-  const redis = require('redis');
+  //const redis = require('redis');
   const emitter = require('socket.io-emitter')(redisConfig);  
     app.set('view engine', 'html');
     app.use(logger('dev'));
@@ -53,7 +53,7 @@ module.exports = (port,dbURL)=>{
     require('./routes/saveContent')(app,path,config);
     //require('./config/nginx');
     //require.('./routes/socket/rabbitMQ')(server,path,config);
-    socketIo.socketId(server,path,config,redisConfig,redis,emitter);
+    socketIo.socketId(server,path,config,redisConfig,emitter);
 
 
 

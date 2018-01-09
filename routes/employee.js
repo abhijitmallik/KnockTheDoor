@@ -82,6 +82,7 @@ module.exports =(app,path,config,passport,Cookies)=>{
 	   	console.log("else",req.body);
 	   	   emp = req.body;
 	       Employees.find({firstname:emp.username},function(err,user){
+	       	console.log("====user====",user);
 	       	passport.authenticate('usersignup',{
 		       failureRedirect: '/'
 		    },(obj)=>{

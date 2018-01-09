@@ -18,7 +18,6 @@ let callee;
 let caller;
 let stream;
 let callPhoneInterval;
-let userType;
 
 
  
@@ -137,34 +136,27 @@ export default class WhiteBoardComponent extends Component{
       }
     }
     audioVideoCall(){
-       this.resetConnection();
        if(this.state.showVideoAudio){
          this.setState({showVideoAudio:false});
+         this.closeConnection();
        }else{
          this.setState({showVideoAudio:true});
        }
-       if(this.state.showVideoAudio){
-         this.closeConnection();
-       }
        let room =  "Online Session";
-       if (room !== "" && !this.state.showVideoAudio) {
+       if (room !== "") {
             if(this.props.adminInfo.status){  
-              userType = "admin";
               this.messageSend({
                 type:'create or join',
                 room:room,
                 adminId:this.props.adminInfo.id,
-                clientId:this.props.invitedIds,
-                userType:'admin'
+                clientId:this.props.invitedIds
               });
             }else{
-              userType = "client";
               this.messageSend({
                 type:'create or join',
                 room:room,
                 adminId:this.props.userInfo.adminId,
-                clientId:this.props.invitedIds,
-                userType:'client'
+                clientId:this.props.invitedIds
               });
             }
             this.initConnection();
@@ -195,35 +187,22 @@ export default class WhiteBoardComponent extends Component{
               }
              break; 
             case "candidate":
-              if(obj.sendTo != userType){
-                 this.onCandidate(obj.candidate);
-              }
-            
+             this.onCandidate(obj.candidate);
              break; 
             case "ringing":
-              if(obj.sendTo === userType){
-               this.onRinging(obj);
-              }
+              this.onRinging(obj);
               break;
             case "acceptCall" :
-              if(obj.sendTo === userType){
-                this.acceptCall();
-              }
+              this.acceptCall();
               break;    
             case "offer" :
-            if(obj.sendTo === userType){
-               this.onOffer(obj); 
-              }
+              this.onOffer(obj); 
               break; 
             case "answer":
-              if(obj.sendTo === userType){
-               this.onAnswer(obj.answer);  
-              }
+              this.onAnswer(obj.answer);  
               break;
             case "leave":
-              if(obj.sendTo != userType){
-               this.onLeave();
-              }
+              this.onLeave();
               break;  
           }
        })
@@ -260,8 +239,7 @@ export default class WhiteBoardComponent extends Component{
             type:"candidate",
             candidate:event.candidate,
             caller:caller,
-            callee:callee,
-            userType:userType
+            callee:callee
           })
         }
       }
@@ -303,7 +281,6 @@ export default class WhiteBoardComponent extends Component{
         rtcConnection.addIceCandidate(new RTCIceCandidate(candidate));
     }
     messageSend(obj){
-    	console.log("===obj sent=====",obj);
       socket.emit('message', obj);
       //socket2.emit('message', obj);
     }
@@ -380,25 +357,17 @@ export default class WhiteBoardComponent extends Component{
       //stream.getVideoTracks()[0].enabled = this.setState.constraints.video;
       
     }
-    resetConnection(){
-      if(stream){
-        stream.getTracks()[0].stop();
-      }
-      if(rtcConnection){
-        rtcConnection.close();
-        rtcConnection.onicecandidate = null;
-        rtcConnection.onaddstream = null;
-      }
-      this.setState({remoteStreamSrc:null});
-      rtcConnection = null;
-      caller = null;
-      stream = null;
-    }
     closeConnection(){
+      rtcConnection.close();
+      rtcConnection.onicecandidate = null;
+      rtcConnection.onaddstream = null;
+      this.setState({remoteStreamSrc:null});
       this.messageSend({
           type:"leave",
-          userType:userType
+          callee:callee,
+          caller:caller
       })
+      caller = null;
     }
     onLeave(){
       console.log("=======call here leave ==========");
@@ -409,7 +378,7 @@ export default class WhiteBoardComponent extends Component{
       this.setState({remoteStreamSrc:null});
       this.setState({voiceClass:"mute-audio"});
       this.setState({videoClass:"stop-video"});
-      this.startConnection();
+      //this.startConnection();
       this.setupPeerConnection(stream);
       this.setState({enableVideoCall:false});
     }
