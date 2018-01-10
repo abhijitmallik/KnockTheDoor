@@ -282,6 +282,15 @@ export default class WhiteBoardComponent extends Component{
                             },
                             {
                               'url': 'stun:stun.voiparound.com'
+                            },
+                            {
+                              'url': 'stun:voipbuster.com'
+                            },
+                            {
+                              'url': 'stun:voipstunt.com'
+                            },
+                            {
+                              'url': 'stun:voxgratia.org'
                             }
                           ]};
 

@@ -56172,6 +56172,12 @@ var WhiteBoardComponent = function (_Component) {
           'url': 'stun:stun.stunprotocol.org:3478'
         }, {
           'url': 'stun:stun.voiparound.com'
+        }, {
+          'url': 'stun:voipbuster.com'
+        }, {
+          'url': 'stun:voipstunt.com'
+        }, {
+          'url': 'stun:voxgratia.org'
         }] };
 
       rtcConnection = new RTCPeerConnection(configuration);
