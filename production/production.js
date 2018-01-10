@@ -56147,9 +56147,11 @@ var WhiteBoardComponent = function (_Component) {
     value: function setupPeerConnection(stream) {
       var _this5 = this;
 
-      var configuration = {
-        "iceServers": [{ "url": "stun:stun.1.google.com:19302" }]
-      };
+      /*let configuration = {
+        "iceServers": [{ "url": "stun:stun.l.google.com:19302" }]
+      };*/
+      var configuration = { "iceServers": [{ url: 'stun:stun.1.google.com:19302' }, { url: 'turn:numb.viagenie.ca', credential: 'muazkh', username: 'webrtc@live.com' }] };
+
       rtcConnection = new RTCPeerConnection(configuration);
       rtcConnection.addStream(stream);
       rtcConnection.onaddstream = function (e) {
