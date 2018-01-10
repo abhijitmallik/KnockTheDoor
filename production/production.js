@@ -56150,37 +56150,7 @@ var WhiteBoardComponent = function (_Component) {
       /*let configuration = {
         "iceServers": [{ "url": "stun:stun.l.google.com:19302" }]
       };*/
-      var configuration = { 'iceServers': [{
-          'url': 'stun:stun.l.google.com:19302'
-        }, {
-          'url': 'stun:stun1.l.google.com:19302'
-        }, {
-          'url': 'stun:stun2.l.google.com:19302'
-        }, {
-          'url': 'stun:stun3.l.google.com:19302'
-        }, {
-          'url': 'stun:stun4.l.google.com:19302'
-        }, {
-          'url': 'stun:stun.ekiga.net'
-        }, {
-          'url': 'stun:stun.ideasip.com'
-        }, {
-          'url': 'stun:stun.rixtelecom.se'
-        }, {
-          'url': 'stun:stun.schlund.de'
-        }, {
-          'url': 'stun:stun.stunprotocol.org:3478'
-        }, {
-          'url': 'stun:stun.voiparound.com'
-        }, {
-          'url': 'turn:turn1.myserver.com:12345?transport=udp',
-          'credential': 'UGJKBJHVYT',
-          'username': '3214234:32324234'
-        }, {
-          'url': 'turn:turn2.myserver.com:12346?transport=tcp',
-          'credential': 'HKJUHBHG',
-          'username': '23249:98437'
-        }] };
+      var configuration = { 'iceServers': ["stun.l.google.com:19302", "stun1.l.google.com:19302", "stun2.l.google.com:19302", "stun3.l.google.com:19302", "stun4.l.google.com:19302", "stun.ekiga.net", "stun.ideasip.com", "stun.rixtelecom.se", "stun.schlund.de", "stun.stunprotocol.org:3478", "stun.voiparound.com", "stun.voipbuster.com", "stun.voipstunt.com", "stun.voxgratia.org"] };
 
       rtcConnection = new RTCPeerConnection(configuration);
       rtcConnection.addStream(stream);
