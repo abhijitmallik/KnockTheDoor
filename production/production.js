@@ -56150,7 +56150,7 @@ var WhiteBoardComponent = function (_Component) {
       /*let configuration = {
         "iceServers": [{ "url": "stun:stun.l.google.com:19302" }]
       };*/
-      var configuration = { "iceServers": [{ url: 'stun:stun.1.google.com:19302' }, { url: 'turn:numb.viagenie.ca', credential: 'muazkh', username: 'webrtc@live.com' }] };
+      var configuration = { "iceServers": [{ url: 'turn:numb.viagenie.ca', credential: 'muazkh', username: 'webrtc@live.com' }] };
 
       rtcConnection = new RTCPeerConnection(configuration);
       rtcConnection.addStream(stream);
