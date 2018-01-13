@@ -1,9 +1,5 @@
 .text-editor{
-    position: absolute;
-    margin: 0px auto;
-    top: 100px;
-    left: 0px;
-    right: 0px;
+    margin: 80px auto;
     width: 1000px;
 }
 .text-editor .rdw-editor-main{

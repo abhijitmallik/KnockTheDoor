@@ -27,7 +27,7 @@ class Content extends Component{
 		return(
           <div className="content-div">
              <TextEditor/>
-             <button className="content-button-save" onClick={this.save.bind(this)}>Save</button>
+             <div className="save-button-div"><button className="content-button-save" onClick={this.save.bind(this)}>Save</button></div>
           </div>
 		)
 	}
