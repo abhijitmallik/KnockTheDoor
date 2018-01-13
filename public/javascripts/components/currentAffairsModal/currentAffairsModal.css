@@ -1,0 +1,12 @@
+.row-data{
+
+}
+.row-data .date-picker,.row-data .add-publish{
+	display: inline-block;
+}
+.row-data .add-publish{
+	margin-left: 10px;
+}
+.row-data button{
+	margin-right: 5px;
+}

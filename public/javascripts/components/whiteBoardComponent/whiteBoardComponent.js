@@ -249,7 +249,50 @@ export default class WhiteBoardComponent extends Component{
       /*let configuration = {
         "iceServers": [{ "url": "stun:stun.l.google.com:19302" }]
       };*/
-      let configuration = {"iceServers":[{url:'stun:stun.1.google.com:19302'},{url:'turn:numb.viagenie.ca',credential: 'muazkh', username: 'webrtc@live.com'}]};
+      let configuration = {'iceServers': [
+                            {
+                              'url': 'stun:stun.l.google.com:19302'
+                            },
+                            {
+                               'url': 'stun:stun1.l.google.com:19302'
+                            },
+                            {
+                               'url': 'stun:stun2.l.google.com:19302'
+                            },
+                            {
+                                'url': 'stun:stun3.l.google.com:19302'
+                            },
+                            {
+                              'url': 'stun:stun4.l.google.com:19302'
+                            },
+                            {
+                              'url': 'stun:stun.ekiga.net'
+                            },
+                            {
+                              'url': 'stun:stun.ideasip.com'
+                            },
+                            {
+                              'url': 'stun:stun.rixtelecom.se'
+                            },
+                            {
+                              'url': 'stun:stun.schlund.de'
+                            },
+                            {
+                              'url': 'stun:stun.stunprotocol.org:3478'
+                            },
+                            {
+                              'url': 'stun:stun.voiparound.com'
+                            },
+                            {
+                              'url': 'stun:voipbuster.com'
+                            },
+                            {
+                              'url': 'stun:voipstunt.com'
+                            },
+                            {
+                              'url': 'stun:voxgratia.org'
+                            }
+                          ]};
 
 
       rtcConnection = new RTCPeerConnection(configuration);
