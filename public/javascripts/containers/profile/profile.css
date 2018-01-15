@@ -48,11 +48,6 @@
 .parent-profile-div .employee-form{
    width: 600px;
 }
-.parent-profile-div .employee-form .upload-image{
-    position: absolute;
-    top:0px;
-    right:20px;
-}
 .parent-profile-div .employee-form .upload-container{
     position: absolute;
     right:0px;

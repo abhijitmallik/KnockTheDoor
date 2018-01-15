@@ -6,6 +6,11 @@
    width: 400px;
    top: 200px;
 }
+.employee-form .upload-image{
+    position: absolute;
+    top:0px;
+    right:20px;
+}
 .field-div{
   
 }

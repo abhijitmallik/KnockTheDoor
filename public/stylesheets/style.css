@@ -92,6 +92,8 @@ a {
 }
 .employee-form{
   position: relative;
+  width: 600px;
+  margin: 0px auto;
 }
 .form-div{
   
@@ -102,7 +104,7 @@ a {
   margin-bottom: 10px;
 }
 .form-button{
-  margin-left: 20%;
+  text-align: center;
 }
 .error-msg{
   margin-left: 75px;
