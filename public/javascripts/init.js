@@ -26,13 +26,15 @@ ReactDOM.render(
     <BrowserRouter>
       <div className="main-container">
        <Route path="/" component={Init} />
-       <Route path="/employee" component={Employees}/>
-       <Route path="/signup" component={userForm}/>
-       <Route path="/admin" component={AdminLogin}/>
-       <Route path="/signin" component={SignIn}/>
-       <Route path="/profile" component={Profile}/>
-       <Route path="/init" component={Profile}/>
-       <Route path="/current-affairs" component={CurrentAffairs}/>
+       <div className="component-div">
+         <Route path="/employee" component={Employees}/>
+         <Route path="/signup" component={userForm}/>
+         <Route path="/admin" component={AdminLogin}/>
+         <Route path="/signin" component={SignIn}/>
+         <Route path="/profile" component={Profile}/>
+         <Route path="/init" component={Profile}/>
+         <Route path="/current-affairs" component={CurrentAffairs}/>
+       </div>
        <Route path="/content" component={Content}/>
       </div> 
     </BrowserRouter>
