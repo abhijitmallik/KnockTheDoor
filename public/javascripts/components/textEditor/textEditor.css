@@ -1,11 +1,10 @@
 .text-editor{
-    margin: 80px auto;
-    width: 1000px;
+    
 }
 .text-editor .rdw-editor-main{
    height: 500px;
    width: 1000px;
-    background-color: #fff;
+   background-color: #fff;
 }
 .rdw-editor-toolbar{
     width: 988px !important;

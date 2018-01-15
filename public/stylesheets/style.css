@@ -107,9 +107,9 @@ a {
   text-align: center;
 }
 .error-msg{
-  margin-left: 75px;
   color: crimson;
   display: block;
+  text-align: center;
 }
 .form-input{
   width: 250px;

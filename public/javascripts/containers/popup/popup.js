@@ -8,11 +8,12 @@ import {getCroppedURL} from '../../actions/croppedImage.js';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-
+let height = 80;
+let width = 100;
 class PopUp extends Component
 {
-	constructor(){
-      super();
+	constructor(props){
+      super(props);
       this.browseFile = this.browseFile.bind(this);
       this.onChange = this.onChange.bind(this);
       this.crop = this.crop.bind(this);
@@ -20,6 +21,10 @@ class PopUp extends Component
             image: null,
             previewImage: null
         };
+        if(this.props.height){
+            height = this.props.height;
+            width = this.props.width;
+        }
 	}
 	componentDidMount(){
 	    var el = ReactDOM.findDOMNode(this);
@@ -73,8 +78,8 @@ class PopUp extends Component
                         <Cropper
                             ref='crop'
                             image={this.state.image}
-                            width={100}
-                            height={80}
+                            width={width}
+                            height={height}
                             onImageLoaded={this.imageLoaded}
                         />
                     </div>
