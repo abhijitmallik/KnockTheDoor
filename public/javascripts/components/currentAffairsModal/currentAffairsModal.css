@@ -5,8 +5,16 @@
 	display: inline-block;
 }
 .row-data .add-publish{
+	margin-right: 20px;
+	float: right;
+	position: relative;
 	margin-left: 10px;
+	width: 150px;
 }
 .row-data button{
 	margin-right: 5px;
+}
+.row-data .publish-class-title{
+    color: navy;
+    font-size: 15px;
 }
