@@ -1,19 +1,60 @@
 .content-div{
-	height: 700px;
-    width: 1200px;
+	/*height: 700px;*/
     position: relative;
 }
-.content-button-save{
+.content-button-cancel{
     
 }
-.content-div .save-button-div{
-    position: absolute;
-    bottom: 50px;
-    right: 0px;
-    left: 0px;
-    margin: 0px auto;
+.content-div .cancel-button-div{
     cursor: pointer;
-    display: inline-block;
     height: 20px;
-    width: 50px;
+    margin-top: 5px;
+    text-align: right;
+}
+.component-div .row-data{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    margin: 0 auto;
+    width: 1000px;
+}
+.component-div .popup-title,.component-div .popup-desc,.component-div .popup-img-source{
+    margin-top:10px;
+}
+.component-div .addinfo-text{
+    margin-bottom: 5px;
+    font-size: 18px;
+    font-family: Kievit;
+    font-weight: bolder;
+    text-align: center;
+    margin-bottom: 20px;
+    color: indigo;
+}
+.component-div .popup-title .rdw-editor-main{
+    height:100px; 
+}
+.component-div .popup-desc .rdw-editor-main{
+    height:300px;
+}
+.component-div .title-section-texteditor{
+    width: 80%;
+    overflow: auto;
+}
+.component-div .image-upload-section{
+    position: absolute;
+    right: 30px;
+    top: 25px;
+}
+.component-div .image-upload-section .upload-container{
+    position: relative;
+}
+.content-div .popup{
+    z-index: 99;
+}
+.component-div .image-upload-section .upload-container{
+    height: 135px ;
+    width: 135px ;
+}
+.component-div .popup-img-source input{
+    width: 300px;
 }

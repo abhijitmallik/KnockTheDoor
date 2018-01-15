@@ -18,15 +18,18 @@ export default class CurrentAffairsModal extends Component{
 	addContent(){
 		this.setState({addPopUp:true});
 	}
+  cancel(){
+    this.setState({addPopUp:false});
+  }
 	render(){
 		return(
           <div className='row-data'>
             <div className='date-picker'><DatePicker dateChange={ this.dateChange.bind(this) } /></div>
             <div className='add-publish'>
                <button type="button" onClick={this.addContent.bind(this)}> + Add</button>
-               <button type="button">Publish</button>
+               <span className="publish-class-title">Publish : </span><span className="publish"></span>
             </div>
-            {this.state.addPopUp ? <Content/> : ""}
+            {this.state.addPopUp ? <Content closePopUp={this.cancel.bind(this)}/> : ""}
           </div>
            
 		)
