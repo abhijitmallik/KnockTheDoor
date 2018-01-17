@@ -1,6 +1,7 @@
 .content-div{
 	/*height: 700px;*/
     position: relative;
+    padding: 10px;
 }
 .content-button-cancel{
     

@@ -51,7 +51,7 @@ module.exports =(app,path,config,passport,Cookies)=>{
 			}
 			res.json(emp);
 		})
-	})
+	});
 
 	/*app.use((req, res, next) => {
 
