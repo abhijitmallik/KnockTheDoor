@@ -328,6 +328,7 @@ a {
   left:0px;
   color: cornsilk;
   text-decoration: none;
+  z-index: 1;
 }
 .dropbtn {
     /*background-color: #4CAF50;
@@ -370,7 +371,6 @@ a {
     color: cornsilk;
 }
 .component-div{
-  padding: 40px;
 }
 
 

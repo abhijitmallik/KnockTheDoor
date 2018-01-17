@@ -15,3 +15,45 @@
 	height: 20px;
 	display: inline-block;
 }
+.component-div .post-data{
+    margin:0px auto;
+    height: 500px;
+    width: 1000px;
+    padding-top: 50px;
+    overflow: auto;
+}
+.post-data .post-data-row{
+    margin-bottom: 10px;
+}
+.post-data .post-data-row .title{
+    margin-bottom: 2px;
+    display: block;
+}
+.post-data .post-data-row .post-image{
+	display: inline-block;
+	height: 80px;
+    width: 80px;
+    margin-left: 20px;
+}
+.post-data .post-data-row .post-image img{
+    height: 70px;
+    width: 70px;
+}
+.post-data .post-data-row .img-desc-div{
+    max-height: 100px;
+    overflow: auto;
+}
+.post-data .post-data-row .description{
+    display: inline-block;
+    height: 80px;
+    max-width: 80%; 
+    float: left;
+    overflow: auto;
+}
+.post-data .post-data-row .source{
+    display: block;
+    margin-bottom: 5px;
+}
+.post-data .post-data-row .post-date{
+    display: block;
+}

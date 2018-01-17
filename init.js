@@ -46,8 +46,9 @@ module.exports = (port,serverConfig)=>{
     require('./routes/passport')(passport);
     require('./routes/userloginpassport')(passport);
     require('./routes/employee')(app,path,config,passport,Cookies);
-    require('./routes/login')(app,path,config,passport,Cookies);
     require('./routes/saveContent')(app,path,config);
+    require('./routes/login')(app,path,config,passport,Cookies);
+    
     //require('./config/nginx');
     //require.('./routes/socket/rabbitMQ')(server,path,config);
     socketIo.socketId(server,path,config,redisConfig,emitter);

@@ -1,6 +1,6 @@
 export function getContent(state=null,action){
 	switch(action.type){
-		case "CONTENT":
+		case "PUBLISH_CONTENTS":
 		 state = action.payload;
 		 break;
 	}

@@ -10,34 +10,43 @@ import CurrentAffairsModal from '../../components/currentAffairsModal/currentAff
 class CurrentAffairs extends Component{
 	constructor(props){
 	   super(props);	
-      this.state = {desc:""};
+      this.state = {desc:"",showPost:true};
 	}
   componentDidMount(){
-      this.props.getContent((obj)=>{
-           this.setState({desc:obj});
-      });
+    this.props.getContent();
   } 
+  hidePost(bool){
+     this.setState({showPost:bool});
+  }
 	render(){
-    return(
-       <div>
-         <CurrentAffairsModal/>
-       </div>
-    )
-    
-    /*let data = this.state.desc;
-    if(data.length > 0){
+    let data = this.props.contents;
+    if(data && data.length > 0){
       let template = data.map((obj)=>{
-          return <span className="description" dangerouslySetInnerHTML={{__html:obj.desc}} key={obj._id}></span>
+          return(
+            <div className="post-data-row" key={obj._id}>
+             <span className="title" dangerouslySetInnerHTML={{__html:obj.title}}></span>
+             <div className="img-desc-div">
+               <span className="description" dangerouslySetInnerHTML={{__html:obj.desc}} ></span>
+               <span className="post-image"><img src={obj.img}/></span>
+             </div>
+             <span className="source">{obj.source}</span>
+             <span className="post-date">{obj.date}</span>
+            </div> 
+          ) 
+
+          
       });
       return(
-          <div className="currentaffairs-containt">
-            <div className="label">Current Affairs</div>
-             {template}
+          <div>
+            <CurrentAffairsModal hideTemplate={this.hidePost.bind(this)}/>
+              <div className='post-data'>
+                {this.state.showPost ? template : ""}
+              </div>
           </div>
       )
     }else{
-      return(<div>No Data</div>);
-    }*/
+      return(<div><CurrentAffairsModal/><div>No Data</div></div>);
+    }
 	
 	}
 }
@@ -46,4 +55,8 @@ function getActionToClass(dispatch){
   return bindActionCreators({getContent},dispatch);
 }
 
-export default connect(null,getActionToClass)(CurrentAffairs);
+function getResultToClass(state){
+  return ({contents:state.getContent});
+}
+
+export default connect(getResultToClass,getActionToClass)(CurrentAffairs);
