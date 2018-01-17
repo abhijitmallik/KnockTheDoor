@@ -1,8 +1,11 @@
 var mongoose = require('mongoose');
 
 var contentSchema = mongoose.Schema({
-    id:String,
-    desc:String
+	title:String,
+	desc:String,
+    img:String,
+    source:String,
+    date:String,
 });
 var Contents = mongoose.model('Contents',contentSchema);
 

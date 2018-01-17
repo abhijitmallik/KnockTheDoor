@@ -1,28 +1,25 @@
 import React,{Component} from 'react';
 import ReactDOM from 'react-dom';
-import {connect} from 'react-redux';
-import {saveContent} from "../../actions/saveContent";
-import {bindActionCreators} from 'redux';
 import TextEditor from "../../components/textEditor/textEditor.js";
 import { Redirect } from 'react-router-dom';
 import UploadImage from '../uploadimage/uploadImage';
 import './contents.css';
 
-class Content extends Component{
+export default class Content extends Component{
 	constructor(props){
 		super(props);
-		this.state={navigateToCurrentAffairs:false};
+		this.state={navigateToCurrentAffairs:false,croppedImage:null};
 	}
 	save(){
 		let el = ReactDOM.findDOMNode(this);
-		let textEditorValue = el.querySelector('textarea').value;
-        let obj = {id:"",desc:textEditorValue}
-		this.props.saveContent(obj,()=>{
-			this.setState({navigateToCurrentAffairs:true});
-		});
+		let textEditorTitleValue = el.querySelector('.popup-title').querySelector('textarea').value;
+		let textEditorDescValue = el.querySelector('.popup-desc').querySelector('textarea').value;
+		let source = this.refs.source.value;
+        let obj = {title:textEditorTitleValue,desc:textEditorDescValue,img:this.state.croppedImage,source};
+        this.props.save(obj);
 	}
-	onCroppedImgData(){
-
+	onCroppedImgData(data){
+         this.setState({croppedImage:data});
 	}
 	render(){
 		if(this.state.navigateToCurrentAffairs){
@@ -41,17 +38,12 @@ class Content extends Component{
                <TextEditor/>
              </div>
              <div className="popup-img-source">
-               <span className="addinfo-text">SOURCE : </span><input type="text"/>
+               <span className="addinfo-text">SOURCE : </span><input type="text" ref='source'/>
              </div>
-             <div className="cancel-button-div"><button className="content-button-cancel" onClick={this.props.closePopUp}>Cancel</button></div>
+             <div className="cancel-button-div"><button className="content-button-save" onClick={this.save.bind(this)}>Save</button><button className="content-button-cancel" onClick={this.props.closePopUp}>Cancel</button></div>
           </div>
 		)
 	}
 } 
  
-function mapActionToClass(dispatch){
-   return bindActionCreators({saveContent},dispatch);
-} 
-
-export default connect(null,mapActionToClass)(Content);
 
