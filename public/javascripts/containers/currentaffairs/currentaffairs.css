@@ -57,3 +57,29 @@
 .post-data .post-data-row .post-date{
     display: block;
 }
+.next-previous-button{
+    width: 1000px;
+    margin: 0px auto;
+    margin-top: 10px;
+    text-align: center;
+}
+.previous-post{
+    float:left;
+}
+.next-post{
+    float:right;
+}
+.dropdown-post{
+    
+}
+.dropdown-post .dropdown-content{
+    right: 0px;
+    left: 0px;
+    min-width: auto;
+    max-height: 200px;
+    overflow: auto;
+}
+.dropdown-post .dropdown-content div{
+   cursor:pointer;
+   border: solid 1px;
+}

@@ -47,8 +47,6 @@ class Init extends Component{
 				  <button className="dropbtn">Menu</button>
 				  <div className="dropdown-content">
 				    <div className="gk-div-current-affairs"><Link to="/current-affairs">Current Affairs</Link></div>
-				    <div className="gk-div-current-affairs"><Link to="/signup">Daily GK</Link></div>
-				    <div className="gk-div-current-affairs"><Link to="/signup">Daily Quiz</Link></div>
 				  </div>
 				</div>
 			    </div>

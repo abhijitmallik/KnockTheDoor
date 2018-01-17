@@ -1,12 +1,20 @@
-
+html{
+  background-repeat: no-repeat;
+  height: 1000px;
+  width: 100%;
+  background: linear-gradient(to bottom right,  #cce3e5, #02b7db,#637275);
+}
 body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  background-image: url('../images/backgroundimage.jpg');
+  /*background-image: url('../images/backgroundimage.jpg');
   background-repeat: no-repeat;
   background-size:100%;
-    height: 100%;
-    width: 100%;
-    /*background: cornflowerblue;*/
+  height: 100%;
+  width: 100%;*/
+  /*background-repeat: no-repeat;
+  height: 900px;
+  width: 100%;
+  background: linear-gradient(to bottom right,  #cce3e5, #02b7db,#637275);*/
 }
 
 a {
@@ -303,6 +311,28 @@ a {
   margin: auto 0px;
   z-index: 1;
   cursor: pointer;
+}
+.previous-button{
+  background-image: url('../images/previous_button.jpg');
+  background-repeat: no-repeat;
+  background-size:100%;
+  height: 50px;
+  width: 50px;
+  top: 0px;
+  bottom: 0px;
+  cursor: pointer;
+  display: inline-block;
+}
+.next-button{
+  background-image: url('../images/next_button.jpg');
+  background-repeat: no-repeat;
+  background-size:100%;
+  height: 50px;
+  width: 50px;
+  top: 0px;
+  bottom: 0px;
+  cursor: pointer;
+  display: inline-block;
 }
 .emp-row .delete-icon{
   vertical-align: top;
